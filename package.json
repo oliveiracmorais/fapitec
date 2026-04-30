@@ -1,0 +1,25 @@
+{
+  "name": "fapitec-se-plataforma",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Monorepo da plataforma modular da FAPITEC-SE.",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "sync:ide": "node scripts/sync-ide.js",
+    "sync:ide:check": "node scripts/sync-ide.js --check",
+    "sync:skills:codex": "node scripts/sync-skills-codex.js",
+    "sync:skills:codex:global": "node scripts/sync-skills-codex.js --global",
+    "validate:structure": "node scripts/validate-structure.js",
+    "validate:agents": "node scripts/validate-agents.js",
+    "lint": "npm run validate:structure && npm run validate:agents",
+    "typecheck": "node scripts/noop-check.js typecheck",
+    "test": "node --test tests/*.test.js"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  }
+}
