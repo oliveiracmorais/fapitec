@@ -3,6 +3,7 @@
 import { useState, FormEvent, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import CampoFormulario from "../../components/campo-formulario";
 import {
   validarNome,
@@ -132,12 +133,20 @@ export default function CadastroPage() {
   );
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4 py-8">
-      <div className="w-full max-w-md rounded-xl bg-white p-8 shadow-lg">
-        <div className="mb-8 text-center">
-          <h1 className="text-2xl font-bold text-gray-900">Criar Conta</h1>
-          <p className="mt-1 text-sm text-gray-500">
-            Preencha os dados para se cadastrar
+    <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-brand-900 via-brand-800 to-brand-700 px-4 py-8">
+      <div className="w-full max-w-md rounded-2xl bg-white/95 p-8 shadow-2xl backdrop-blur">
+        <div className="mb-8 flex flex-col items-center">
+          <Image
+            src="/logo-2.png"
+            alt="FAPITEC-SE"
+            width={211}
+            height={60}
+            className="mb-4"
+            priority
+          />
+          <h1 className="text-xl font-bold text-brand-800">Criar Conta</h1>
+          <p className="text-sm text-gray-500">
+            Preencha os dados para se cadastrar na plataforma
           </p>
         </div>
 
@@ -161,7 +170,7 @@ export default function CadastroPage() {
               type="checkbox"
               checked={form.estrangeiro}
               onChange={(e) => atualizar("estrangeiro", e.target.checked)}
-              className="h-4 w-4 rounded border-gray-300 text-blue-700"
+              className="h-4 w-4 rounded border-gray-300 text-brand-600"
             />
             <label htmlFor="estrangeiro" className="text-sm text-gray-700">
               Sou estrangeiro
@@ -171,7 +180,9 @@ export default function CadastroPage() {
           <CampoFormulario
             id="documento"
             label={form.estrangeiro ? "Passaporte" : "CPF"}
-            placeholder={form.estrangeiro ? "Número do passaporte" : "000.000.000-00"}
+            placeholder={
+              form.estrangeiro ? "Número do passaporte" : "000.000.000-00"
+            }
             value={form.documento}
             onChange={(e) => {
               const valor = form.estrangeiro
@@ -255,7 +266,7 @@ export default function CadastroPage() {
           <button
             type="submit"
             disabled={carregando}
-            className="w-full rounded-lg bg-blue-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-50"
+            className="w-full rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {carregando ? "Cadastrando..." : "Cadastrar"}
           </button>
@@ -265,7 +276,7 @@ export default function CadastroPage() {
           Já tem conta?{" "}
           <Link
             href="/"
-            className="font-medium text-blue-700 hover:text-blue-800"
+            className="font-medium text-brand-600 hover:text-brand-700"
           >
             Faça login
           </Link>

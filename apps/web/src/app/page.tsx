@@ -3,6 +3,7 @@
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import CampoFormulario from "../components/campo-formulario";
 
 type UsuarioSessao = {
@@ -56,11 +57,19 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4">
-      <div className="w-full max-w-md rounded-xl bg-white p-8 shadow-lg">
-        <div className="mb-8 text-center">
-          <h1 className="text-2xl font-bold text-gray-900">FAPITEC-SE</h1>
-          <p className="mt-1 text-sm text-gray-500">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-brand-900 via-brand-800 to-brand-700 px-4">
+      <div className="w-full max-w-md rounded-2xl bg-white/95 p-8 shadow-2xl backdrop-blur">
+        <div className="mb-8 flex flex-col items-center">
+          <Image
+            src="/logo-2.png"
+            alt="FAPITEC-SE"
+            width={211}
+            height={60}
+            className="mb-4"
+            priority
+          />
+          <h1 className="text-xl font-bold text-brand-800">FAPITEC-SE</h1>
+          <p className="text-sm text-gray-500">
             Plataforma integrada de gestão institucional
           </p>
         </div>
@@ -96,7 +105,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={carregando}
-            className="w-full rounded-lg bg-blue-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-50"
+            className="w-full rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {carregando ? "Entrando..." : "Entrar"}
           </button>
@@ -105,7 +114,7 @@ export default function LoginPage() {
         <div className="mt-6 space-y-3 text-center text-sm">
           <Link
             href="/recuperar-senha"
-            className="block text-blue-700 hover:text-blue-800"
+            className="block text-brand-600 hover:text-brand-700"
           >
             Esqueci minha senha
           </Link>
@@ -113,13 +122,18 @@ export default function LoginPage() {
             Não tem cadastro?{" "}
             <Link
               href="/cadastro"
-              className="font-medium text-blue-700 hover:text-blue-800"
+              className="font-medium text-brand-600 hover:text-brand-700"
             >
               Clique aqui
             </Link>
           </p>
         </div>
       </div>
+
+      <p className="mt-6 text-center text-xs text-white/60">
+        Fundação de Apoio à Pesquisa e à Inovação Tecnológica do Estado de
+        Sergipe
+      </p>
     </div>
   );
 }
