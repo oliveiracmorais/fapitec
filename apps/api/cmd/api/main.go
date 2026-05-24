@@ -8,23 +8,50 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/oliveiracmorais/fapitec/api/internal/auditoria/infraestrutura/adaptadores"
 	auditoriaPersistencia "github.com/oliveiracmorais/fapitec/api/internal/auditoria/infraestrutura/persistencia"
 	"github.com/oliveiracmorais/fapitec/api/internal/identidade_e_acesso/aplicacao/casos_de_uso"
 	"github.com/oliveiracmorais/fapitec/api/internal/identidade_e_acesso/aplicacao/dto"
+	"github.com/oliveiracmorais/fapitec/api/internal/identidade_e_acesso/dominio/repositorios"
 	emailService "github.com/oliveiracmorais/fapitec/api/internal/identidade_e_acesso/infraestrutura/email"
 	"github.com/oliveiracmorais/fapitec/api/internal/identidade_e_acesso/infraestrutura/hash"
 	"github.com/oliveiracmorais/fapitec/api/internal/identidade_e_acesso/infraestrutura/persistencia"
+	sqlcpersistencia "github.com/oliveiracmorais/fapitec/api/internal/identidade_e_acesso/infraestrutura/persistencia/sqlc"
 )
 
 func main() {
-	repo := persistencia.NovoRepositorioDeUsuarioMemoria()
-	tokenRepo := persistencia.NovoRepositorioDeTokenRedefinicaoMemoria()
 	hashService := hash.NovoServicoDeHashBcrypt()
 	emailLog := emailService.NovoServicoDeEmailLog()
 
 	auditRepo := auditoriaPersistencia.NovoRepositorioDeEventosMemoria()
 	auditService := adaptadores.NovoRegistradorAuditoria(auditRepo)
+
+	var repo repositorios.RepositorioDeUsuario
+	var tokenRepo repositorios.RepositorioDeTokenRedefinicao
+
+	dbURL := os.Getenv("DATABASE_URL")
+	if dbURL == "" {
+		dbURL = "postgres://fapitec:fapitec123@localhost:5432/fapitec?sslmode=disable"
+	}
+
+	pool, err := pgxpool.New(context.Background(), dbURL)
+	if err == nil {
+		if err := pool.Ping(context.Background()); err == nil {
+			queries := sqlcpersistencia.New(pool)
+			repo = persistencia.NovoRepositorioDeUsuarioSQLC(queries)
+			tokenRepo = persistencia.NovoRepositorioDeTokenRedefinicaoSQLC(queries)
+			log.Println("Conectado ao PostgreSQL")
+		} else {
+			pool.Close()
+		}
+	}
+
+	if repo == nil {
+		log.Println("PostgreSQL indisponivel — usando repositorio em memoria")
+		repo = persistencia.NovoRepositorioDeUsuarioMemoria()
+		tokenRepo = persistencia.NovoRepositorioDeTokenRedefinicaoMemoria()
+	}
 
 	cadastrar := casos_de_uso.NovoCadastrarUsuarioComAuditoria(repo, hashService, auditService)
 	autenticar := casos_de_uso.NovoAutenticarUsuarioComAuditoria(repo, hashService, auditService)

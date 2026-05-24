@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: fapitec-db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: fapitec
+      POSTGRES_PASSWORD: fapitec123
+      POSTGRES_DB: fapitec
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./db/migracoes:/docker-entrypoint-initdb.d
+
+volumes:
+  pgdata:

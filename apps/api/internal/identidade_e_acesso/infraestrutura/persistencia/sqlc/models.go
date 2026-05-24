@@ -8,6 +8,15 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type TokensRedefinicao struct {
+	ID          int64
+	UsuarioID   int64
+	Token       string
+	ExpiradoEm  pgtype.Timestamptz
+	ConsumidoEm pgtype.Timestamptz
+	CriadoEm    pgtype.Timestamptz
+}
+
 type Usuario struct {
 	ID            int64
 	Nome          string

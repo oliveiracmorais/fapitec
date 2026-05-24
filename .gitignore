@@ -37,3 +37,7 @@ next-env.d.ts
 .antigravity/
 .kimi/
 .github/agents/
+
+# Test coverage (AIOX)
+coverage.html
+coverage.out
