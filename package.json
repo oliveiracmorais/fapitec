@@ -24,9 +24,16 @@
     "lint": "pnpm run validate:structure && pnpm run validate:agents",
     "typecheck": "node scripts/typecheck.js",
     "test": "node --test tests/*.test.js",
-    "test:go": "cd apps/api && go test ./...",
+    "test:go": "cd apps/api && go test ./... -v -count=1",
+    "test:go:coverage": "cd apps/api && go test ./... -coverprofile=coverage.out -count=1 && go tool cover -html=coverage.out -o coverage.html",
     "build:api": "cd apps/api && go build -o bin/api ./cmd/api",
-    "api": "cd apps/api && go run ./cmd/api"
+    "api": "cd apps/api && go run ./cmd/api",
+    "api:make": "cd apps/api && make",
+    "api:run": "cd apps/api && make run",
+    "api:test": "cd apps/api && make test",
+    "api:build": "cd apps/api && make build",
+    "api:vet": "cd apps/api && make vet",
+    "api:sqlc": "cd apps/api && make sqlc"
   },
   "engines": {
     "node": ">=20.0.0",
