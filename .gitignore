@@ -27,6 +27,7 @@ Thumbs.db
 
 .next/
 *.tsbuildinfo
+next-env.d.ts
 
 # IDE-specific AI configs (synced from .aiox-core/development/agents/)
 # Only .codex/ is used (opencode); the rest are redundant copies
