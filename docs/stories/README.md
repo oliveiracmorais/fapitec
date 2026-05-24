@@ -107,3 +107,4 @@ Objetivo:
 - [1.10.ajustes-de-conformidade-autenticacao-e-cadastro.md](/home/carlos/projetos/fapitec/docs/stories/1.10.ajustes-de-conformidade-autenticacao-e-cadastro.md)
 - [1.11.recuperacao-de-senha.md](/home/carlos/projetos/fapitec/docs/stories/1.11.recuperacao-de-senha.md)
 - [1.12.gestao-de-editais.md](/home/carlos/projetos/fapitec/docs/stories/1.12.gestao-de-editais.md)
+- [1.13.identidade-e-acesso-ponta-a-ponta.md](/home/carlos/projetos/fapitec/docs/stories/1.13.identidade-e-acesso-ponta-a-ponta.md)
