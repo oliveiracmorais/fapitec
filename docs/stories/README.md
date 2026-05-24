@@ -13,7 +13,7 @@ Este arquivo organiza as primeiras stories fundacionais do projeto da `FAPITEC-S
 7. Story: integração runtime mínima de autenticação, autorização e auditoria
 8. Story: implementação de autenticação e cadastro (código)
 9. Story: gestão documental base
-10. Story: módulo de gestão de editais
+10. Story: módulo de gestão de editais ✅
 
 ## Sequenciamento em ondas
 
@@ -27,8 +27,9 @@ Este arquivo organiza as primeiras stories fundacionais do projeto da `FAPITEC-S
 - Story `1.6`: shell inicial e dashboard modular
 - Story `1.7`: integração runtime mínima de autenticação, autorização e auditoria
 - Story `1.9`: implementação de autenticação e cadastro (código) ✅
-- Story `1.10`: ajustes de conformidade (passaporte, mensagens, confirmação de e-mail) 🔜
-- Story `1.11`: recuperação de senha 🔜
+- Story `1.10`: ajustes de conformidade (passaporte, mensagens, confirmação de e-mail) ✅
+- Story `1.11`: recuperação de senha ✅
+- Story `1.12`: gestão de editais 🔜
 
 Objetivo:
 
@@ -105,3 +106,4 @@ Objetivo:
 - [1.9.implementacao-autenticacao-e-cadastro.md](/home/carlos/projetos/fapitec/docs/stories/1.9.implementacao-autenticacao-e-cadastro.md)
 - [1.10.ajustes-de-conformidade-autenticacao-e-cadastro.md](/home/carlos/projetos/fapitec/docs/stories/1.10.ajustes-de-conformidade-autenticacao-e-cadastro.md)
 - [1.11.recuperacao-de-senha.md](/home/carlos/projetos/fapitec/docs/stories/1.11.recuperacao-de-senha.md)
+- [1.12.gestao-de-editais.md](/home/carlos/projetos/fapitec/docs/stories/1.12.gestao-de-editais.md)

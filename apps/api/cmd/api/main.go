@@ -13,6 +13,9 @@ import (
 	auditoriaPersistencia "github.com/oliveiracmorais/fapitec/api/internal/auditoria/infraestrutura/persistencia"
 	"github.com/oliveiracmorais/fapitec/api/internal/identidade_e_acesso/aplicacao/casos_de_uso"
 	"github.com/oliveiracmorais/fapitec/api/internal/identidade_e_acesso/aplicacao/dto"
+	gestaoEditais "github.com/oliveiracmorais/fapitec/api/internal/gestao_de_editais/aplicacao/casos_de_uso"
+	gestaoEditaisDTO "github.com/oliveiracmorais/fapitec/api/internal/gestao_de_editais/aplicacao/dto"
+	gestaoEditaisPersistencia "github.com/oliveiracmorais/fapitec/api/internal/gestao_de_editais/infraestrutura/persistencia"
 	"github.com/oliveiracmorais/fapitec/api/internal/identidade_e_acesso/dominio/repositorios"
 	emailService "github.com/oliveiracmorais/fapitec/api/internal/identidade_e_acesso/infraestrutura/email"
 	"github.com/oliveiracmorais/fapitec/api/internal/identidade_e_acesso/infraestrutura/hash"
@@ -57,6 +60,11 @@ func main() {
 	autenticar := casos_de_uso.NovoAutenticarUsuarioComAuditoria(repo, hashService, auditService)
 	solicitarRedefinicao := casos_de_uso.NovoSolicitarRedefinicaoSenhaComAuditoria(repo, tokenRepo, emailLog, auditService)
 	redefinirSenha := casos_de_uso.NovoRedefinirSenhaComAuditoria(repo, tokenRepo, hashService, auditService)
+
+	editalRepo := gestaoEditaisPersistencia.NovoRepositorioDeEditalMemoria()
+	criarEdital := gestaoEditais.NovoEdital(editalRepo)
+	listarEditais := gestaoEditais.NovoListarEditais(editalRepo)
+	visualizarEdital := gestaoEditais.NovoVisualizarEdital(editalRepo)
 
 	mux := http.NewServeMux()
 
@@ -216,6 +224,59 @@ func main() {
 		}
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(resp)
+	})
+
+	mux.HandleFunc("POST /api/v1/editais", func(w http.ResponseWriter, r *http.Request) {
+		var req gestaoEditaisDTO.CriarEditalEntrada
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			http.Error(w, `{"erro":"requisicao invalida"}`, http.StatusBadRequest)
+			return
+		}
+
+		saida, err := criarEdital.Executar(context.Background(), req)
+		if err != nil {
+			http.Error(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusBadRequest)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+		json.NewEncoder(w).Encode(saida)
+	})
+
+	mux.HandleFunc("GET /api/v1/editais", func(w http.ResponseWriter, r *http.Request) {
+		filtros := gestaoEditais.FiltrosListarEditais{
+			Titulo:      r.URL.Query().Get("titulo"),
+			Status:      r.URL.Query().Get("status"),
+			TipoChamada: r.URL.Query().Get("tipo_chamada"),
+		}
+
+		saida, err := listarEditais.Executar(context.Background(), filtros)
+		if err != nil {
+			http.Error(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(saida)
+	})
+
+	mux.HandleFunc("GET /api/v1/editais/{id}", func(w http.ResponseWriter, r *http.Request) {
+		idStr := r.PathValue("id")
+		var id int64
+		if _, err := fmt.Sscanf(idStr, "%d", &id); err != nil {
+			http.Error(w, `{"erro":"id invalido"}`, http.StatusBadRequest)
+			return
+		}
+
+		saida, err := visualizarEdital.Executar(context.Background(), id)
+		if err != nil {
+			http.Error(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusNotFound)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(saida)
 	})
 
 	mux.HandleFunc("GET /api/v1/health", func(w http.ResponseWriter, r *http.Request) {
