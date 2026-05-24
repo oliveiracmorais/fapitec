@@ -11,8 +11,9 @@ type CadastrarUsuarioEntrada struct {
 }
 
 type CadastrarUsuarioSaida struct {
-	ID    int64  `json:"id"`
-	Nome  string `json:"nome"`
-	CPF   string `json:"cpf"`
-	Email string `json:"email"`
+	ID          int64  `json:"id"`
+	Nome        string `json:"nome"`
+	Documento   string `json:"documento"`
+	Email       string `json:"email"`
+	Estrangeiro bool   `json:"estrangeiro"`
 }

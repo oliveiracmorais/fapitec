@@ -123,8 +123,11 @@ func TestCadastrarUsuarioComPassaporte(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Cadastro com passaporte retornou erro: %v", err)
 	}
-	if saida.CPF != "AB123456" {
-		t.Fatalf("Passaporte esperado AB123456, got %s", saida.CPF)
+	if saida.Documento != "AB123456" {
+		t.Fatalf("Passaporte esperado AB123456, got %s", saida.Documento)
+	}
+	if !saida.Estrangeiro {
+		t.Fatal("Esperava estrangeiro=true")
 	}
 }
 

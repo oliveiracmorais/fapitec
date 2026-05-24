@@ -115,9 +115,10 @@ func (c CadastrarUsuario) Executar(ctx context.Context, entrada dto.CadastrarUsu
 	}
 
 	return &dto.CadastrarUsuarioSaida{
-		ID:    usuario.ID,
-		Nome:  usuario.Nome,
-		CPF:   usuario.CPF,
-		Email: email.String(),
+		ID:          usuario.ID,
+		Nome:        usuario.Nome,
+		Documento:   usuario.CPF,
+		Email:       email.String(),
+		Estrangeiro: usuario.Estrangeiro,
 	}, nil
 }

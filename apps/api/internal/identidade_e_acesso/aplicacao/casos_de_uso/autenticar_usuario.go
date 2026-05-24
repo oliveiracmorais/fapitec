@@ -90,9 +90,10 @@ func (a AutenticarUsuario) Executar(ctx context.Context, entrada dto.AutenticarU
 	}
 
 	return &dto.AutenticarUsuarioSaida{
-		ID:    usuario.ID,
-		Nome:  usuario.Nome,
-		CPF:   usuario.CPF,
-		Email: usuario.Email.String(),
+		ID:          usuario.ID,
+		Nome:        usuario.Nome,
+		Documento:   usuario.CPF,
+		Email:       usuario.Email.String(),
+		Estrangeiro: usuario.Estrangeiro,
 	}, nil
 }
