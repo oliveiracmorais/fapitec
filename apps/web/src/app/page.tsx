@@ -3,6 +3,7 @@
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import CampoFormulario from "../components/campo-formulario";
 
 type UsuarioSessao = {
   id: number;
@@ -65,41 +66,26 @@ export default function LoginPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <label
-              htmlFor="cpf"
-              className="block text-sm font-medium text-gray-700"
-            >
-              CPF ou Passaporte
-            </label>
-            <input
-              id="cpf"
-              type="text"
-              value={cpf}
-              onChange={(e) => setCpf(e.target.value)}
-              placeholder="000.000.000-00"
-              required
-              className="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600"
-            />
-          </div>
+          <CampoFormulario
+            id="cpf"
+            label="CPF ou Passaporte"
+            placeholder="000.000.000-00"
+            value={cpf}
+            onChange={(e) => setCpf(e.target.value)}
+            icone="🆔"
+            required
+          />
 
-          <div>
-            <label
-              htmlFor="senha"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Senha
-            </label>
-            <input
-              id="senha"
-              type="password"
-              value={senha}
-              onChange={(e) => setSenha(e.target.value)}
-              placeholder="Sua senha"
-              required
-              className="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600"
-            />
-          </div>
+          <CampoFormulario
+            id="senha"
+            label="Senha"
+            placeholder="Sua senha"
+            value={senha}
+            onChange={(e) => setSenha(e.target.value)}
+            icone="🔒"
+            tipoSenha
+            required
+          />
 
           {erro && (
             <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700">

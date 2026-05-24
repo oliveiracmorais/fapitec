@@ -1,12 +1,57 @@
 "use client";
 
-import { useState, FormEvent } from "react";
+import { useState, FormEvent, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import CampoFormulario from "../../components/campo-formulario";
+import {
+  validarNome,
+  validarCPF,
+  validarPassaporte,
+  validarEmail,
+  validarConfirmacaoEmail,
+  validarSenha,
+  validarConfirmacaoSenha,
+  formatarCPF,
+  type ErrosFormulario,
+} from "../../lib/validacao";
+
+type FormState = {
+  nome: string;
+  email: string;
+  confirmacaoEmail: string;
+  senha: string;
+  confirmacaoSenha: string;
+  estrangeiro: boolean;
+  documento: string;
+};
+
+type TouchedState = Record<string, boolean>;
+
+function validarFormulario(form: FormState): ErrosFormulario {
+  const erros: ErrosFormulario = {};
+  erros.nome = validarNome(form.nome);
+  if (form.estrangeiro) {
+    erros.documento = validarPassaporte(form.documento);
+  } else {
+    erros.documento = validarCPF(form.documento);
+  }
+  erros.email = validarEmail(form.email);
+  erros.confirmacaoEmail = validarConfirmacaoEmail(
+    form.email,
+    form.confirmacaoEmail
+  );
+  erros.senha = validarSenha(form.senha);
+  erros.confirmacaoSenha = validarConfirmacaoSenha(
+    form.senha,
+    form.confirmacaoSenha
+  );
+  return erros;
+}
 
 export default function CadastroPage() {
   const router = useRouter();
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<FormState>({
     nome: "",
     email: "",
     confirmacaoEmail: "",
@@ -15,64 +60,76 @@ export default function CadastroPage() {
     estrangeiro: false,
     documento: "",
   });
-  const [erro, setErro] = useState("");
+  const [touched, setTouched] = useState<TouchedState>({});
+  const [erroServidor, setErroServidor] = useState("");
   const [carregando, setCarregando] = useState(false);
 
-  function atualizar(chave: string, valor: string | boolean) {
+  const erros = validarFormulario(form);
+  const valido = Object.values(erros).every((e) => !e);
+
+  function atualizar(chave: keyof FormState, valor: string | boolean) {
     setForm((prev) => ({ ...prev, [chave]: valor }));
   }
 
-  async function handleSubmit(e: FormEvent) {
-    e.preventDefault();
-    setErro("");
+  function handleBlur(chave: string) {
+    setTouched((prev) => ({ ...prev, [chave]: true }));
+  }
 
-    if (form.email !== form.confirmacaoEmail) {
-      setErro("O e-mail deve ser IGUAL ao e-mail principal.");
-      return;
-    }
-    if (form.senha !== form.confirmacaoSenha) {
-      setErro("A senha deve ser IGUAL à primeira senha fornecida.");
-      return;
-    }
-
-    setCarregando(true);
-
-    try {
-      const body: Record<string, unknown> = {
-        nome: form.nome,
-        email: form.email,
-        confirmacao_email: form.confirmacaoEmail,
-        senha: form.senha,
-        confirmacao_senha: form.confirmacaoSenha,
-        estrangeiro: form.estrangeiro,
-      };
-
-      if (form.estrangeiro) {
-        body.passaporte = form.documento;
-      } else {
-        body.cpf = form.documento;
-      }
-
-      const res = await fetch("/api/v1/cadastro", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
+  const handleSubmit = useCallback(
+    async (e: FormEvent) => {
+      e.preventDefault();
+      setTouched({
+        nome: true,
+        documento: true,
+        email: true,
+        confirmacaoEmail: true,
+        senha: true,
+        confirmacaoSenha: true,
       });
 
-      const data = await res.json();
+      if (!valido) return;
 
-      if (!res.ok) {
-        setErro(data.erro || "Erro ao cadastrar");
-        return;
+      setErroServidor("");
+      setCarregando(true);
+
+      try {
+        const body: Record<string, unknown> = {
+          nome: form.nome,
+          email: form.email,
+          confirmacao_email: form.confirmacaoEmail,
+          senha: form.senha,
+          confirmacao_senha: form.confirmacaoSenha,
+          estrangeiro: form.estrangeiro,
+        };
+
+        if (form.estrangeiro) {
+          body.passaporte = form.documento;
+        } else {
+          body.cpf = form.documento;
+        }
+
+        const res = await fetch("/api/v1/cadastro", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          setErroServidor(data.erro || "Erro ao cadastrar");
+          return;
+        }
+
+        router.push("/?cadastro=ok");
+      } catch {
+        setErroServidor("Erro de conexão com o servidor");
+      } finally {
+        setCarregando(false);
       }
-
-      router.push("/?cadastro=ok");
-    } catch {
-      setErro("Erro de conexão com o servidor");
-    } finally {
-      setCarregando(false);
-    }
-  }
+    },
+    [form, valido, router]
+  );
 
   return (
     <div className="flex min-h-screen items-center justify-center px-4 py-8">
@@ -85,23 +142,18 @@ export default function CadastroPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label
-              htmlFor="nome"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Nome Completo
-            </label>
-            <input
-              id="nome"
-              type="text"
-              value={form.nome}
-              onChange={(e) => atualizar("nome", e.target.value)}
-              placeholder="Seu nome completo"
-              required
-              className="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600"
-            />
-          </div>
+          <CampoFormulario
+            id="nome"
+            label="Nome Completo"
+            placeholder="Seu nome completo"
+            value={form.nome}
+            onChange={(e) => atualizar("nome", e.target.value)}
+            onBlur={() => handleBlur("nome")}
+            icone="👤"
+            erro={erros.nome}
+            touched={touched.nome}
+            required
+          />
 
           <div className="flex items-center gap-2">
             <input
@@ -116,104 +168,87 @@ export default function CadastroPage() {
             </label>
           </div>
 
-          <div>
-            <label
-              htmlFor="documento"
-              className="block text-sm font-medium text-gray-700"
-            >
-              {form.estrangeiro ? "Passaporte" : "CPF"}
-            </label>
-            <input
-              id="documento"
-              type="text"
-              value={form.documento}
-              onChange={(e) => atualizar("documento", e.target.value)}
-              placeholder={
-                form.estrangeiro ? "Número do passaporte" : "000.000.000-00"
-              }
-              required
-              className="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600"
-            />
-          </div>
+          <CampoFormulario
+            id="documento"
+            label={form.estrangeiro ? "Passaporte" : "CPF"}
+            placeholder={form.estrangeiro ? "Número do passaporte" : "000.000.000-00"}
+            value={form.documento}
+            onChange={(e) => {
+              const valor = form.estrangeiro
+                ? e.target.value
+                : formatarCPF(e.target.value);
+              atualizar("documento", valor);
+            }}
+            onBlur={() => handleBlur("documento")}
+            icone={form.estrangeiro ? "🛂" : "🆔"}
+            erro={erros.documento}
+            touched={touched.documento}
+            required
+          />
 
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
-            >
-              E-mail
-            </label>
-            <input
-              id="email"
-              type="email"
-              value={form.email}
-              onChange={(e) => atualizar("email", e.target.value)}
-              placeholder="seu@email.com"
-              required
-              className="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600"
-            />
-          </div>
+          <CampoFormulario
+            id="email"
+            label="E-mail"
+            type="email"
+            placeholder="seu@email.com"
+            value={form.email}
+            onChange={(e) => atualizar("email", e.target.value)}
+            onBlur={() => handleBlur("email")}
+            icone="📧"
+            erro={erros.email}
+            touched={touched.email}
+            required
+          />
 
-          <div>
-            <label
-              htmlFor="confirmacaoEmail"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Confirmação de E-mail
-            </label>
-            <input
-              id="confirmacaoEmail"
-              type="email"
-              value={form.confirmacaoEmail}
-              onChange={(e) => atualizar("confirmacaoEmail", e.target.value)}
-              placeholder="Confirme seu e-mail"
-              required
-              className="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600"
-            />
-          </div>
+          <CampoFormulario
+            id="confirmacaoEmail"
+            label="Confirmação de E-mail"
+            type="email"
+            placeholder="Confirme seu e-mail"
+            value={form.confirmacaoEmail}
+            onChange={(e) => atualizar("confirmacaoEmail", e.target.value)}
+            onBlur={() => handleBlur("confirmacaoEmail")}
+            icone="📧"
+            erro={erros.confirmacaoEmail}
+            touched={touched.confirmacaoEmail}
+            required
+          />
 
-          <div>
-            <label
-              htmlFor="senha"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Senha
-            </label>
-            <input
-              id="senha"
-              type="password"
-              value={form.senha}
-              onChange={(e) => atualizar("senha", e.target.value)}
-              placeholder="Mínimo 8 caracteres"
-              required
-              className="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600"
-            />
-            <p className="mt-1 text-xs text-gray-400">
-              Mínimo 8 caracteres, com letras, números e símbolos
-            </p>
-          </div>
+          <CampoFormulario
+            id="senha"
+            label="Senha"
+            placeholder="Mínimo 8 caracteres"
+            value={form.senha}
+            onChange={(e) => atualizar("senha", e.target.value)}
+            onBlur={() => handleBlur("senha")}
+            icone="🔒"
+            tipoSenha
+            erro={erros.senha}
+            touched={touched.senha}
+            required
+          />
+          <p className="-mt-2 text-xs text-gray-400">
+            Mínimo 8 caracteres, com letras maiúsculas, minúsculas, números e
+            símbolos
+          </p>
 
-          <div>
-            <label
-              htmlFor="confirmacaoSenha"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Confirmação de Senha
-            </label>
-            <input
-              id="confirmacaoSenha"
-              type="password"
-              value={form.confirmacaoSenha}
-              onChange={(e) => atualizar("confirmacaoSenha", e.target.value)}
-              placeholder="Repita a senha"
-              required
-              className="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600"
-            />
-          </div>
+          <CampoFormulario
+            id="confirmacaoSenha"
+            label="Confirmação de Senha"
+            placeholder="Repita a senha"
+            value={form.confirmacaoSenha}
+            onChange={(e) => atualizar("confirmacaoSenha", e.target.value)}
+            onBlur={() => handleBlur("confirmacaoSenha")}
+            icone="🔒"
+            tipoSenha
+            erro={erros.confirmacaoSenha}
+            touched={touched.confirmacaoSenha}
+            required
+          />
 
-          {erro && (
+          {erroServidor && (
             <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700">
-              {erro}
+              {erroServidor}
             </div>
           )}
 
