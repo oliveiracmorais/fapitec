@@ -294,7 +294,7 @@ workflow:
         output: 'tokens.yaml, design system structure, migration plan'
 
       phase_4_build:
-        commands: ['*build {atom}', '*compose {molecule}', '*extend {variant}']
+        commands: ['*build {component}', '*compose {molecule}', '*extend {component}']
         output: 'Production-ready components (TypeScript, tests, docs)'
 
       phase_5_quality:
@@ -491,5 +491,5 @@ Type `*help` to see commands by phase, or `*status` to see workflow state.
 - **@dev (Dex)** - Implements components
 
 ---
----
+
 *AIOX Agent - Synced from .aiox-core/development/agents/ux-design-expert.md*

@@ -269,7 +269,7 @@ Type `*help` to see all commands.
 
 ## Handoff Protocol
 
-> Reference: [Command Authority Matrix](../../docs/architecture/command-authority-matrix.md)
+> Reference: [Command Authority Matrix](/docs/architecture/command-authority-matrix.md)
 
 **Commands I delegate:**
 
@@ -331,5 +331,5 @@ Type `*help` to see all commands.
 - **@qa (Quinn)** - Validates quality gates in stories
 
 ---
----
+
 *AIOX Agent - Synced from .aiox-core/development/agents/po.md*
