@@ -21,6 +21,8 @@
     "shell:identidades": "node scripts/plataforma-shell.js identidades",
     "shell:cadastrar": "node scripts/plataforma-shell.js cadastrar",
     "shell:login": "node scripts/plataforma-shell.js login",
+    "shell:solicitar-redefinicao": "node scripts/plataforma-shell.js solicitar-redefinicao",
+    "shell:redefinir-senha": "node scripts/plataforma-shell.js redefinir-senha",
     "lint": "pnpm run validate:structure && pnpm run validate:agents",
     "typecheck": "node scripts/typecheck.js",
     "test": "node --test tests/*.test.js",
