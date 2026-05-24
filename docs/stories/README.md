@@ -6,12 +6,14 @@ Este arquivo organiza as primeiras stories fundacionais do projeto da `FAPITEC-S
 
 1. Story: estrutura base do monorepo
 2. Story: convenções arquiteturais e linguagem ubíqua
-3. Story: autenticação e cadastro inicial
-4. Story: autorização por perfis
-5. Story: trilha de auditoria
+3. Story: autenticação e cadastro inicial (especificação)
+4. Story: autorização por perfis (especificação)
+5. Story: trilha de auditoria (especificação)
 6. Story: shell inicial e dashboard modular
-7. Story: gestão documental base
-8. Story: módulo de gestão de editais
+7. Story: integração runtime mínima de autenticação, autorização e auditoria
+8. Story: implementação de autenticação e cadastro (código)
+9. Story: gestão documental base
+10. Story: módulo de gestão de editais
 
 ## Sequenciamento em ondas
 
@@ -19,10 +21,14 @@ Este arquivo organiza as primeiras stories fundacionais do projeto da `FAPITEC-S
 
 - Story `1.1`: estrutura base do monorepo
 - Story `1.2`: convenções arquiteturais e linguagem ubíqua
-- Story `1.3`: autenticação e cadastro inicial
-- Story `1.4`: autorização por perfis
-- Story `1.5`: trilha de auditoria mínima
+- Story `1.3`: autenticação e cadastro inicial (especificação) ✅
+- Story `1.4`: autorização por perfis (especificação)
+- Story `1.5`: trilha de auditoria mínima (especificação)
 - Story `1.6`: shell inicial e dashboard modular
+- Story `1.7`: integração runtime mínima de autenticação, autorização e auditoria
+- Story `1.9`: implementação de autenticação e cadastro (código) ✅
+- Story `1.10`: ajustes de conformidade (passaporte, mensagens, confirmação de e-mail) 🔜
+- Story `1.11`: recuperação de senha 🔜
 
 Objetivo:
 
@@ -72,6 +78,7 @@ Objetivo:
 - autorização antecede o controle de acesso fino por perfil e módulo.
 - auditoria mínima deve existir antes dos primeiros fluxos críticos de negócio.
 - o shell inicial deve validar macroestrutura, nomes de módulos e acesso antes do detalhamento dos módulos de negócio.
+- a integração runtime mínima deve remover o perfil fixo do dashboard e demonstrar sessão, autorização e auditoria antes da apresentação institucional.
 - gestão documental base antecede módulos com anexos, comprovações e documentos formais.
 - notificações base devem existir antes dos fluxos institucionais que dependem de comunicação operacional.
 - gestão de editais funciona como eixo para diversos fluxos posteriores.
@@ -93,3 +100,8 @@ Objetivo:
 - [1.4.autorizacao-por-perfis.md](/home/carlos/projetos/fapitec/docs/stories/1.4.autorizacao-por-perfis.md)
 - [1.5.trilha-de-auditoria-minima.md](/home/carlos/projetos/fapitec/docs/stories/1.5.trilha-de-auditoria-minima.md)
 - [1.6.shell-inicial-e-dashboard-modular.md](/home/carlos/projetos/fapitec/docs/stories/1.6.shell-inicial-e-dashboard-modular.md)
+- [1.7.integracao-runtime-minima-de-autenticacao-autorizacao-e-auditoria.md](/home/carlos/projetos/fapitec/docs/stories/1.7.integracao-runtime-minima-de-autenticacao-autorizacao-e-auditoria.md)
+- [1.8.tela-de-login-simulado-com-auditoria.md](/home/carlos/projetos/fapitec/docs/stories/1.8.tela-de-login-simulado-com-auditoria.md)
+- [1.9.implementacao-autenticacao-e-cadastro.md](/home/carlos/projetos/fapitec/docs/stories/1.9.implementacao-autenticacao-e-cadastro.md)
+- [1.10.ajustes-de-conformidade-autenticacao-e-cadastro.md](/home/carlos/projetos/fapitec/docs/stories/1.10.ajustes-de-conformidade-autenticacao-e-cadastro.md)
+- [1.11.recuperacao-de-senha.md](/home/carlos/projetos/fapitec/docs/stories/1.11.recuperacao-de-senha.md)

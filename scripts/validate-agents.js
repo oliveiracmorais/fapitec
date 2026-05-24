@@ -19,23 +19,12 @@ const agentes = [
 ];
 
 const raiz = process.cwd();
-const bases = ['.codex/agents', '.claude/rules', '.github/agents'];
 const faltantes = [];
 
 for (const agente of agentes) {
-  const caminhosPossiveis = [
-    path.join(raiz, '.codex/agents', `${agente}.md`),
-    path.join(raiz, '.github/agents', `${agente}.agent.md`)
-  ];
-
-  if (!caminhosPossiveis.some((caminho) => fs.existsSync(caminho))) {
+  const caminho = path.join(raiz, '.codex/agents', `${agente}.md`);
+  if (!fs.existsSync(caminho)) {
     faltantes.push(agente);
-  }
-}
-
-for (const base of bases) {
-  if (!fs.existsSync(path.join(raiz, base))) {
-    faltantes.push(base);
   }
 }
 

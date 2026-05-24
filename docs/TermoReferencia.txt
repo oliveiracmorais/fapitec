@@ -1,0 +1,1463 @@
+Folha 136
+
+Sigla: ASSEC
+
+C
+6 enpITESE
+GOVERNO DE SERGIPE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO TECNOLÓGICA
+DO ESTADO DE SERGIPE
+Página:1 de 16
+
+TERMO DE REFERÊNCIA
+1.
+
+DO OBJETO
+
+Conforme o Processo 189/2025, Atualmente, a FAPITEC/SE (Fundação de Apoio à
+Pesquisa e à Inovação Tecnológica do Estado de Sergipe) está gerenciando simultaneamente
+62 editais, os quais envolvem uma série de processos administrativos complexos, como
+contratação de serviços e recursos, pagamentos, prestação de contas e tomada de contas
+especiais. Esses processos, essenciais para o bom andamento das atividades da instituição, são
+atualmente realizados de forma manual, utilizando ferramentas como planilhas eletrônicas e
+arquivos em PDF.
+A dependência de métodos manuais para o controle e a gestão dessas etapas acarreta
+uma série de desafios e limitações. Primeiramente, a gestão de 62 editais simultâneos
+demanda um acompanhamento detalhado e contínuo, o que é extremamente difícil de ser
+realizado de forma eficaz sem o auxílio de ferramentas automatizadas ou sistemas integrados.
+Nesse contexto, os registros e os dados de cada edital estão dispersos em diferentes
+documentos, como planilhas e arquivos PDF, dificultando a centralização da informação.
+Essa abordagem manual tem como consequência a perda frequente de informações, o
+que pode comprometer o andamento dos processos e a tomada de decisões. Além disso, a falta
+de integração entre os setores envolvidos resulta em informações desencontradas e, muitas
+vezes, contraditórias, o que gera retrabalho e conflitos no fluxo de atividades. O processo de
+comunicação entre as equipes torna-se ineficiente, uma vez que a atualização de dados em
+planilhas e documentos PDF não é sincronizada, criando um ambiente propenso a erros e
+
+falhas de acompanhamento.
+,
+
+ITEM
+
+ESPECIFICAÇÃO
+CONTRATAÇÃO
+
+1
+
+ESPECIALIZADA
+
+DE
+
+EM
+
+UNIDADE DE
+
+MEDIDA
+
+QUANTIDADE
+
+UNIDADE
+
+1
+
+EMPRESA
+
+CRIAÇÃO
+
+E
+
+DESENVOLVIMENTO DE SISTEMA DE
+GESTÃO
+
+INCLUINDO
+
+MANUTENÇÃO
+
+ANUAL DO SOFTWARE
+
+2. DA VIGÊNCIA DA CONTRATAÇÃO
+O prazo de vigência da contratação do serviço é de 12 meses contados da assinatura
+do contrato, na forma do artigo 105 da Lei no 14.133, de 2021.
+
+3. FUNDAMENTAÇÃO E DESCRIÇÃO DA NECESSIDADE DA CONTRATAÇÃO
+A Fundação de Apoio à Pesquisa e à Inovação Tecnológica do Estado de Sergipe —
+FAPITEC/SE
+
+apresenta uma demanda premente pela modernização
+
+e
+
+automação
+
+dos
+
+processos administrativos relacionados à gestão de editais públicos.
+Atualmente, a FAPITEC/SE está responsável pela condução simultânea de 62 editais,
+
+Av. José Carlos Silva, no 4444 (Anexo à Codise), Inácio Barbosa - CEP; 49040-850, Aracaju - SE - Fone: (79) 99647-5197 / 99654-8827 CPNJ 07.888.112/0001-70
+e-DOC+ - Documento Virtual válido conforme Decreto no 40.394/2019
+
+Folha 137
+
+Sigla: ASSEC
+
+C
+6 enpITESE
+GOVERNO DE SERGIPE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO TECNOLÓGICA
+DO ESTADO DE SERGIPE
+Página:2 de 16
+
+os
+
+quais
+
+envolvem atividades
+
+administrativas
+
+complexas
+
+e
+
+interdependentes,
+
+como
+
+a
+
+contratação de pesquisadores e bolsistas, execução de pagamentos, acompanhamento de
+prestações de contas, bem como a instauração e o controle de tomadas de contas especial. No
+entanto, todas essas atividades estão sendo executadas de forma manual, com o uso de
+planilhas eletrônicas e documentos em formato PDF, o que tem se mostrado insuficiente
+diante da escala e da complexidade da operação.
+A ausência de um sistema informatizado
+
+e integrado tem gerado
+
+significativa
+
+ineficiência na tramitação dos processos, dificultando o controle efetivo das informações,
+comprometendo a rastreabilidade dos dados e aumentando o risco de perda de informações
+relevantes. Essa situação ocasiona falhas na comunicação entre os setores, retrabalho,
+inconsistência nos dados compartilhados e atrasos na execução das atividades, o que impacta
+negativamente a gestão dos editais e, por conseguinte, o cumprimento da missão institucional
+da FAPITEC/SE.
+
+Dessa forma, a necessidade da contratação de solução tecnológica que permita a
+automação e a centralização dos processos administrativos revela-se essencial para garantir
+maior eficiência, segurança, transparência e agilidade na gestão dos editais. A adoção de um
+sistema informatizado visa à melhoria da governança institucional, ao fortalecimento do
+controle interno, bem como à otimização dos recursos humanos e operacionais da Fundação.
+
+4. DESCRIÇÃO DA SOLUÇÃO COMO UM TODO CONSIDERANDO O CICLO DE
+VIDA DO OBJETO E ESPECIFICAÇÃO DO PRODUTO
+A
+
+solução
+
+proposta
+
+consiste
+
+na
+
+contratação
+
+de
+
+empresa
+
+especializada
+
+em
+
+desenvolvimento de sistemas informatizados para criação de um Sistema Integrado de Gestão
+de Editais da FAPITEC/SE, totalmente personalizado e alinhado às necessidades operacionais,
+normativas e estratégicas da Fundação. O sistema deverá contemplar todas as etapas do ciclo
+de vida dos editais, proporcionando automação, rastreabilidade, padronização e integração
+entre os setores envolvidos.
+A solução abrangerá o desenvolvimento de uma plataforma tecnológica composta por
+módulos interconectados, contemplando, no mínimo, os seguintes componentes:
+4.1. Módulo de Gestão de Editais
+
+o
+
+Cadastro e configuração de editais e chamadas públicas.
+
+o
+
+Definição de critérios de elegibilidade, cronogramas e etapas.
+
+o
+
+Publicação e acompanhamento do andamento de cada edital.
+4.2. Módulo de Inscrição e Seleção de Propostas
+
+o
+
+Ambiente para submissão de propostas por pesquisadores e instituições.
+
+o
+
+Upload de documentação exigida e validação automática de requisitos.
+
+o
+
+Avaliação de projetos por consultores ad hoc ou comissões internas.
+
+o
+
+Registro de pareceres, notas e resultados.
+4.3. Módulo de Contratação e Concessão de Apoios
+
+Av. José Carlos Silva, no 4444 (Anexo à Codise), Inácio Barbosa - CEP; 49040-850, Aracaju - SE - Fone: (79) 99647-5197 / 99654-8827 CPNJ 07.888.112/0001-70
+e-DOC+ - Documento Virtual válido conforme Decreto no 40.394/2019
+
+Folha 138
+
+Sigla: ASSEC
+
+C
+6 enpITESE
+GOVERNO DE SERGIPE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO TECNOLÓGICA
+DO ESTADO DE SERGIPE
+Página:3 de 16
+
+o
+
+Emissão de termos, contratos e instrumentos jurídicos.
+
+o
+
+Controle de bolsas, auxílios financeiros, despesas e obrigações contratuais.
+
+o
+
+Gestão de bolsistas e pesquisadores vinculados.
+4.4. Módulo Financeiro e de Pagamentos
+
+o
+
+Registro, acompanhamento e execução de pagamentos de bolsas, auxílios e serviços.
+
+o
+
+Integração com sistemas financeiros estaduais, quando aplicável.
+
+o
+
+Emissão de relatórios financeiros gerenciais.
+4.5. Módulo de Prestação de Contas
+
+Envio de documentos comprobatórios por parte dos beneficiários.
+Análise técnica e financeira pela equipe responsável.
+
+Alertas automáticos de prazos e pendências.
+Registro de decisões e encaminhamentos.
+4.6. Módulo de Tomada de Contas Especial (TCE)
+
+o
+
+Abertura e acompanhamento de processos de TCE.
+
+o
+
+Registro de diligências, documentos e manifestações técnicas.
+
+o
+
+Trilhas de auditoria completas para fins de controle interno e externo.
+4.7. Módulo de Comunicação Institucional
+
+o
+
+Sistema de notificações e alertas para usuários internos e externos.
+
+o
+
+Fluxos automatizados de comunicação entre setores.
+
+o
+
+Histórico completo de interações e registros operacionais.
+4.8. Módulo de Relatórios e Painéis de Indicadores
+
+o
+
+Relatórios gerenciais customizados.
+
+o
+
+Indicadores
+
+sobre
+
+andamento
+
+de
+
+editais,
+
+execução
+
+financeira
+
+e
+
+desempenho
+
+operacional.
+o
+
+Possibilidade de exportação de dados para auditorias e tomada de decisão.
+4.9. Módulo de Gestão Documental
+
+o
+
+Armazenamento seguro de documentos.
+
+o
+
+Controle de versões e vinculação de arquivos por atividade.
+
+o
+
+Adequação às normas de segurança da informação.
+4.10. Infraestrutura, Suporte e Segurança
+
+o
+
+Hospedagem em ambiente seguro e conforme boas práticas.
+
+o
+
+Backup automático e criptografia de dados.
+
+o
+
+Controle de acesso por perfis e níveis de autorização.
+
+Av. José Carlos Silva, no 4444 (Anexo à Codise), Inácio Barbosa - CEP; 49040-850, Aracaju - SE - Fone: (79) 99647-5197 / 99654-8827 CPN/ 07.888.112/0001-70
+e-DOC+ - Documento Virtual válido conforme Decreto no 40.394/2019
+
+Folha 139
+
+Sigla: ASSEC
+
+C
+6 enpITESE
+GOVERNO DE SERGIPE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO TECNOLÓGICA
+DO ESTADO DE SERGIPE
+Página:4 de 16
+
+o
+
+Suporte técnico e manutenção corretiva/evolutiva durante o período contratual.
+A solução integrará todos os processos atualmente conduzidos de forma manual,
+
+eliminando a fragmentação das informações e garantindo:
+
+o
+
+Centralização dos dados dos 62 editais em andamento e dos futuros editais.
+
+o
+
+Redução de falhas operacionais, perda de documentos e retrabalho.
+
+o
+
+Maior agilidade e segurança na tramitação das atividades internas.
+
+o
+
+Automação de fluxos complexos, com rastreabilidade completa.
+
+o
+
+Fortalecimento da governança institucional, auditoria e controles internos.
+
+o
+
+Otimização dos recursos humanos e aumento da produtividade.
+
+5. REQUISITOS DA CONTRATAÇÃO
+Nos termos do art. 26, inciso III, do Decreto Estadual no 342/2023, os requisitos da
+contratação devem ser claramente definidos no Estudo Técnico Preliminar, a fim de garantir
+que a solução a ser contratada atenda de forma plena às necessidades identificadas.
+Diante do exposto, os requisitos para a contratação de uma empresa especializada em
+criação de Sistema de Gestão de Editais e Projetos de Pesquisa da FAPITEC/SE devem
+atender aos
+
+seguintes requisitos
+
+técnicos para
+
+sua implementação,
+
+o
+
+cronograma de
+
+desenvolvimento e o orçamento necessário para sua execução:
+5.1 Experiência e qualificação da equipe
+o
+
+Minimo de 10 anos de experiência no desenvolvimento de sistemas web de grande
+
+porte.
+
+o
+
+A equipe deve contar com, pelo menos, um analista sênior,
+
+com experiência
+
+comprovada em arquitetura de software, desenvolvimento full stack e metodologias ágeis.
+o
+
+A empresa deve contar em seu quadro de profissionais com, pelo menos, um
+
+especialista que possua as certificações CISSP (Certified Information Systems Security
+Professional) da ISC?, e CISM (Certified Information Security Manager) e CRISC (Certified
+in Risk and Information Systems Control) da ISACA. Essas certificações atestam a expertise
+
+do profissional na área de segurança da informação, gestão de riscos e controles em sistemas,
+assegurando a capacidade da empresa em lidar com requisitos de segurança em projetos
+governamentais.
+o
+
+A
+
+empresa
+
+deverá
+
+contar
+
+com
+
+profissional
+
+certificado
+
+em
+
+CISSP
+
+(Certified
+
+Information Systems Security Professional) pela ISC?. Essa certificação é reconhecida
+mundialmente como referência em segurança da informação e atesta conhecimento avançado
+
+em arquitetura, gerenciamento e controle de segurança. A presença de um CISSP na equipe
+assegura que o projeto será desenvolvido com os mais altos padrões de segurança, protegendo
+os ativos de informação contra ameaças e vulnerabilidades.
+o
+
+A empresa deverá possuir, em seu corpo técnico, profissional com a certificação CISM
+
+(Certified
+
+Information
+
+Security
+
+Manager)
+
+da
+
+ISACA.
+
+Esta
+
+certificação
+
+comprova
+
+a
+
+experiência do profissional na gestão de segurança da informação, incluindo governança,
+
+Av. José Carlos Silva, no 4444 (Anexo à Codise), Inácio Barbosa - CEP; 49040-850, Aracaju - SE - Fone: (79) 99647-5197 / 99654-8827 CPNJ 07.888.112/0001-70
+e-DOC+ - Documento Virtual válido conforme Decreto no 40.394/2019
+
+Folha 140
+
+Sigla: ASSEC
+
+6) apiTEcIsE
+GOVERNO DE SERGIPE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO TECNOLÓGICA
+DO ESTADO DE SERGIPE
+Página:5 de 16
+
+gestão de riscos, resposta a incidentes e desenvolvimento de políticas e processos de
+segurança. A exigência desse certificado garante que o projeto terá uma abordagem alinhada à
+gestão estratégica da segurança, especialmente em ambientes governamentais.
+o
+
+Será exigida a presença de profissional certificado em CRISC (Certified in Risk and
+
+Information Systems Control), também pela ISACA. Esta certificação foca na identificação e
+gestão de riscos associados aos sistemas de informação e na implementação de controles
+eficazes. A sua obrigatoriedade assegura que a empresa está apta a antecipar, mitigar e
+gerenciar riscos operacionais e tecnológicos durante todas as fases do desenvolvimento do
+sistema.
+o
+
+A empresa deverá contar com profissional certificado como Data Protection Officer
+
+(DPO) pela EXIN, que possui competência técnica para garantir a conformidade com
+legislações de proteção de dados, como a LGPD e o GDPR. Essa certificação assegura que o
+projeto será desenvolvido com foco em segurança jurídica e proteção de dados pessoais,
+fundamentais quando o sistema tratar informações sensíveis de usuários ou instituições
+públicas.
+o
+
+Será obrigatória a participação
+
+de profissional
+
+certificado
+
+como
+
+Cybersecurity
+
+Architect Expert (SC-100), da Microsoft. Essa certificação atesta a capacidade de planejar,
+projetar e implementar soluções de segurança em alto nível, considerando desde a arquitetura
+do sistema até a resposta a incidentes. A presença desse profissional garante uma abordagem
+estratégica e arquitetural completa para a segurança da informação ao longo de todo o ciclo de
+vida do sistema.
+o
+
+A empresa deverá possuir profissional com certificação Microsoft Azure Security
+
+Technologies (AZ-500), com foco em segurança em ambientes de nuvem Azure. Esta
+certificação é essencial para garantir que a aplicação seja desenvolvida e mantida em
+conformidade com os melhores padrões de segurança na nuvem, implementando controle de
+acesso, criptografia, políticas de segurança e proteção contra ameaças cibernéticas.
+o
+
+Profissionais especializados em desenvolvimento back-end, front-end, UX/UI design,
+
+segurança da informação e infraestrutura de TI.
+5.2 Comprovação de Capacidade Técnica
+
+5.2.1 A licitante deverá comprovar sua aptidão para o desempenho de atividade
+pertinente e compatível em características, quantidades e prazos com o objeto desta licitação,
+mediante a apresentação de um ou mais atestados de capacidade técnica, emitidos por pessoa
+jurídica de direito público ou privado, que comprovem que a empresa executou (ou executa)
+serviços de desenvolvimento e manutenção de software com complexidade equivalente ao
+objeto, contemplando ao menos 2 (dois) dos seguintes requisitos mínimos:
+a) Gestão de Processos Finalísticos (Workflow): Comprovação de desenvolvimento
+de módulos para controle de fluxo de processos complexos, com múltiplas etapas de
+aprovação (semelhante ao fluxo de editais e fomento).
+b) Gestão Financeira e Prestação de Contas: Comprovação de funcionalidade para
+controle de repasses financeiros, pagamentos vinculados a cronogramas e módulos de
+
+Av. José Carlos Silva, no 4444 (Anexo à Codise), Inácio Barbosa - CEP; 49040-850, Aracaju - SE - Fone: (79) 99647-5197 / 99654-8827 CPNJ 07.888.112/0001-70
+e-DOC+ - Documento Virtual válido conforme Decreto no 40.394/2019
+
+Folha 141
+Sigla: ASSEC
+
+C
+6 enpITESE
+GOVERNO DE SERGIPE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO TECNOLÓGICA
+DO ESTADO DE SERGIPE
+Página:6 de 16
+
+análise de prestação de contas.
+c) Integração de Dados: Experiência em integração entre módulos ou sistemas
+externos (ex: via API ou Webservices) para garantir a integridade da informação entre
+as fases de contratação e execução.
+d)
+
+Armazenamento
+
+e
+
+Segurança:
+
+Implementação
+
+de
+
+repositório
+
+digital
+
+de
+
+documentos com controle de acesso por perfis e trilhas de auditoria (quem alterou o
+quê e quando).
+5.2.2 Para fins de avaliação da compatibilidade e semelhança, serão considerados os
+módulos descritos nos itens 4, 5.7 e 5.8, sendo exigido que os atestados apresentados
+comprovem experiência em sistemas que possuam lógica de negócio voltada à administração
+pública ou gestão de recursos de terceiros.
+5.2.3 Os atestados deverão ser acompanhados da respectiva Certidão de Acervo
+Técnico (CAT), quando for o caso, ou declaração que permita a validação da veracidade junto
+ao emitente.
+5.3 Tecnologia e Infraestrutura
+
+o
+
+Utilização das melhores práticas de desenvolvimento, incluindo arquitetura MVC no
+
+servidor, Active Record para mapeamento objeto-relacional (ORM), fornecimento de dados
+via API RESTful e cobertura de Testes Automatizados.
+
+o
+
+APIs
+
+abertas
+
+e
+
+bem
+
+documentadas
+
+para
+
+integração
+
+com
+
+outros
+
+sistemas
+
+governamentais e acadêmicos.
+o
+
+Mensageria integrada ao software, permitindo notificações automáticas e comunicação
+
+eficiente entre usuários.
+5.4 Segurança e Proteção de Dados (LGPD)
+
+o
+
+Implementação de instrumentos de proteção de dados, garantindo total conformidade
+
+com a Lei Geral de Proteção de Dados (LGPD).
+o
+
+Controle de acessos baseado em autenticação multifator (MFA) e autorização por
+
+papéis de usuário (RBAC).
+o
+
+Registro e monitoramento de logs de acesso e atividades para auditoria.
+
+o
+
+Criptografia de dados sensíveis em repouso e em trânsito (TLS/SSL).
+
+o
+
+Mecanismos de prevenção contra ataques CSRF, SQL Injection, XSS e outros vetores
+
+comuns de segurança.
+5.5 Das Garantias
+
+5.5.1 Será exigida a garantia da contratação de que tratam os arts. 96 e seguintes da Lei
+no 14.133, de 2021, com validade durante a execução do contrato e 90 (noventa) dias após
+término da vigência contratual, podendo o Contratado optar pela caução em dinheiro ou em
+títulos da dívida pública, seguro-garantia, fiança bancária ou título de capitalização, em valor
+correspondente a 3% (três por cento) do valor total da contratação
+
+Av. José Carlos Silva, no 4444 (Anexo à Codise), Inácio Barbosa - CEP; 49040-850, Aracaju - SE - Fone: (79) 99647-5197 / 99654-8827 CPNJ 07.888.112/0001-70
+e-DOC+ - Documento Virtual válido conforme Decreto no 40.394/2019
+
+Folha 142
+Sigla: ASSEC
+
+C
+6 enpITESE
+GOVERNO DE SERGIPE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO TECNOLÓGICA
+DO ESTADO DE SERGIPE
+Página:7 de 16
+
+5.5.2 Em caso de opção pelo seguro-garantia, a parte adjudicatária deverá apresentá-la,
+no máximo, até a data de assinatura do contrato
+5.5.3 A apólice de seguro-garantia permanecerá em vigor mesmo que o Contratado não
+pague o prêmio nas datas convencionadas.
+5.5.4 Caso o adjudicatário não apresente a apólice de seguro de garantia antes da
+assinatura do contrato, ocorrerá a preclusão do direito de escolha dessa modalidade de
+garantia
+5.5.5 A apólice de seguro-garantia deverá acompanhar as modificações referentes à
+vigência do contrato principal mediante a emissão do respectivo endosso pela seguradora
+5.5.6 Será permitida a substituição da apólice de seguro-garantia na data de renovação
+ou de aniversário, desde que mantidas as condições e coberturas da apólice vigente e nenhum
+período fique descoberto, ressalvados os períodos de suspensão contratual
+5.5.7 Caso o adjudicatário não opte pelo seguro-garantia ou não apresente a apólice de
+seguro de garantia antes da assinatura do contrato, deverá apresentar, no prazo máximo de 10
+(dez) dias úteis, prorrogáveis por igual período, a critério do Contratante, contado da
+assinatura do contrato, comprovante de prestação de garantia nas modalidades de caução em
+dinheiro ou títulos da dívida pública, fiança bancária ou títulos de capitalização
+5.5.8 Caso seja a garantia em dinheiro a modalidade de garantia escolhida pelo
+Contratado, deverá ser efetuada em favor do Contratante, em conta específica na Banco do
+Estado de Sergipe - BANESE, com correção monetária
+5.5.9 Caso a opção seja por utilizar títulos da dívida pública, estes devem ter sido
+emitidos sob a forma escritural, mediante registro em sistema centralizado de liquidação e de
+custódia autorizado pelo Banco Central do Brasil, e avaliados pelos seus valores econômicos,
+conforme definido pelo Ministério competente
+
+5.5.10 No caso de garantia na modalidade de fiança bancária, deverá ser emitida por
+banco ou instituição financeira devidamente autorizada a operar no País pelo Banco Central
+do Brasil, e deverá constar expressa renúncia do fiador aos benefícios do artigo 827 do
+Código Civil
+5.5.11 Na hipótese de opção pelo título de capitalização, a garantia deverá ser custeada
+por pagamento único, com resgate pelo valor total, sob a modalidade de instrumento de
+garantia, emitido por sociedades de capitalização regulamente constituídas e autorizadas pelo
+Governo Federal
+5.5.12 O título de capitalização deverá ser apresentado ao Contratante juntamente com
+as condições gerais e o número do processo administrativo sob o qual o plano de capitalização
+foi aprovado pela Susep (art. 8o, III, da Circular SUSEP no 656, de 11 de março de 2022).
+5.5.13 A garantia assegurará, qualquer que seja a modalidade escolhida, sob pena de
+não aceitação, o pagamento de:
+o
+
+Prejuízos advindos do não cumprimento do objeto do contrato e do não adimplemento
+
+das demais obrigações nele previstas;
+
+Av. José Carlos Silva, no 4444 (Anexo à Codise), Inácio Barbosa - CEP; 49040-850, Aracaju - SE - Fone: (79) 99647-5197 / 99654-8827 CPNJ 07.888.112/0001-70
+e-DOC+ - Documento Virtual válido conforme Decreto no 40.394/2019
+
+Folha 143
+
+Sigla: ASSEC
+
+C
+6 enpITESE
+GOVERNO DE SERGIPE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO TECNOLÓGICA
+DO ESTADO DE SERGIPE
+Página:8 de 16
+
+o
+
+Multas moratórias e punitivas aplicadas pela Administração à contratada; e
+
+o
+
+Obrigações trabalhistas e previdenciárias de qualquer natureza e para com o FGTS,
+
+não adimplidas pelo Contratado;
+
+5.5.14 A apólice do seguro-garantia ou a fiança bancária deverá ter cobertura para o
+pagamento direto ao empregado das verbas devidas em razão da inadimplência do Contratado
+5.5.15 O pagamento direto não pode estar condicionado ao trânsito em julgado de
+decisão judicial, sendo suficiente decisão definitiva em processo administrativo, que apure o
+montante devido
+5.5.16 No caso de alteração do valor do contrato, ou prorrogação de sua vigência, a
+garantia deverá ser ajustada ou renovada, no prazo máximo de
+
+10 (dez) dias úteis,
+
+prorrogáveis por igual período, contado da data de assinatura do termo aditivo ou da emissão
+do apostilamento, seguindo os mesmos parâmetros utilizados quando da contratação
+5.5.17 Na hipótese de suspensão do contrato por ordem ou inadimplemento da
+Administração, o Contratado ficará desobrigado de renovar a garantia ou de endossar a
+apólice de seguro até a ordem de reinício da execução ou o adimplemento pela Administração
+5.5.18 Se o valor da garantia for utilizado total ou parcialmente em pagamento de
+qualquer obrigação, o Contratado obriga-se a fazer a respectiva reposição no prazo máximo de
+10 (dez) dias úteis, prorrogáveis por igual período, a critério do Contratante, contados da data
+em que for notificada
+
+5.5.19 O Contratante executará a garantia na forma prevista na legislação que rege a
+matéria
+
+5.5.20 O emitente da garantia ofertada pelo Contratado deverá ser notificado pelo
+Contratante quanto ao início de processo administrativo para apuração de descumprimento de
+cláusulas contratuais
+5.5.21 Caso se trate da modalidade seguro-garantia, ocorrido o sinistro durante a
+vigência da apólice, sua caracterização e comunicação poderão ocorrer fora desta vigência,
+não caracterizando fato que justifique a negativa do sinistro, desde que respeitados os prazos
+prescricionais aplicados ao contrato de seguro, nos termos do art. 20 da Circular Susep no
+662, de 11 de abril de 2022.
+5.5.22 Extinguir-se-á a garantia com a restituição da carta fiança, autorização para a
+liberação de importâncias depositadas em dinheiro a título de garantia ou anuência ao resgate
+do título de capitalização, acompanhada de declaração do Contratante, mediante termo
+circunstanciado, de que o Contratado cumpriu todas as cláusulas do contrato
+5.5.23
+
+A
+
+extinção
+
+da
+
+garantia
+
+na
+
+modalidade
+
+seguro-garantia
+
+observará
+
+a
+
+regulamentação da Susep.
+
+5.5.24 A Administração deverá apurar se há alguma pendência contratual antes do
+término da vigência da apólice
+5.5.25 A garantia somente será liberada ou restituída após a fiel execução do contrato
+ou após a sua extinção por culpa exclusiva da Administração e, quando em dinheiro, será
+
+Av. José Carlos Silva, no 4444 (Anexo à Codise), Inácio Barbosa - CEP; 49040-850, Aracaju - SE - Fone: (79) 99647-5197 / 99654-8827 CPNJ 07.888.112/0001-70
+e-DOC+ - Documento Virtual válido conforme Decreto no 40.394/2019
+
+Folha 144
+
+Sigla: ASSEC
+
+C
+6 enpITESE
+GOVERNO DE SERGIPE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO TECNOLÓGICA
+DO ESTADO DE SERGIPE
+Página:9 de 16
+
+atualizada monetariamente
+5.5.26 O Contratado autoriza o Contratante a reter, a qualquer tempo, a garantia, na
+forma prevista neste Termo de Referência
+5.5.27 O garantidor não é parte para figurar em processo administrativo instaurado
+pelo Contratante com o objetivo de apurar prejuízos e/ou aplicar sanções à contratada
+5.5.28 A garantia de execução é independente de eventual garantia do produto ou
+serviço prevista neste Termo de Referência
+5.6 Da Habilitação Econômico-Financeira
+Balanço patrimonial e demonstrações contábeis dos 2 (dois) últimos exercícios sociais,
+devidamente registrado ou autenticado na Junta Comercial ou no respectivo Cartório de
+Registro Civil de Pessoas Jurídicas, conforme o tipo de empresa licitante, também admitida a
+autenticação pelo Sistema Público de Escrituração Digital — SPED mediante apresentação do
+comprovante de autenticação digital, vedada a sua substituição por balancetes ou balanços
+provisórios, podendo ser atualizados por índices oficiais quando encerrado há mais de 3 (três)
+meses da data da sessão pública de abertura do processo licitatório, demonstrando os
+seguintes indicadores contábeis igual ou superiores a 1 (um):
+o
+
+Liquidez Geral (LG) = (Ativo Circulante + Realizável a Longo Prazo)/( Passivo
+
+Circulante + Passivo Não Circulante);
+
+o
+
+Solvência Geral (SG) = (Ativo Total)/(Passivo Circulante + Passivo não Circulante); e
+
+o
+
+Liquidez Corrente (LC) = (Ativo Circulante)/(Passivo Circulante).
+
+Caso a empresa apresente valor inferior a 1 (um), em qualquer dos índices, citados
+acima, deverá comprovar possuir Patrimônio Líquido igual ou superior a 10% (dez) por cento
+do valor estimado da contratação, sob pena de desclassificação.
+5.7. Módulos Do Sistema De Gestão FAPITEC/SE
+
+5.7.1. Perfis de Usuários e Seus Acessos
+5.7.2. Perfis de Acesso e suas Funcionalidades
+Administrador FAPITEC (gestores e administradores do sistema)
+
+.
+
+Gestão de usuários e permissões com autenticação baseada em papéis (RBAC)
+
+o
+
+Criação, edição e arquivamento de editais
+
+o
+
+Configuração de regras de submissão e avaliação de projetos
+
+o
+
+Monitoramento de todos os projetos em andamento e finalizados
+
+o
+
+Aprovação de pagamentos e liberações de bolsas
+
+o
+
+Geração de relatórios estratégicos e financeiros
+
+o
+
+Integração com assinatura digital para validação de documentos — Gov.br
+
+o
+
+Gestão de recursos financeiros e alocação de orçamento
+
+o
+
+Criação de novas categorias de bolsas e auxílios
+
+Av. José Carlos Silva, no 4444 (Anexo à Codise), Inácio Barbosa - CEP; 49040-850, Aracaju - SE - Fone: (79) 99647-5197 / 99654-8827 CPNJ 07.888.112/0001-70
+e-DOC+ - Documento Virtual válido conforme Decreto no 40.394/2019
+
+Folha 145
+
+Sigla: ASSEC
+
+C
+6 enpITESE
+GOVERNO DE SERGIPE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO TECNOLÓGICA
+DO ESTADO DE SERGIPE
+Página:10 de 16
+
+Controle de envio de notificações e comunicados
+Monitoramento de desempenho de projetos por indicadores (KPIs)
+Instituições de Ensino (universidades e centros de pesquisa)
+
+Cadastro e gerenciamento de pesquisadores e orientadores
+Submissão de projetos institucionais vinculados a múltiplos editais
+Acompanhamento de projetos aprovados e solicitações pendentes
+Acesso a histórico de projetos e resultados de avaliações
+Validação de documentação institucional e emissão de declarações
+Acompanhamento de bolsas concedidas a alunos da instituição
+Visualização de métricas de desempenho das pesquisas vinculadas
+Funcionários da FAPITEC (gestão operacional interna)
+
+Acompanhamento e gestão das solicitações em tempo real
+Validação e conferência de documentações submetidas
+Apoio à análise financeira de projetos
+
+Monitoramento da conformidade dos processos de submissão
+Controle de fluxo de pagamentos
+Gestão da comunicação interna entre departamentos — Plataforma de mensageria para
+comunicação entre os setores
+Acompanhamento e resolução de pendências documentais
+Usuário de Diretoria (decisores finais)
+
+Aprovação ou rejeição de projetos com justificativa obrigatória
+Solicitação de ajustes e complementação de informações nos projetos
+Definição de novas diretrizes estratégicas para editais futuros
+Aprovação final de pagamentos e bolsas concedidas
+Assinatura digital de contratos e documentos de projetos
+Acesso a dashboards de acompanhamento detalhado
+Validação de critérios técnicos e administrativos
+Usuário Proponente (pesquisadores e solicitantes de financiamento)
+
+Cadastro completo de perfil com histórico acadêmico e profissional
+Submissão de propostas de pesquisa com documentação exigida
+Solicitação de auxílios e bolsas por categoria e linha de financiamento
+Acompanhamento do status de avaliação em tempo real
+Ajuste e atualização de propostas submetidas antes do prazo final
+Recebimento de notificações e feedbacks dos avaliadores
+Av. José Carlos Silva, no 4444 (Anexo à Codise), Inácio Barbosa - CEP; 49040-850, Aracaju - SE - Fone: (79) 99647-5197 / 99654-8827 CPNJ 07.888.112/0001-70
+e-DOC+ - Documento Virtual válido conforme Decreto no 40.394/2019
+
+Folha 146
+
+Sigla: ASSEC
+
+C
+6 enpITESE
+GOVERNO DE SERGIPE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO TECNOLÓGICA
+DO ESTADO DE SERGIPE
+Página:11 de 16
+
+o
+
+Prestação de contas obrigatória com upload de documentos financeiros
+
+o
+
+Acesso ao saldo de recursos disponíveis para cada projeto
+Usuário Avaliador (avaliadores que pontuam os projetos)
+
+o
+
+Recebimento de convites para avaliação de projetos
+
+o
+
+Acesso anonimizado para evitar conflitos de interesse
+Painel com critérios de pontuação predefinidos
+
+Feedback detalhado sobre pontos positivos e melhorias sugeridas
+Sistema de nivelamento de notas para evitar discrepâncias extremas
+Avaliação automatizada de critérios de elegibilidade
+Controle de prazo para envio de avaliações
+5.8. Regras de Negócio e Módulos Principais
+
+5.8.1. Módulo de Gerenciamento de Editais
+Cadastro de novos editais com critérios específicos e categorias
+o
+
+Definição de regras de submissão e requisitos obrigatórios
+
+Configuração de prazos e cronograma de avaliações
+Validação de documentação obrigatória e análise prévia
+Publicação automática e envio de alertas para usuários cadastrados
+o
+
+Histórico completo de editais passados para consulta
+
+o
+
+Ferramentas para replicação e ajustes em editais antigos
+
+Relatórios analíticos de impacto dos editais anteriores
+5.8.2. Módulo de Submissão de Projetos
+Interface intuitiva e responsiva para submissão de propostas
+
+Upload de documentos obrigatórios
+Edição de propostas dentro do prazo permitido
+o
+
+Geração de protocolo € rastreamento do status da submissão
+Histórico de alterações e versões submetidas
+Cálculo automático do orçamento total da proposta
+
+o
+
+Mecanismo de sugestão de editais compatíveis com o perfil do proponente
+5.8.3. Módulo de Avaliação de Projetos
+Distribuição automática de projetos para avaliadores
+Painel de notas e feedbacks com critérios definidos
+Sistema de anonimato total ou parcial conforme necessidade
+
+o
+
+Nivelamento de notas para evitar avaliações discrepantes
+
+Av. José Carlos Silva, no 4444 (Anexo à Codise), Inácio Barbosa - CEP; 49040-850, Aracaju - SE - Fone: (79) 99647-5197 / 99654-8827 CPNJ 07.888.112/0001-70
+e-DOC+ - Documento Virtual válido conforme Decreto no 40.394/2019
+
+Folha 147
+Sigla: ASSEC
+
+C
+6 enpITESE
+GOVERNO DE SERGIPE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO TECNOLÓGICA
+DO ESTADO DE SERGIPE
+Página:12 de 16
+
+o
+
+Relatórios de desempenho dos avaliadores
+
+o
+
+Integração com inteligência artificial para detecção de plágio
+
+5.8.4. Módulo de Gestão Financeira e Prestação de Contas
+o
+
+Envio de relatórios financeiros detalhados pelos proponentes
+
+o
+
+Upload de comprovantes de despesas obrigatórias
+
+o
+
+Validação automatizada de conformidade com orçamento aprovado
+
+o
+
+Controle de saldo disponível para cada projeto
+
+o
+
+Relatórios de impacto financeiro e eficiência dos recursos
+
+o
+
+Monitoramento de pagamentos pendentes
+
+5.8.5. Módulo de Relatórios
+o
+
+Dashboards personalizados com KPIs de desempenho
+
+o
+
+Relatórios financeiros e administrativos detalhados
+
+o
+
+Exportação de relatórios para diversos formatos (PDF, CSV, XLSX)
+5.8.6. Validação com Assinatura Eletrônica via gov.br
+Para garantir segurança jurídica, autenticidade dos dados e integridade documental, o
+
+sistema adotará a integração com a plataforma de assinatura eletrônica do gov.br, permitindo
+que todos os projetos submetidos e documentos oficiais associados sejam devidamente
+assinados digitalmente pelos proponentes, avaliadores e gestores. A utilização da assinatura
+gov.br proporcionará:
+o
+
+Validação formal das submissões de projetos, termos de outorga e relatórios técnicos;
+
+o
+
+Rastreabilidade completa das assinaturas, com data, hora e identidade verificada do
+
+signatário;
+
+o
+
+Conformidade com a legislação vigente de documentos públicos digitais (MP 2.200-
+
+2/2001 e Lei 14.063/2020);
+
+o
+
+Eliminação
+
+do
+
+uso
+
+de
+
+documentos
+
+impressos,
+
+promovendo
+
+maior
+
+agilidade
+
+e
+
+sustentabilidade.
+Com essa funcionalidade, a FAPITEC/SE reafirma seu compromisso com inovação,
+transparência e segurança institucional, elevando o padrão tecnológico da gestão de editais e
+projetos no estado de Sergipe.
+
+É obrigação da FAPITEC/SE providenciar a criação e manutenção de uma conta
+institucional no gov.br, com o respectivo nível de segurança necessário para a assinatura
+digital qualificada, bem como garantir o acesso à API de integração da plataforma de
+assinatura eletrônica. Essa medida é essencial para viabilizara autenticação dos usuários, o
+gerenciamento das assinaturas e a integração segura com o sistema de gestão de projetos,
+assegurando o pleno funcionamento da funcionalidade conforme os requisitos técnicos e
+legais estabelecidos.
+A empresa CONTRATADA deverá enviar antecipadamente para a CONTRATANTE
+as seguintes documentações:
+
+Av. José Carlos Silva, no 4444 (Anexo à Codise), Inácio Barbosa - CEP; 49040-850, Aracaju - SE - Fone: (79) 99647-5197 / 99654-8827 CPN/ 07.888.112/0001-70
+e-DOC+ - Documento Virtual válido conforme Decreto no 40.394/2019
+
+Folha 148
+
+Sigla: ASSEC
+
++) FAPITECISE
+GOVERNO DE SERGIPE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO TECNOLÓGICA
+DO ESTADO DE SERGIPE
+Página:13 de 16
+
+- Ato Constitutivo (contrato social, estatuto social ou requerimento de empresário);
+- Todas as alterações ou consolidação do Ato Constitutivo;
+- Atestado de Capacidade Técnica;
+- Procuração dos respectivos representantes nas licitações;
+- Documentos dos Sócios;
+- Documentos do Representante Legal;
+- Prova de Administração ou Diretoria (depende do tipo empresarial)
+- Cartão de CNPJ;
+- Inscrição Estadual;
+- Inscrição Municipal;
+
+- Certidão negativa de débitos Federal;
+- Certidão negativa de débitos Estadual;
+- Certidão negativa de débitos Municipal;
+- Certidão negativa de débitos Trabalhista;
+- Certidão negativa de débitos do FGTS;
+- Certidão negativa de débitos do INSS;
+- Recolhimento de ICMS (SEFAZ)
+- Declaração de não empregar menor; (art. 7o da CF inciso XXXIIT)
+- Declaração ME/EPP;
+
+6. JUSTIFICATIVA PARA NÃO DIVISÃO DO OBJETO EM COTAS
+6.1. Fundamentação Legal
+
+A presente justificativa fundamenta-se no Art. 49, inciso II, da Lei Complementar no
+123/2006, que dispõe que não se aplica o tratamento diferenciado às microempresas e
+empresas de pequeno porte quando "a natureza do bem ou serviço for incompatível com a
+aplicação do beneficio", bem como no Art. 67, 81o da Lei no 14.133/2021, que trata da
+responsabilidade técnica.
+
+6.2. Da Natureza Do Objeto E Risco À Integridade
+O objeto desta contratação consiste no desenvolvimento de um sistema integrado de
+gestão
+
+de
+
+fomento
+
+para
+
+a FAPITEC/SF.
+
+Conforme
+
+detalhado
+
+nos
+
+Estudos
+
+Técnicos
+
+Preliminares (ETP), o sistema deve gerenciar o fluxo completo de editais, desde a submissão
+
+até a prestação de contas financeira.
+A divisão do objeto em cota ampla e cota reservada para empresas distintas apresenta
+riscos técnicos intransponíveis, como a quebra de unidade lógica. Devido ao desenvolvimento
+de
+
+software
+
+requerer
+
+uma
+
+arquitetura
+
+única
+
+e
+
+coesa,
+
+ter
+
+duas
+
+empresas
+
+diferentes
+
+desenvolvendo partes do mesmo sistema comprometeria a integridade do código-fonte e a
+segurança dos dados.
+Além disso, a repartição do serviço geraria conflitos de responsabilidade em caso de
+
+Av. José Carlos Silva, no 4444 (Anexo à Codise), Inácio Barbosa - CEP; 49040-850, Aracaju - SE - Fone: (79) 99647-5197 / 99654-8827 CPNJ 07.888.112/0001-70
+e-DOC+ - Documento Virtual válido conforme Decreto no 40.394/2019
+
+Folha 149
+
+Sigla: ASSEC
+
++) FAPITECISE
+GOVERNO DE SERGIPE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO TECNOLÓGICA
+DO ESTADO DE SERGIPE
+Página:14 de 16
+
+erros (bugs) ou falhas de integração, dificultando a manutenção e o suporte técnico.
+6.3. Conclusão
+
+Portanto, a divisão em cotas reservadas comprometeria a padronização técnica e a
+economicidade, visto que a unidade do objeto é indispensável para garantir que o sistema de
+fomento funcione de forma fluida e segura. Por esses motivos, opta-se pela não divisão,
+mantendo-se a participação em cota única, permitindo-se, contudo, que Microempresas e
+Empresas de Pequeno Porte participem da disputa em igualdade de condições com as demais
+empresas.
+
+7. MODELO DE EXECUÇÃO DO OBJETO
+7.1
+
+O sistema será alocado na infraestrutura tecnológica da EMGETIS — Empresa
+
+Sergipana de Tecnologia da Informação, sendo operado e utilizado pela FAPITEC/SE - Av.
+José Carlos Silva, no 4444 (Anexo à Codise), Inácio Barbosa - CEP: 49040-850, Aracaju - SE
+- Fone: (79) 3259-3007 / 3259-6366 — CPNJ 07.888.112/0001-70.
+7.2 A CONTRATADA deverá entregar cada módulo no prazo estabelecido no momento da
+assinatura do contrato, observando rigorosamente o cronograma aprovado. Eventuais ajustes
+de prazo deverão ser previamente justificados e formalmente autorizados pela FAPITEC/SE,
+sob pena de aplicação das sanções previstas na legislação e no instrumento contratual.
+7.3
+
+A CONTRATANTE poderá desistir do contrato, no prazo de 7 dias a contar de sua
+
+assinatura ou do ato de recebimento do produto ou serviço, sempre que a contratação de
+fornecimento de produtos e serviços ocorrer fora do estabelecimento comercial, especialmente
+por telefone ou a domicílio, conforme descrito no Art. 49 do CDC — (Código de Defesa do
+Consumidor)
+7.4 A conclusão dos serviços será atestada pela FAPITEC/SE mediante verificação técnica,
+garantindo que a revista atenda aos padrões de qualidade exigidos. Durante a execução do
+serviço, os funcionários da contratada deverão estar uniformes
+Estimativa de Custos:
+
+Adicionalmente, as pesquisas de mercado realizadas, inclusive no Portal Nacional de
+Contratações Públicas (PNCP), indicaram a existência de fornecedores capacitados com
+preços compatíveis com os praticados no mercado, o que reforça a viabilidade econômica da
+contratação e o respeito ao princípio da razoabilidade dos gastos. Com base nas análises
+realizadas, o valor de referência estimado para a contratação corresponde ao menor custo
+identificado que atende integralmente às condições estabelecidas neste Termo de Referência,
+incluindo todos os encargos legais, administrativos e operacionais necessários para a
+aquisição dos produtos.
+
+8. MODELO DE GESTÃO DO CONTRATO
+O contrato deverá ser executado fielmente pelas partes, de acordo com as cláusulas
+avençadas
+
+e
+
+as normas
+
+da Lei no
+
+14.133,
+
+de 2021,
+
+e
+
+cada parte responderá pelas
+
+consequências de sua inexecução total ou parcial.
+8.1
+
+Em caso de impedimento, ordem de paralisação ou suspensão do contrato, o
+
+Av. José Carlos Silva, no 4444 (Anexo à Codise), Inácio Barbosa - CEP; 49040-850, Aracaju - SE - Fone: (79) 99647-5197 / 99654-8827 CPNJ 07.888.112/0001-70
+e-DOC+ - Documento Virtual válido conforme Decreto no 40.394/2019
+
+Folha 150
+
+Sigla: ASSEC
+
+C
+6 enpITESE
+GOVERNO DE SERGIPE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO TECNOLÓGICA
+DO ESTADO DE SERGIPE
+Página:15 de 16
+
+cronograma de execução será prorrogado automaticamente pelo tempo correspondente,
+anotadas tais circunstâncias mediante simples apostila.
+8.2 O órgão ou entidade poderá convocar representante da empresa para adoção de
+providências que devam ser cumpridas de imediato.
+8.3 Após a assinatura do contrato ou instrumento equivalente, o órgão ou entidade poderá
+convocar o representante da empresa contratada para reunião inicial para apresentação do
+plano de fiscalização, que conterá informações acerca das obrigações contratuais, dos
+mecanismos de fiscalização, das estratégias para execução do objeto, do plano complementar
+de execução da contratada, quando houver, do método de aferição dos resultados e das
+sanções aplicáveis, dentre outros.
+8.4 A execução do contrato deverá ser acompanhada e fiscalizada pelo(s) fiscal(is) do
+contrato, ou pelos respectivos substitutos (Lei no 14.133, de 2021, art. 117, caput).
+8.5 O fiscal técnico do contrato acompanhará a execução do contrato, para que sejam
+cumpridas todas as condições estabelecidas no contrato, de modo a assegurar os melhores
+resultados para a Administração;
+8.6 O fiscal técnico do contrato anotará no histórico de gerenciamento do contrato todas as
+ocorrências relacionadas à execução do contrato, com a descrição do que for necessário para a
+regularização das faltas ou dos defeitos observados. (Lei no 14.133, de 2021, art. 117, 819)
+8.7 Identificada qualquer inexatidão ou irregularidade, o fiscal do contrato emitirá
+notificações para a correção da execução do contrato, determinando prazo para a correção;
+
+9. CRITÉRIOS DE MEDIÇÃO E DE PAGAMENTO
+8.1 O pagamento será efetuado após liquidação da despesa por meio de crédito em conta
+corrente indicada pelo licitante vencedor, mediante a apresentação de Nota Fiscal/Fatura,
+devidamente certificada pelo Setor responsável pelo recebimento do objeto.
+8.2 O pagamento será efetuado de forma parcelada, condicionado à entrega e validação de
+cada módulo do sistema de gestão pela FAPITEC/SE. Cada parcela somente será liberada
+após a comprovação do cumprimento das especificações técnicas, aprovação dos testes
+funcionais e emissão do atesto pela fiscal do contrato.
+8.3 Para fazer jus ao pagamento, a empresa deverá apresentar, juntamente com o
+documento de cobrança, prova de regularidade perante o FGTS — CRF, Certidões Negativas
+de Débitos junto às Fazendas Federal (abrangendo os débitos relativos a tributos federais, à
+dívida ativa da União, e as contribuições previdenciárias e de terceiros), Estadual e Municipal
+do domicílio do contratado.
+8.4 O prazo da disposição acima será contado do recebimento de comunicação de cobrança
+oriunda do contratado com a comprovação da prestação dos serviços a que se referem a
+parcela a ser paga.
+8.5 Os serviços poderão ser rejeitados, no todo ou em parte, quando em desacordo com as
+especificações constantes neste Termo de Referência e na proposta, sem prejuízo da aplicação
+das penalidades.
+
+Av. José Carlos Silva, no 4444 (Anexo à Codise), Inácio Barbosa - CEP; 49040-850, Aracaju - SE - Fone: (79) 99647-5197 / 99654-8827 CPN/ 07.888.112/0001-70
+e-DOC+ - Documento Virtual válido conforme Decreto no 40.394/2019
+
+Folha 151
+
+Sigla: ASSEC
+
+GOVERNO DE SERGIPE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO TECNOLÓGICA
+DO ESTADO DE SERGIPE
+Página:16 de 16
+
+8.6 Quando a fiscalização for exercida por um único servidor, o Termo Detalhado deverá
+conter o registro, a análise e a conclusão acerca das ocorrências na execução do contrato, em
+relação à fiscalização técnica e administrativa e demais documentos que julgar necessários,
+devendo encaminhá-los ao gestor do contrato para recebimento definitivo.
+10. PRAZO DE PAGAMENTO
+
+9.1 O pagamento será efetuado mensalmente, após liquidação da despesa por meio de
+crédito em conta corrente indicada pelo licitante(s) vencedor(es), no prazo de até 30 (trinta)
+dias consecutivos, mediante a apresentação de Nota Fiscal/Fatura, devidamente certificada e
+atestada pelo setor responsável pelo acompanhamento e fiscalização do órgão contratante
+9.2 No caso de atraso pelo Contratante, os valores devidos ao contratado serão atualizados
+monetariamente entre o termo final do prazo de pagamento até a data de sua efetiva
+realização, mediante aplicação do índice IPCA - Indice Nacional de Preços ao Consumidor
+Amplo.
+
+11. FORMA E CRITÉRIOS DE SELEÇÃO DO FORNECEDOR
+10.1 O fornecedor será selecionado por meio da realização de procedimento de PREGÃO
+ELETRÔNICO a ser conduzido pela Secretaria Especial de Gestão das Contratações,
+Licitações e Logística (SECLOG), sob a forma ELETRÔNICA, com adoção do critério de
+julgamento pelo menor preço.
+
+Aracaju, 12 de março de 2026
+
+Av. José Carlos Silva, no 4444 (Anexo à Codise), Inácio Barbosa - CEP; 49040-850, Aracaju - SE - Fone: (79) 99647-5197 / 99654-8827 CPNJ 07.888.112/0001-70
+e-DOC+ - Documento Virtual válido conforme Decreto no 40.394/2019
+
+Protocolo de Assinatura(s)
+O documento acima foi proposto para assinatura digital. Para verificar as assinaturas acesse o
+endereço http://edocsergipe.se.gov.br/consultacodigo e utilize o código abaixo para verificar se este
+documento é válido.
+
+Código de verificação: INKA-YPLZ-ESDL-AMOT
+
+O(s) nome(s) indicado(s) para assinatura, bem como seu(s) status em 30/03/2026 é(são) :
+Legenda: & Aprovada
+
+& Indeterminada
+
+Pendente
+
+& Adryan Lacerda Amaral Santos ***01993*** COMISSÃO PERMANENTE DE LICITAÇÃO - FAPITEC Fundação de Apoio
+à Pesquisa e Inovação Tecnológica do Estado de Sergipe 12/03/2026 12:59:41 (Dociflow)
+
+& Italo da Costa Santana ***95062*** COMISSÃO PERMANENTE DE LICITAÇÃO - FAPITEC Fundação de Apoio à
+Pesquisa e Inovação Tecnológica do Estado de Sergipe 12/03/2026 13:00:36
+
+(Docflow)
+
+& Luana Karinne Andrade Viana ***84483*** COMISSÃO PERMANENTE DE LICITAÇÃO - FAPITEC Fundação de Apoio à
+Pesquisa e Inovação Tecnológica do Estado de Sergipe 12/03/2026 12:53:29 (Docflow)
+
+é
+
+Ludmilla Oliveira Cunha ***03107*** GERENCIA DE INFORMATICA - FAPITEC Fundação de Apoio à Pesquisa e
+Inovação Tecnológica do Estado de Sergipe 12/03/2026 13:03:59 (Docflow)
+
+& Wagner Gama de Jesus ***99559*** COMISSÃO PERMANENTE DE LICITAÇÃO - FAPITEC Fundação de Apoio à
+Pesquisa e Inovação Tecnológica do Estado de Sergipe 12/03/2026 12:53:36 (Docflow)
+
+

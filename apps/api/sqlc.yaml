@@ -1,0 +1,10 @@
+version: "2"
+sql:
+  - engine: "postgresql"
+    schema: "db/migracoes"
+    queries: "db/consultas/identidade_e_acesso"
+    gen:
+      go:
+        package: "sqlcpersistencia"
+        out: "internal/identidade_e_acesso/infraestrutura/persistencia/sqlc"
+        sql_package: "pgx/v5"

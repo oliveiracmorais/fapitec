@@ -1,0 +1,154 @@
+{
+  "perfis": [
+    {
+      "id": "administrador",
+      "nome": "Administrador",
+      "descricao": "Gerencia usuários, perfis, permissões e acessa todos os módulos."
+    },
+    {
+      "id": "gestor_fapitec",
+      "nome": "Gestor FAPITEC-SE",
+      "descricao": "Acompanha fluxos administrativos e módulos institucionais."
+    },
+    {
+      "id": "avaliador",
+      "nome": "Avaliador",
+      "descricao": "Perfil reservado para futuras análises e pareceres de propostas."
+    },
+    {
+      "id": "proponente",
+      "nome": "Proponente",
+      "descricao": "Perfil externo para cadastro, submissão e acompanhamento futuro."
+    },
+    {
+      "id": "auditoria_controle",
+      "nome": "Auditoria e Controle",
+      "descricao": "Acessa trilhas, relatórios e registros de controle."
+    }
+  ],
+  "identidadesDemonstrativas": [
+    {
+      "id": "admin_validacao",
+      "nome": "Administrador de Validação",
+      "perfil": "administrador"
+    },
+    {
+      "id": "gestor_validacao",
+      "nome": "Gestor FAPITEC-SE de Validação",
+      "perfil": "gestor_fapitec"
+    },
+    {
+      "id": "avaliador_validacao",
+      "nome": "Avaliador de Validação",
+      "perfil": "avaliador"
+    },
+    {
+      "id": "proponente_validacao",
+      "nome": "Proponente de Validação",
+      "perfil": "proponente"
+    },
+    {
+      "id": "auditoria_validacao",
+      "nome": "Auditoria e Controle de Validação",
+      "perfil": "auditoria_controle"
+    }
+  ],
+  "modulos": [
+    {
+      "id": "gestao_de_editais",
+      "nome": "Gestão de Editais",
+      "descricao": "Cadastro, configuração, publicação e acompanhamento de editais.",
+      "tipo": "negocio",
+      "status": "Em estruturação",
+      "perfisPermitidos": ["administrador", "gestor_fapitec"]
+    },
+    {
+      "id": "inscricao_e_selecao_de_projetos",
+      "nome": "Inscrição e Seleção de Projetos",
+      "descricao": "Submissão, análise, avaliação e seleção de propostas.",
+      "tipo": "negocio",
+      "status": "Em estruturação",
+      "perfisPermitidos": ["administrador", "gestor_fapitec", "avaliador", "proponente"]
+    },
+    {
+      "id": "solicitacao_e_concessao_de_auxilios",
+      "nome": "Solicitação e Concessão de Auxílios",
+      "descricao": "Solicitações, concessões, controle financeiro e obrigações contratuais.",
+      "tipo": "negocio",
+      "status": "Em estruturação",
+      "perfisPermitidos": ["administrador", "gestor_fapitec", "proponente"]
+    },
+    {
+      "id": "gestao_de_bolsistas_e_pesquisadores",
+      "nome": "Gestão de Bolsistas e Pesquisadores Vinculados",
+      "descricao": "Registro, acompanhamento e pagamentos relacionados a bolsas e vínculos.",
+      "tipo": "negocio",
+      "status": "Em estruturação",
+      "perfisPermitidos": ["administrador", "gestor_fapitec"]
+    },
+    {
+      "id": "prestacao_de_contas",
+      "nome": "Prestação de Contas",
+      "descricao": "Envio, análise e acompanhamento de documentos comprobatórios.",
+      "tipo": "negocio",
+      "status": "Em estruturação",
+      "perfisPermitidos": ["administrador", "gestor_fapitec", "proponente", "auditoria_controle"]
+    },
+    {
+      "id": "tomada_de_contas_especial",
+      "nome": "Tomada de Contas Especial",
+      "descricao": "Acompanhamento de processos, diligências e manifestações técnicas.",
+      "tipo": "negocio",
+      "status": "Em estruturação",
+      "perfisPermitidos": ["administrador", "gestor_fapitec", "auditoria_controle"]
+    },
+    {
+      "id": "comunicacao_institucional",
+      "nome": "Comunicação Institucional",
+      "descricao": "Notificações, alertas e histórico de interações operacionais.",
+      "tipo": "negocio",
+      "status": "Em estruturação",
+      "perfisPermitidos": ["administrador", "gestor_fapitec", "proponente", "avaliador"]
+    },
+    {
+      "id": "relatorios_e_indicadores",
+      "nome": "Relatórios e Painéis de Indicadores",
+      "descricao": "Indicadores gerenciais, exportações e apoio à tomada de decisão.",
+      "tipo": "negocio",
+      "status": "Em estruturação",
+      "perfisPermitidos": ["administrador", "gestor_fapitec", "auditoria_controle"]
+    },
+    {
+      "id": "gestao_documental",
+      "nome": "Gestão Documental",
+      "descricao": "Armazenamento seguro, versionamento e vínculo de arquivos por atividade.",
+      "tipo": "transversal",
+      "status": "Em estruturação",
+      "perfisPermitidos": ["administrador", "gestor_fapitec", "proponente", "avaliador", "auditoria_controle"]
+    },
+    {
+      "id": "identidade_e_acesso",
+      "nome": "Identidade e Acesso",
+      "descricao": "Usuários, perfis, permissões e administração de acesso.",
+      "tipo": "administrativo",
+      "status": "Fundação mínima",
+      "perfisPermitidos": ["administrador"]
+    },
+    {
+      "id": "auditoria",
+      "nome": "Auditoria",
+      "descricao": "Trilha mínima de eventos, acessos negados e operações críticas.",
+      "tipo": "administrativo",
+      "status": "Fundação mínima",
+      "perfisPermitidos": ["administrador", "auditoria_controle"]
+    },
+    {
+      "id": "notificacoes",
+      "nome": "Notificações",
+      "descricao": "Base futura para alertas e comunicação operacional.",
+      "tipo": "administrativo",
+      "status": "Em estruturação",
+      "perfisPermitidos": ["administrador", "gestor_fapitec"]
+    }
+  ]
+}

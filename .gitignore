@@ -1,5 +1,3 @@
-
-
 # Environment & Secrets (AIOX)
 .env
 .env.local
@@ -25,5 +23,16 @@ Thumbs.db
 
 # AIOX Local (AIOX)
 .aiox-core/local/
-.claude/settings.local.json
 .aiox/install-log.txt
+
+.next/
+*.tsbuildinfo
+
+# IDE-specific AI configs (synced from .aiox-core/development/agents/)
+# Only .codex/ is used (opencode); the rest are redundant copies
+.claude/
+.cursor/
+.gemini/
+.antigravity/
+.kimi/
+.github/agents/

@@ -5,6 +5,7 @@ const diretoriosObrigatorios = [
   'apps/web/src/aplicacao',
   'apps/web/src/infraestrutura',
   'apps/web/src/lib',
+  'apps/web/src/app/modulos/[id]',
   'apps/web/public',
   'apps/api/cmd/api',
   'apps/api/internal/identidade_e_acesso',
@@ -43,7 +44,20 @@ const arquivosObrigatorios = [
   'docs/stories/1.4.autorizacao-por-perfis.md',
   'docs/stories/1.5.trilha-de-auditoria-minima.md',
   'docs/stories/1.6.shell-inicial-e-dashboard-modular.md',
-  'package.json'
+  'docs/stories/1.9.implementacao-autenticacao-e-cadastro.md',
+  'package.json',
+  'packages/config/src/catalogo-plataforma.json',
+  'scripts/plataforma-core.js',
+  'scripts/plataforma-shell.js',
+  'scripts/typecheck.js',
+  'apps/web/package.json',
+  'apps/web/next.config.mjs',
+  'apps/web/tsconfig.json',
+  'apps/web/src/app/layout.tsx',
+  'apps/web/src/app/page.tsx',
+  'apps/web/src/app/modulos/[id]/page.tsx',
+  'apps/web/src/app/globals.css',
+  'apps/web/src/lib/catalogo-plataforma.ts'
 ];
 
 module.exports = {

@@ -383,9 +383,9 @@ Os gates atuais do repositório cobrem o ecossistema Node. Para o projeto alvo, 
 
 Direção futura:
 
-- `npm run lint`
-- `npm run typecheck`
-- `npm test`
+- `pnpm run lint`
+- `pnpm run typecheck`
+- `pnpm test`
 - `go test ./...`
 - lint do ecossistema Go
 

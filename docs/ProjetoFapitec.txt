@@ -1,0 +1,10976 @@
+FAPITECISE
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+Foi elaborado pela equipe de Tecnologia da Informação da Fundação, o esboço inicial
+com o objetivo de subsidiar a definição e a estruturação dos módulos do sistema.
+Ressalta-se que este material não constitui documentação definitiva.
+
+A documentação
+
+final, bem como a consolidação das regras de negócio, será de responsabilidade da
+empresa a ser contratada no âmbito do presente certame.
+
+PROJETO FAPITEC
+
+Tela inicial
+
+1. Requisitos Funcionais
+1.1 Autenticação
+
+e
+
+O usuário deve Inserir CPF ou Passaporte e Senha para acessar o sistema.
+
+e
+
+Deve haver validação de CPF no formato XXX. XXX. XXX-XX ou Passaporte
+com letras e números.
+
+e
+
+À senha deve ter no mínimo 8 caracteres, incluindo letras, números e símbolos.
+
+e
+
+Deve haver um botão "Entrar" para enviar as credenciais ao servidor.
+
+e
+
+Caso os dados estejam incorretos, o sistema deve exibir uma mensagem de erro:
+o
+
+"CPF/Passaporte ou Senha inválidos. Tente novamente.”
+
+1.2 Recuperação de Senha
+e
+
+Deve haver um botão "Esqueci minha senha” que leva o usuário a uma página
+para redefinir sua senha.
+
+e
+
+O sistema deve permitir a redefinição via e-mail cadastrado ou código enviado
+por SMS.
+
+1.3 Cadastro de Novo Usuário
+e
+
+O link “clique aqui” deve direcionar para a página de cadastro.
+
+e
+
+No cadastro, devem ser exigidos CPF/Passaporte, Nome Completo, E-mail, Senha
+e Confirmação de Senha.
+
+e
+
+O sistema deve validar se o CPF já existe antes de criar um novo cadastro.
+
+-)
+
+FAPITECISE
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+1.4 Segurança
+
+A senha deve ser armazenada de forma segura usando hashing com bcrypt ou
+Argon2.
+
+Após 5 tentativas falhas de login, o usuário deve ser bloqueado temporariamente
+por 15 minutos.
+Implementar Captcha caso sejam detectadas tentativas excessivas de login.
+O sistema deve usar HTTPS para criptografar a comunicação.
+
+2. Requisitos não Funcionais
+2.1 Design e Responsividade
+
+À tela deve ser responsiva para funcionar em desktop, tablets e smartphones.
+O layout deve manter a identidade visual da FAPITEC/SE, incluindo cores, fontes
+e logotipo.
+Deve ser utilizado um framework moderno como Bootstrap ou Tailwind CSS.
+2.2 Performance
+
+O tempo de resposta para autenticação deve ser inferior a 2 segundos.
+Às Imagens e ícones devem ser otimizados para carregamento rápido.
+2.3 Acessibilidade
+Os campos de entrada devem ter rótulos descritivos e placeholders.
+Deve haver suporte para teclas de atalho e leitores de tela.
+O contraste do texto deve seguir as diretrizes WCAG 2.1 para acessibilidade.
+3. APT e Banco de Dados
+
+3.1 Endponnts da API
+POST login — Autenticação do usuário.
+
+POST /reset-password — Envia link de recuperação por e-mail.
+POST /register — Criação de novos usuários.
+GET /user-profile — Retorna informações do usuário autenticado.
+
+-)
+
+FAPITECISE
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+Cadastro inicial
+
+1. Requisitos Funcionais
+1.1 Cadastro de Usuário
+e
+
+e
+
+O usuário deve preencher os seguintes campos obrigatórios:
+o
+
+Nome Completo
+
+o
+
+CPF (caso seja brasileiro)
+
+o
+
+E-mail e Confirmação de E-mail
+
+o
+
+Senha e Confirmação de Senha
+
+O sistema deve validar se o usuário é estrangeiro:
+o
+
+Se SIM, o CPF não é obrigatório.
+
+o
+
+Se NÃO, o CPF deve ser informado e validado.
+
+1.2 Validações de Formulário
+e
+
+Nome Completo deve conter apenas letras e espaços, com no mínimo 3
+caracteres.
+
+e
+
+CPF deve ser validado no formato XXX.XXX.XXX-XX.
+
+e
+
+E-mail e Confirmação de E-mail devem ser iguais, caso contrário, exibir erro:
+
+o
+e
+
+Senha e Confirmação de Senha devem ser iguais, caso contrário, exibir erro:
+o
+
+e
+
+“O e-mail deve ser IGUAL ao e-mail principal.”
+
+"A senha deve ser IGUAL à primeira senha fornecida.”
+
+À senha deve conter no mínimo 8 caracteres, incluindo:
+o
+
+1 letra maiúscula
+
+o
+
+1 letra minúscula
+
+o
+
+1 número
+
+o
+
+1 caractere especial (O, 4, $, etc.)
+
+1.3 Cadastro e Confirmação
+e
+
+O botão "Cadastrar" só deve ser habilitado quando todos os campos estiverem
+preenchidos corretamente.
+
+FAPITECISE
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+Ao clicar em "Cadastrar", os dados devem ser enviados para a API e armazenados
+no banco de dados.
+Caso o e-mail já esteja cadastrado, exibir erro:
+o
+
+"E-mail já cadastrado. Utilize outro endereço ou recupere sua senha.”
+
+Caso o CPF já esteja cadastrado, exibir erro:
+o
+
+"CPF já cadastrado no sistema.”
+
+2. Requisitos não Funcionais
+2.1 Design e Responsividade
+
+À tela deve ser responsiva para funcionar em desktop, tablets e smartphones.
+O layout deve seguir a identidade visual da FAPITEC/SE, incluindo cores, fontes
+e logotipo.
+Utilizar um framework moderno como Bootstrap ou Tailwind CSS para
+estilização.
+2.2 Performance
+
+O tempo de resposta do cadastro deve ser inferior a 2 segundos.
+Os campos devem ser validados no lado do cliente (javascript) para melhorar a
+experiência do usuário.
+
+A validação final deve ocorrer no lado do servidor antes de armazenar os dados.
+2.3 Acessibilidade
+Campos devem ter rótulos descritivos e placeholders para auxiliar o
+preenchimento.
+
+Deve haver suporte para teclas de atalho e leitores de tela.
+As mensagens de erro devem ser claras e visíveis em vermelho, conforme a
+imagem.
+
+3. API
+3.1 Endponnts da API
+POST /register — Criação de novos usuários.
+GET /check-email — Verrfica se o e-mail já está cadastrado.
+
+-)
+e
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+GET /check-cpf — Verifica se o CPF já está cadastrado.
+
+Tela inicial Proponente
+
+1. Chamada de Projetos Vigentes
+e
+
+Listagem de chamadas de pesquisa científica, tecnológica e de inovação.
+
+e
+
+Cada chamada tem um título, descrição e última atualização.
+
+e
+
+Botão verde "FORMULÁRIO" para acesso ao formulário de inscrição.
+
+2. Painel do Usuário
+
+e
+
+Informações do usuário logado (João Henrique de Moura).
+
+e
+
+Opção para Atualizar Perfil.
+
+e
+
+Seções Interativas para ações importantes, incluindo:
+o
+
+Dados da Empresa
+
+o
+
+Avaliação de Projetos
+
+o
+
+Relatório Técnico
+
+o
+
+Prestações de Contas Financeiras
+
+o
+
+Acompanhamento de Projetos
+
+3. Design e Usabilidade
+e
+
+O layout segue um padrão clean e organizado.
+
+e
+
+Botões bem definidos para ações rápidas.
+
+e
+
+Uso de ícones e cores para diferenciar as opções.
+
+Perfil
+
+Especificação de Requisitos — Módulo de Cadastro de Proponente/Participante
+
+-)
+
+FAPITECISE
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+1. Requisitos Funcionais
+1.1 Cadastro de Usuário
+e
+
+e
+
+O sistema deve permitir o preenchimento dos seguintes campos obrigatórios:
+o
+
+Nome Completo
+
+o
+
+CPF (obrigatório apenas para brasileiros)
+
+o
+
+E-mail e Confirmação de E-mail
+
+o
+
+Senha e Confirmação de Senha
+
+Validação de nacionalidade:
+o
+
+Se o usuário for estrangeiro, o CPF não será obrigatório.
+
+o
+
+Se for brasileiro, o CPF deve ser informado e validado.
+
+1.2 Validações de Formulário
+e
+
+Nome Completo: apenas letras e espaços, mínimo de 3 caracteres.
+
+e
+
+CPF: validado no formato XXX.XXX. XXX-XX.
+
+e
+
+E-mails: ambos devem ser iguais.
+
+o
+e
+
+Mensagem de erro: "O e-mail deve ser IGUAL ao e-mail principal.”
+
+Senhas: ambas devem ser iguais.
+o
+
+Mensagem de erro: "A senha deve ser IGUAL à primeira senha
+fornecida.”
+
+e
+
+Regras da senha:
+o
+
+Mínimo de 8 caracteres
+
+o
+
+ÁÃo menos 1 letra maiúscula, 1 minúscula, 1 número e 1 caractere especial
+
+(ex: O, *, $)
+1.3 Cadastro e Confirmação
+e
+
+Botão "Cadastrar" só habilitado se todos os campos forem válidos.
+
+e
+
+Após clicar, os dados serão enviados via API e armazenados no banco.
+
+e
+
+Mensagens de erro específicas:
+
+o
+
+E-mail já cadastrado: "E-mail já cadastrado. Utilize outro endereço ou
+recupere sua senha.”
+
+-)
+o
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+CPF já cadastrado: "CPF já cadastrado no sistema.”
+
+2. Requisitos não Funcionais
+2.1 Design e Responsividade
+
+e
+
+Interface responsiva para desktop, tablet e mobile.
+
+e
+
+Layout deve seguir identidade visual da FAPITEC/SE.
+
+e
+
+Utilização de frameworks como Bootstrap ou Tailwind CSS.
+
+2.2 Performance
+e
+
+Tempo de resposta inferior a 2 segundos.
+
+e
+
+Validações devem ocorrer no cliente com javascript.
+
+e
+
+Validação final no servidor antes da persistência dos dados.
+
+2.3 Acessibilidade
+e
+
+Campos com rótulos e placeholders informativos.
+
+e
+
+Suporte a teclas de atalho e leitores de tela.
+
+e
+
+Mensagens de erro destacadas em vermelho.
+
+3. API
+3.1 Endpoints
+e
+
+POST fregister: cria novo usuário.
+
+e
+
+GET /check-email: verifica duplicidade de e-mail.
+
+e
+
+GET /check-cpf: verifica duplicidade de CPF.
+
+Acadêmico
+
+1. Requisitos Funcionais
+1.1 Cadastro de Informações Acadêmicas
+
+-)
+e
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+O usuário deve preencher os seguintes campos obrigatórios:
+o
+
+e
+
+FAPITECISE
+
+Maior Titulação (opções):
+=
+
+Doutor
+
+=
+
+Mestre
+
+=
+
+Pós-graduação/Especialização
+
+=
+
+Graduação/Bacharel
+
+=
+
+Ensino Médio/Técnico
+
+=
+
+Ensino Fundamental II
+
+o
+
+Nome do Curso da Maior Titulação
+
+o
+
+Instituição que Concedeu a Titulação
+
+o
+
+Mês de Titulação
+
+o
+
+Ano de Titulação
+
+Os seguintes campos são opcionais, mas devem permitir preenchimento e
+salvamento:
+o
+
+Nome do Curso em Andamento
+
+o
+
+Ano da Matrícula Atual
+
+o
+
+Período da Matrícula Atual
+
+o
+
+Grande Área de Conhecimento
+
+o
+
+Sub-área de Conhecimento
+
+o
+
+Município (curso)
+
+o
+
+UF (curso)
+
+1.2 Validações de Formulário
+e
+
+Campos obrigatórios não podem ser deixados em branco.
+
+e
+
+Ano de Titulação e Ano da Matrícula Atual devem aceitar apenas valores
+numéricos com 4 dígitos.
+
+e
+
+Mês de Titulação deve estar entre 1 e 12.
+
+e
+
+À UF (curso) deve ser uma sigla válida de estado brasileiro.
+
+-)
+e
+
+FAPITECISE
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+Os campos de texto devem aceitar somente letras e espaços (sem caracteres
+especiais), com mínimo de 3 caracteres para Nome de Curso e Instituição.
+
+1.3 Cadastro e Confirmação
+e
+
+O botão “Próximo” deve ser habilitado somente quando os campos obrigatórios
+estiverem preenchidos corretamente.
+
+e
+
+Ao clicar em “Próximo”, os dados devem ser armazenados temporariamente para
+
+submissão final ou enviados à API, conforme a arquitetura do sistema.
+e
+
+Em caso de erro, uma mensagem clara deve ser exibida em vermelho indicando
+qual campo está inválido.
+
+2. Requisitos não Funcionais
+2.1 Design e Responsividade
+
+e
+
+A interface deve ser responsiva, compatível com desktop, tablets e dispositivos
+móveis.
+
+e
+
+Manter o padrão visual da FAPITEC/SE, utilizando suas cores, tipografia e logo.
+
+e
+
+Utilizar frameworks modernos de interface.
+
+2.2 Performance
+
+e
+
+O tempo de resposta entre a mudança de aba e carregamento da próxima etapa
+deve ser inferior a 1 segundo.
+
+e
+
+Validações devem ocorrer no lado cliente para maior agilidade.
+
+2.3 Acessibilidade
+e
+
+Labels e placeholders devem ser descritivos e acessíveis para leitores de tela.
+
+e
+
+Ás mensagens de erro devem ser legíveis e contrastantes (em vermelho).
+
+e
+
+Permitir navegação com teclado em todos os campos do formulário.
+
+3. API
+3.1 Endponnts da API
+e
+
+POST /academic-info — Envia e armazena as informações acadêmicas do
+participante.
+
+-)
+
+FAPITECISE
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+GET /academic-areas — Retorna a lista de áreas e subáreas de conhecimento.
+
+Documentos
+
+1. Requisitos Funcionais
+1.1 Upload de Documentos Obrigatórios
+O usuário deve anexar os seguintes documentos, todos obrigatoriamente em formato
+PDF, com limite máximo de 5MB por arquivo:
+1.1.1 Cópias do RG e CPF
+e
+
+Deve aceitar apenas arquivos .pdf
+
+e
+
+Tamanho máximo permitido: SMB
+
+e
+
+Possibilidade de:
+
+o
+
+Arrastar e soltar o arquivo na área destacada
+
+o
+
+Selecionar o arquivo através do botão “Escolher Arquivo”
+
+1.1.2 Comprovante de Conclusão do Curso de Maior Nível
+e
+
+Mesmo comportamento do item anterior
+
+e
+
+Documento obrigatório para validação da maior titulação informada na etapa
+
+anterior
+1.1.3 Comprovante de Residência
+e
+
+Mesmo comportamento do item anterior
+
+1.2 Botões e Fluxo de Ação
+
+e
+
+Botão “Escolher Arquivo”: abre o seletor de arquivos do dispositivo
+
+e
+
+Botão “Finalizar”:
+o
+
+Só deve ser habilitado após todos os arquivos obrigatórios serem anexados
+com sucesso
+
+o
+
+Ão ser clicado, deve:
+
+=
+
+Validar o tipo e tamanho dos arquivos
+
+-)
+=
+
+FAPITECISE
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+Exibir mensagens de erro caso algum documento esteja em
+
+formato inválido ou ultrapasse o tamanho permitido
+=
+
+Armazenar os documentos de forma segura (por exemplo, em uma
+API backend ou serviço de armazenamento)
+
+=
+
+e
+
+Exibir mensagem de sucesso ao finalizar o cadastro
+
+Botão “Anterior”:
+
+o
+
+Levao
+
+usuário de volta à etapa “Acadêmicos / Profissionais” mantendo os
+
+dados preenchidos
+
+2. Requisitos não Funcionais
+2.1 Design e Responsividade
+
+e
+
+Interface deve manter o padrão visual da FAPITEC/SE
+
+e
+
+Botões e caixas de upload devem ser acessíveis e responsivos em diferentes
+tamanhos de tela
+
+2.2 Validação e Segurança
+e
+
+Verificar MIME type real do arquivo para garantir que é um PDF
+
+e
+
+Rejeitar arquivos com extensões alteradas (ex: .Jpg renomeado para .pdf)
+
+e
+
+Garantir que o armazenamento de documentos esteja em ambiente seguro com
+criptografia
+
+e
+
+Nome dos arquivos pode ser padronizado para evitar conflitos
+
+2.3 Acessibilidade
+e
+
+e
+
+Cada área de upload deve conter:
+o
+
+Um rótulo descritivo claro do que se espera
+
+o
+
+Indicação de erro visível em caso de falha
+
+Suporte para leitores de tela
+
+3. API
+3.1 Endponnts da API
+
+-)
+e
+
+FAPITECISE
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+POST /upload-documents — Envia os três arquivos obrigatórios. O payload deve
+conter:
+
+e
+
+o
+
+Rg cpfdocument.pdf
+
+o
+
+Degree certificate.pdf
+
+o
+
+Residence proof.pdf
+
+GET /upload-status — Consulta se os documentos já foram enviados anteriormente
+(para permitir reenvio ou validação)
+
+Empresas
+
+1. Requisitos Funcionais
+1.1 Cadastro de Empresa
+e
+
+O usuário poderá escolher entre:
+o
+
+Selecionar uma empresa já cadastrada
+
+o
+
+Cadastrar uma nova empresa selecionando a opção “Novo cadastro” na
+caixa de seleção superior
+
+1.2 Campos do Formulário
+O preenchimento deve validar os seguintes requisitos:
+Campo
+
+Tipo
+
+Obrigatório] Validação
+
+Razão Social ||Texto
+
+Sim
+
+Mínimo 3 caracteres
+
+Nome
+
+..
+Mínimo 3 caracteres
+
+.
+Fantasia
+
+Texto
+
+j
+Sim
+
+CNPJ
+
+Numér
+ico o
+nmene
+
+|Si[im
+
+Inscrição
+Estadual
+
+Texto
+
+Não
+
+Deve seguir o padrão do CNPJ brasileiro
+
+(formato: 00.000.000/0000-00) e ser validado
+Livre
+
+-)
+
+FAPITECISE
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+Campo
+
+Tipo
+
+Obrigatório] Validação
+
+CEP
+
+Numérico
+
+||Sim
+
+Apenas números, formato válido (8 dígitos)
+
+Endereço
+
+Texto
+
+Sim
+
+Mínimo 5 caracteres
+
+Bairro
+
+Texto
+
+Sim
+
+Mínimo 3 caracteres
+
+País
+
+Texto
+
+Sim
+
+Valor padrão: "Brasil"
+
+Cidade
+
+Texto
+
+Sim
+
+Valor padrão: " Aracaju”
+
+Telefone
+
+Numérico
+
+|Sim
+
+Deve permitir DDD + número
+
+Fax
+
+Numérico
+
+||Não
+
+Opcional
+
+E-mail
+
+Texto
+
+Sim
+
+Deve ser um e-mail válido
+
+URL
+
+.
+
+(Website)
+
+|lexto
+
+qNão
+
+Caixa Postal
+
+[Texto
+
+Não
+
+Deve seguir o padrão de uma URL (com ou sem
+
+https://)
+Livre
+
+1.3 Botões de Navegação
+
+e
+
+e
+
+Botão “Próximo”:
+o
+
+Valida todos os campos obrigatórios
+
+o
+
+Exibe mensagens de erro específicas por campo, se necessário
+
+o
+
+Só permite o avanço se todas as validações forem atendidas
+
+o
+
+Avança para a etapa 2: Documentação Digital
+
+Botão “Anterior”:
+o
+
+Não exibido nesta etapa (por ser a primeira)
+
+-)
+
+FAPITECISE
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+2. Requisitos não Funcionais
+2.1 Design e Responsividade
+
+e
+
+Layout deve ser responsivo para se adaptar bem a dispositivos móveis e desktops
+
+e
+
+Utilização de espaçamento adequado entre os campos
+
+e
+
+Indicação visual clara de campos obrigatórios e erros de preenchimento
+
+2.2 Validação e Segurança
+e
+
+CNPJ deve ser validado com verificação de dígitos
+
+e
+
+E-mail deve seguir padrões de RFC de validação
+
+e
+
+Proteção contra envio de scripts maliciosos
+
+e
+
+Dados devem ser enviados para a API via HTTPS
+
+2.3 Acessibilidade
+e
+
+Campos devem ter rótulos acessíveis para leitores de tela
+
+e
+
+Mensagens de erro devem ser claras e associadas diretamente ao campo com erro
+
+3. API
+3.1 Endponnts da API
+e
+
+POST /empresa — Cria um novo cadastro de empresa. Payload:
+o
+
+Todos os campos listados no formulário
+
+e
+
+GET /empresa — Lista empresas já cadastradas associadas ao usuário logado
+
+e
+
+GET /empresa/:1d — Retorna os dados de uma empresa específica para edição (se
+aplicável)
+
+Se desejar, posso agora gerar um único documento com as três etapas completas:
+1.
+
+Informações da Empresa
+
+2.
+
+Acadêmicos / Profissionais
+
+3.
+
+Documentação Digital
+
+-)
+
+FAPITECISE
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+Relatório técnico
+
+1. Requisitos Funcionais
+1.1 Exibição dos Projetos
+
+e
+
+À tela deve exibir uma tabela com os projetos vinculados ao usuário.
+
+e
+
+Cada linha deve conter:
+
+o
+
+Código e título do projeto (Ex: “17/2020 - [APQ] Cooperação
+Internacional com a França - ANR 2021”)
+
+o
+
+Um botão de ação com as seguintes informações:
+
+=
+
+Número do Relatório (Ex: “1 - Relatório”)
+
+=
+
+Status (Ex: “Data limite 24/04/2025” em vermelho quando estiver
+próxima ou vencida)
+
+«
+
+Um ícone representando o preenchimento do relatório
+
+=
+
+Um link ou botão com o texto “Preencher”
+
+1.2 Ação de Preenchimento
+
+e
+
+Ao clicar em “Preencher”, o usuário deve ser redirecionado para o formulário
+correspondente ao relatório técnico daquele projeto.
+
+e
+
+O sistema deve validar se o usuário tem permissão para preencher o relatório
+antes de abrir o formulário.
+
+1.3 Botão “Anterior”
+e
+
+Disponível no canto inferior esquerdo
+
+e
+
+Retorna o usuário para a etapa anterior do processo
+
+2. Requisitos não Funcionais
+2.1 Design e Responsividade
+
+e
+
+À tabela deve se adaptar bem a diferentes tamanhos de tela, mantendo a
+legibilidade das informações.
+
+-)
+e
+
+FAPITECISE
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+O botão “Preencher” e o ícone devem ter toque sensível para uso em dispositivos
+móveis.
+
+2.2 Acessibilidade
+
+e
+
+Todaa
+
+tabela deve ser navegável por teclado.
+
+e
+
+O botão “Preencher” deve ter rótulo acessível (ex: aria-label="Preencher relatório
+do projeto 17/2020")
+
+2.3 Usabilidade
+e
+
+O status do relatório (ex: data limite) deve mudar de cor conforme a proximidade
+
+da data de vencimento (verde > 15 dias, amarelo < 15 dias, vermelho = vencido
+ou no dia)
+e
+
+Icones e botões devem ter tooltips com explicações curtas ao passar o cursor
+
+3. API
+3.1 Endpoints
+e
+
+GET /projetos-com-relatorios — Retorna todos os projetos do usuário com os
+relatórios pendentes ou em andamento.
+
+e
+
+GET frelatorio/:1d — Retorna o formulário de relatório técnico para o ID do
+relatório selecionado.
+
+e
+
+POST frelatorio/:1d/preencher — Envia os dados preenchidos do relatório técnico.
+
+Contas
+
+1. Requisitos Funcionais
+1.1 Exibição dos Projetos
+
+e
+
+À tela deve apresentar uma tabela com os projetos vinculados ao usuário.
+
+e
+
+Cada linha deve conter:
+
+o
+
+Código e título do projeto (Ex: “17/2020 - [APQ] Cooperação
+Internacional com a França - ANR 2021”)
+
+o
+
+Botões de ações relacionados ao acompanhamento do projeto:
+
+-)
+=
+
+FAPITECISE
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+Itens anexados — Botão com o texto “Visualizar” e ícone de
+documento.
+
+=
+
+Alteração de membros — Botão com o texto “Visualizar” e ícone de
+documento.
+
+=
+
+Alteração contratual — Botão com o texto “Visualizar” e ícone de
+documento.
+
+1.2 Visualização dos Itens
+
+e
+
+Cada botão “Visualizar” deve redirecionar para a tela correspondente à função:
+o
+
+Itens anexados: lista de documentos e arquivos enviados no
+acompanhamento do projeto.
+
+o
+
+Alteração de membros: lista de solicitações e aprovações de mudanças na
+equipe do projeto.
+
+o
+
+Alteração contratual: histórico e solicitações de mudanças contratuais.
+
+1.3 Botão “Anterior”
+e
+
+Localizado no canto inferior esquerdo
+
+e
+
+Retorna o usuário para a etapa anterior do processo
+
+2. Requisitos não Funcionais
+2.1 Design e Responsividade
+
+e
+
+Os elementos da tabela devem se adaptar corretamente para dispositivos móveis e
+telas menores.
+
+e
+
+Os botões devem ser facilmente clicáveis com o toque.
+
+2.2 Acessibilidade
+
+e
+
+Os botões “Visualizar” devem conter rótulos descritivos acessíveis, como arialabel="Visualizar itens anexados do projeto 177/2020".
+
+2.3 Usabilidade
+e
+
+Os ícones e botões devem ter tooltips informativos ao passar o cursor.
+
+e
+
+Caso não haja dados disponíveis em alguma das seções (por exemplo, nenhuma
+
+alteração contratual), deve-se exibir uma mensagem como “Nenhum item
+disponível”.
+
+-)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+3. API
+3.1 Endpoints
+e
+
+GET /projetos/:1d/itens-anexados — Retorna todos os documentos e arquivos
+anexados ao projeto.
+
+e
+
+GET /projetos/:1d/alteracao-membros — Retorna o histórico de alterações de
+membros do projeto.
+
+e
+
+GET /projetos/:1d/alteracao-contratual — Retorna o histórico de alterações
+contratuais solicitadas/aprovadas.
+
+Relatório Financeiro
+
+Tela destinada ao preenchimento do relatório financeiro do projeto. Permite ao usuário
+cadastrar itens adquiridos, indicar quantidades, valores, totalizar os gastos e anexar
+comprovantes.
+
+1. Requisitos Funcionais
+1.1 Cadastro de Itens Financeiros
+e
+
+O sistema deve permitir ao usuário preencher múltiplos registros de itens
+financeiros com os seguintes campos por linha:
+o
+
+Nome/Descrição do item
+
+o
+
+Quantidade
+
+o
+
+Valor unitário, com prefixo “R$” e máscara monetária)
+
+o
+
+Valor total (campo calculado automaticamente, somente leitura)
+
+-)
+o
+
+FAPITECISE
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+Anexo de comprovante com botão “Selecionar o arquivo” e ícone de
+ajuda)
+
+1.2 Cálculo Automático
+
+e
+
+O campo Valor Total será calculado automaticamente pelo sistema com a
+fórmula:
+
+Ini
+
+Copiareditar
+Valor total = quantidade * valor unitario
+
+e
+
+Ovalor total deve aparecer no formato monetário brasileiro: R$ 0.000,00.
+
+1.3 Adição de Novos Itens
+
+e
+
+Obotão “Criar novo” (com icone “+” deve permitir a adição de uma nova linha
+de item.
+
+e
+
+Deve ser validado se os campos obrigatórios da linha anterior estão preenchidos
+antes de permitir a criação de uma nova.
+
+1.4 Upload de Comprovantes
+
+e
+
+Para cada linha, o botão “Selecionar o arquivo” deve abrir o seletor de arquivos
+do sistema.
+
+e
+
+O campo aceita formatos como .pdf, .jpg, .Jpeg, .png.
+
+1.5 Navegação
+
+e
+
+O botão “Anterior” (canto inferior esquerdo) deve levar o usuário à tela anterior
+do fluxo do projeto.
+
+2. Requisitos não Funcionais
+2.1 Responsividade
+
+e
+
+À tabela deve se ajustar corretamente para visualização em telas menores (tablet e
+
+celular).
+e
+
+Os botões e campos devem estar organizados para navegação fluida e leitura
+confortável.
+
+2.2 Acessibilidade
+
+e
+
+Cada campo e botão deve conter atributos aria-label descrevendo sua função.
+
+FAPITECISE
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+e
+
+O ícone “?” Ao lado de “Selecionar o arquivo” deve exibir uma tooltip com a
+mensagem:
+
+“Anexe um comprovante do gasto como nota fiscal, recibo ou documento
+equivalente. ”
+2.3 Usabilidade
+e
+
+Máscara monetária no campo de valor unitário e valor total.
+
+e
+
+Obotão “Criar novo” deve ser claramente identificado com ícone de “+” e texto.
+
+e
+
+Campos com erro de preenchimento devem ser destacados com borda vermelha
+ou alerta visual.
+
+3. API
+3.1 Envio dos Itens
+e
+
+POST /apifrelatorio-financeiro
+
+o
+
+Envia todos os itens da tabela em formato
+
+JSON.
+
+3.2 Upload de Comprovantes
+e
+
+POST /api/relatorio-financeiro/:item 1d/comprovante
+
+o
+
+Faz o upload de um comprovante específico para o item identificado por
+item 1d.
+
+3.3 Listagem de Itens Existentes
+e
+
+GET /api/relatorio-financeiro
+
+o
+
+Retorna todos os itens já cadastrados para exibição e edição.
+Itens anexados ao projeto
+
+E utilizada para registrar formalmente a solicitação de aquisição de itens vinculados ao
+
+projeto. O usuário pode cadastrar os dados do item, justificar a necessidade e enviar a
+solicitação.
+1. Requisitos Funcionais
+1.1 Cadastro de Item
+e
+
+O formulário deve conter os seguintes campos:
+
+-)
+
+FAPITECISE
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+o
+
+Nome/Descrição do item Exemplo: “Notebook XYZ modelo 16”
+
+o
+
+Quantidade
+Com valor mínimo de 1
+
+o
+
+Valor unitário com prefixo R$ e máscara monetária)
+
+o
+
+Valor total (campo calculado automaticamente e não editável)
+
+Cálculo automático:
+Ini
+
+Copiareditar
+Valor total = quantidade * valor unitário
+
+e
+
+Exibido no campo “Valor Total” com máscara monetária: R$ 0.000,00
+
+1.2 Justificativa da Solicitação
+
+e
+
+Campo de texto livre (textarea) identificado como “Descrição da solicitação”.
+o
+
+Deve permitir até 1000 caracteres.
+
+o
+
+Campo obrigatório para envio da solicitação.
+
+1.3 Envio da Solicitação
+
+e
+
+Botão “Solicitar”
+o
+
+Envia os dados para o backend.
+
+o
+
+Realiza validação de todos os campos obrigatórios.
+
+o
+
+Caso falte algum dado, exibe mensagem de erro ou destaque visual.
+
+2. Requisitos não Funcionais
+2.1 Responsividade
+
+e
+
+À
+
+estrutura do formulário deve se adaptar para uso em dispositivos móveis
+
+(colunas devem se empilhar verticalmente).
+2.2 Acessibilidade
+
+e
+
+Labels descritivos para todos os campos.
+
+-)
+e
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+Campos com erro de validação devem receber destaque.
+
+2.3 Máscaras e Formatação
+
+e
+
+Campos monetários devem aplicar máscara de moeda brasileira (R$ 0.000,00)
+automaticamente durante a digitação.
+
+e
+
+O campo de valor total deve ser atualizado em tempo real ao alterar quantidade ou
+valor unitário.
+
+3. API
+3.1 Cadastro de Solicitação
+e
+
+POST /api/solicitacoes-itens
+
+o
+
+Envia os dados do formulário em
+
+JSON
+
+3.2 Validação
+e
+
+O backend deve validar:
+o
+
+Campos obrigatórios preenchidos.
+
+o
+
+Quantidade maior que zero.
+
+o
+
+Valores positivos.
+
+o
+
+Justificativa presente.
+
+Alteração de cronograma de projeto
+
+E utilizada para registrar uma alteração no cronograma de execução do projeto. O usuário
+
+informa a nova data prevista e descreve os motivos ou detalhes da alteração solicitada.
+
+1. Requisitos Funcionais
+1.1 Alteração de Cronograma
+
+e
+
+Título da seção: “Cronograma do projeto”
+
+Campos disponíveis:
+
+-)
+e
+
+e
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+Prazo de execução / Cronograma
+o
+
+Tipo: inputltype="date”]
+
+o
+
+Campo obrigatório
+
+o
+
+Ícone de calendário presente para facilitar a seleção da data.
+
+Descrição
+o
+
+Tipo: textarea
+
+o
+
+Campo obrigatório
+
+o
+
+Deve permitir até 1000 caracteres.
+
+o
+
+Utilizado para justificar ou detalhar a alteração solicitada.
+
+1.2 Envio da Solicitação
+
+e
+
+Botão “Solicitar”
+o
+
+Realiza a validação dos campos obrigatórios.
+
+o
+
+Envia os dados para o backend.
+
+o
+
+Exibe mensagem de erro se algum campo estiver vazio ou inválido.
+
+2. Requisitos não Funcionais
+2.1 Responsividade
+
+e
+
+À tela deve se adaptar corretamente a dispositivos móveis, reorganizando os
+elementos verticalmente.
+
+2.2 Acessibilidade
+
+e
+
+Uso de labels claros e associados aos respectivos inputs.
+
+e
+
+Campos obrigatórios devem destacar erros com bordas coloridas e mensagens
+auxiliares (se necessário).
+
+3. Regras de Negócio
+e
+
+O campo de data só deve aceitar datas futuras em relação à data atual (validar
+com regra de comparação).
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+e
+
+À descrição é obrigatória para garantir rastreabilidade e justificativa formal da
+alteração.
+
+4. API (Sugestão de Integração)
+
+4.1 Solicitação de Alteração de Cronograma
+e
+
+POST /api/alteracoes-cronograma
+
+Equipe Tecnica
+
+Permite a solicitação de adição ou exclusão de membros da equipe técnica do projeto,
+informando nome, CPF e uma descrição justificando a ação.
+
+1. Requisitos Funcionais
+1.1 Listagem e Edição de Membros
+e
+
+Cada linha representa um membro da equipe técnica.
+
+Campos por membro:
+e
+
+e
+
+Nome
+o
+
+Tipo: inputltype="text"]
+
+o
+
+Campo obrigatório
+
+o
+
+Deve aceitar até 100 caracteres.
+
+o
+
+Tipo: inputltype="text"]
+
+o
+
+Campo obrigatório
+
+o
+
+Deve seguir o formato de CPF válido (11 dígitos).
+
+Descrição
+o
+
+Tipo: textarea
+
+o
+
+Campo obrigatório
+
+o
+
+Deve permitir até 1000 caracteres.
+
+-)
+o
+e
+
+FAPITECISE
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+Utilizado para justificar a inclusão ou alteração do membro.
+
+Botão de exclusão
+
+o
+
+Ícone: X
+
+o
+
+Remove a linha correspondente ao membro da equipe.
+
+1.2 Adição de Novos Membros
+
+e
+
+Botão “Solicitar adição” (ícone +)
+o
+
+Adiciona um novo conjunto de campos (Nome, CPF, Descrição).
+
+o
+
+Deve manter a estrutura das linhas anteriores.
+
+1.3 Envio da Solicitação
+
+e
+
+Botão “Solicitar”
+o
+
+Valida se todos os campos obrigatórios estão preenchidos.
+
+o
+
+Envia os dados dos membros adicionados/modificados.
+
+o
+
+Exibe mensagens de erro se campos estiverem vazios ou CPF inválido.
+
+2. Requisitos não Funcionais
+2.1 Responsividade
+
+e
+
+À tela deve reorganizar as colunas (Nome, CPF, Descrição) verticalmente em
+dispositivos móveis.
+
+2.2 Acessibilidade
+e
+
+Labels claros para cada campo.
+
+e
+
+Utilizar elementos visuais e textuais para indicar erros (ex.: CPF inválido ou
+campos vazios).
+
+3. Regras de Negócio
+e
+
+CPF deve ser validado com base na estrutura oficial (11 dígitos, com validação de
+dígitos verificadores).
+
+-)
+
+FAPITECISE
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+e
+
+À descrição da solicitação é obrigatória para rastreabilidade.
+
+e
+
+Permitir adição de múltiplos membros.
+
+e
+
+Deve ser possível excluir membros antes do envio da solicitação.
+
+4. API (Sugestão de Integração)
+
+4.1 Solicitação de Alteração na Equipe Técnica
+e
+
+POST /api/equipe-tecnica/alteracoes
+
+Itens Anexados ao Projeto
+
+Interface
+
+dedicada
+
+ao registro,
+
+acompanhamento
+
+e
+
+solicitação
+
+de
+
+edição
+
+de itens
+
+orçamentários vinculados a um projeto específico submetido no âmbito do edital 17/2020
+— [APQ] Cooperação Internacional com a França - ANR 2021.
+
+1. Requisitos Funcionais
+Campo
+
+Tipo de Entrada | |Formato/Validação
+
+Obrigatoriedade
+
+Nome/Descrição do Item|/Texto
+
+Livre
+
+Sim
+
+Quantidade
+
+Numérico
+
+Inteiro positivo
+
+Sim
+
+Valor unitário
+
+Numérico (moeda)|R$ xxxx,xx
+
+Valor total
+
+Calculado
+
+Sim
+
+Quantidade x Valor Unit.|Sim (automático)
+
+2. Funcionalidades
+
+Componente
+
+4 Solicitar edição
+
+Ação
+Botão
+
+individual
+
+alteração
+
+por
+
+item
+
+que
+
+aciona
+
+fluxo
+
+de
+
+requisição
+
+de
+
+-)
+Componente
+
+Dm
+
+=
+adição
+
+Solicitar
+
+— Anterior
+
+FAPITECISE
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+Ação
+
+o.
+
+..
+
+Botão global para incluir novos itens na planilha orçamentária
+
+Navegação para etapa anterior do processo de submissão
+
+3. Regras de Negócio
+e
+
+À soma total dos itens compõe o valor global do projeto e deve respeitar os
+limites do edital.
+
+e
+
+L
+
+O valor total do item é calculado automaticamente e não pode ser editado
+diretamente.
+
+e
+
+Edição e adição de itens devem ser aprovadas por gestor do sistema.
+
+4. Estética e Usabilidade
+e
+
+Paleta de cores predominante: roxo institucional (FAPITEC/SE).
+
+e
+
+Interface responsiva com foco na clareza da informação.
+
+e
+
+Botões de ação com ícones e rótulos descritivos.
+
+e
+
+À tela apresenta em destaque o número e título do edital.
+
+5. Acessibilidade
+e
+
+Contraste suficiente entre texto e fundo.
+
+e
+
+Tamanhos de fonte adequados à leitura em diferentes dispositivos.
+
+e
+
+Navegação por teclado e compatibilidade com leitores de tela.
+
+Permite visualizar, filtrar e selecionar avaliadores para um determinado processo,
+
+definindo também o período de atuação do(s) avaliador(es).
+1. Requisitos Funcionais
+1.1 Filtros de Busca
+
+=)
+e
+
+FAPITECISE
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+Campos de filtro para facilitar a localização dos avaliadores:
+Tipo
+
+Campo
+Pesquisa geral (ícone de
+lupa)
+
+Input[type="text"]
+
+Observações
+Pesquisa por nome, e-mail ou outros
+campos.
+
+Título
+
+Input[type="text"] Ex: Doutor, Mestre, Especialista.
+
+Área de conhecimento
+
+Input[type="text"] Filtra por área específica de atuação.
+
+Estado
+
+Input[type="text"] Ex: SE, SP, RJ etc.
+
+1.2 Tabela de Avaliadores
+
+e
+
+Exibe a lista de avaliadores que atendem aos filtros.
+
+Colunas exibidas:
+Coluna
+
+|lTipo
+
+Descrição
+
+Nome
+
+Texto
+
+Nome completo do avaliador.
+
+Formação] Texto
+
+Grau de formação (ex: Mestrado, Doutorado).
+
+Contatos
+
+||Texto
+
+Exibe e-mail e telefone.
+
+Seleção
+
+|Checkbox||Permite selecionar o avaliador para atribuição.
+
+1.3 Definição de Período de Atuação
+
+e
+
+Campos obrigatórios ao selecionar um avaliador.
+
+Campo Tipo
+De
+
+Observações
+
+Input[type="date"] Data de início do vínculo/participação.
+Input[type="date"] Data de fim da atuação.
+
+-)
+
+FAPITECISE
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+1.4 Ações
+
+e
+
+Botão “Salvar”
+o
+
+Valida se há pelo menos um avaliador selecionado e se as datas foram
+preenchidas corretamente.
+
+o
+
+Ássocia o(s) avaltador(es) ao projeto ou chamada vigente com base no
+período informado.
+
+e
+
+Botão “Anterior”
+o
+
+Retorna para a etapa anterior do fluxo.
+
+2. Requisitos não Funcionais
+2.1 Responsividade
+e
+
+Os filtros devem se reorganizar em colunas únicas em dispositivos móveis.
+
+e
+
+À tabela de avaliadores deve ser scrollável horizontalmente, se necessário.
+
+2.2 Acessibilidade
+e
+
+Labels visíveis e claros para todos os campos.
+
+e
+
+Mensagens de validação destacadas em vermelho com ícones de atenção quando
+campos estiverem incorretos ou ausentes.
+
+3. Regras de Negócio
+e
+
+Ao menos um avaliador deve ser selecionado antes de salvar.
+
+e
+
+Os campos de data “De” e “Até” devem estar preenchidos.
+
+e
+
+Ointervalo entre as datas deve ser válido (data final posterior à data inicial).
+
+e
+
+Não deve permitir salvar avaliadores duplicados no mesmo período.
+
+4. API (Sugestão de Integração)
+4.1 Buscar Avaliadores
+
+e
+
+GET /api/avaliadores?Nome=&titulo=&area conhecimento=&estado=
+
+-)
+
+FAPITECISE
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+4.2 Atribuir Avaliador
+
+e
+
+POST /api/avaliadores/atribuir
+
+Itens anexados
+
+Permite ao usuário cadastrar um novo item para o projeto ou solicitar a substituição de
+um item previamente anexado. Também possibilita a descrição detalhada da solicitação
+feita.
+
+1. Requisitos Funcionais
+1.1 Campos de Cadastro de Item
+Campo
+
+Nome/Descrição
+do item
+
+Quantidade
+
+Valor unitário
+
+Valor total
+
+Tipo
+
+Observações
+
+nm
+
+Input[type="text”]
+
+Input[type="number”]
+Input[type="text"] com
+máscara monetária
+
+Input[type="text"] com
+máscara monetária
+
+Campo obrigatório. Descrição clara do
+item.
+
+Apenas números inteiros. Obrigatório.
+
+Exibe prefixo R$. Obrigatório.
+
+Calculado automaticamente com base em
+quantidade x valor unitário. Campo
+desabilitado para edição direta.
+
+1.2 Substituição de Item
+Campo
+
+Checkbox “Solicitar
+
+Tipo
+Inputltype="checkbox”]
+
+Observações
+
+Ao ser marcado, exibe os campos
+
+-)
+
+FAPITECISE
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+Tipo
+
+Campo
+
+Observações
+
+substituição”
+
+adicionais abaixo.
+
+nn
+
+Nome/Descrição do item a
+
+Obrigatório se o checkbox estiver
+
+Inputltype="text”]
+
+ser substituído
+
+Quantidade a substituir
+
+I
+
+t
+
+t
+
+=!
+
+b
+
+marcado.
+
+"
+
+nputltype="number”]
+
+Obrigatório se o checkbox estiver
+marcado.
+
+1.3 Descrição da Solicitação
+Campo
+
+Tipo
+
+Observações
+
+Descrição da
+Ea
+solicitação
+
+Textarea
+
+Campo livre para justificar ou detalhar a inclusão ou
+do
+usp
+substituição. Pode ser obrigatório conforme regras do sistema.
+
+1.4 Ação
+
+Botão
+
+|[Tipo
+
+Ação
+Valida os campos obrigatórios e envia os dados da
+
+Solicitar|Button[type="submit"]|jsolicitação para o sistema. Exibe mensagens de sucesso
+ou erro conforme o retorno da API.
+
+2. Requisitos não Funcionais
+2.1 Responsividade
+
+e
+
+Olayout deve adaptar os campos em colunas únicas em telas menores.
+
+e
+
+À caixa de texto para a descrição deve ocupar a largura máxima disponível em
+dispositivos móveis.
+
+2.2 Acessibilidade
+
+e
+
+Labels visíveis e associados a todos os campos.
+
+e
+
+Feedback de erro claro em campos obrigatórios ou inválidos.
+
+-)
+e
+
+FAPITECISE
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+Navegação compatível com teclado.
+
+3. Regras de Negócio
+
+e
+
+O campo “Valor Total” deve ser preenchido automaticamente com a fórmula:
+Valor Total = Quantidade x Valor Unitário.
+
+e
+
+Se “Solicitar substituição” estiver marcado:
+o
+
+e
+
+Os campos adicionais se tornam obrigatórios.
+
+À solicitação só pode ser enviada se todos os campos obrigatórios estiverem
+preenchidos corretamente.
+
+e
+
+O sistema deve impedir que valores negativos ou zero sejam inseridos nos campos
+de quantidade e valor.
+
+4. API (Sugestão de Integração)
+4.1 Enviar solicitação de item
+
+e
+
+POST /aprfitens/solicitar
+
+Avaliar projeto
+
+Interface de acompanhamento e execução das etapas de avaliação de projetos submetidos
+em editais, com foco no edital 177/2020 — [APQ] Cooperação Internacional com a França
+- ANR 2021.
+
+1. Requisitos Funcionais
+Etapa
+
+Descrição da Função
+
+1 - Enquadramento
+
+Verificação do atendimento aos critérios do
+;
+
+d
+
+edital
+
+2 - Avaliação Técnica Julgamento do mérito técnico-científico
+
+Status Inicial
+||Aguardando
+À
+
+análise
+
+Aguardando
+
+-)
+Etapa
+
+FAPITECISE
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+Descrição da Função
+
+Status Inicial
+análise
+
+3 - Avaliação
+
+o
+j
+Reavaliação mediante recurso apresentado
+
+Recursal
+4 - Consideração
+
+S
+
+Final
+
+o
+
+a
+
+Na
+
+Consolidação da avaliação e decisão final
+
+Aguardando
+sn
+
+análise
+
+Aguardando
+
+s
+
+análise
+
+2. Funcionalidades
+
+Componente
+
+Ação
+
+Aba “Editais
+Particinantes”
+
+Exibe todos os editais nos quais o avaliador está vinculado
+
+Aba “Avaliar Projetos” |
+
+||Navegação para projetos disponíveis para avaliação
+
+articipantes
+
+Icone de situação
+
+Botão "Anterior"
+
+Indica o status da análise com possibilidade de clique (futuro
+uso)
+Retorno à interface anterior
+
+3. Regras de Negócio
+e
+
+Todas as etapas devem ser concluídas sequencialmente.
+
+e
+
+O status de cada etapa é atualizado automaticamente pelo sistema após validação.
+
+e
+
+O sistema pode bloquear a próxima etapa enquanto a anterior estiver pendente.
+
+4. Estética e Usabilidade
+e
+
+Estrutura tabular com cores alternadas para diferenciação visual.
+
+e
+
+Icones e rótulos visuais para cada etapa de avaliação.
+
+-)
+e
+
+FAPITECISE
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+Sistema de abas facilita a alternância entre modos de visualização (projetos vs
+editais).
+
+e
+
+Cores institucionais predominantes (roxo e branco), em conformidade com a
+identidade FAPITEC.
+
+5. Acessibilidade
+e
+
+Textos com contraste adequado.
+
+e
+
+Tamanhos e espaçamentos consistentes para navegação por teclado.
+
+e
+
+Ícones acompanhados de rótulos para leitura por leitores de tela.
+
+Permite ao
+
+avaliador visualizar os projetos
+
+disponíveis para avaliação, manifestar
+
+interesse em participar como avaliador e acessar as etapas de avaliação técnica para cada
+projeto.
+
+1. Requisitos Funcionais
+1.1 Listagem de Projetos Disponíveis para Avaliação
+O sistema deve exibir uma tabela com as seguintes informações por linha:
+Coluna
+
+Tipo
+
+Observações
+
+Identificação do
+
+Teto
+
+Ex: “17/2020 - [APQ] Cooperação Internacional
+
+Projeto
+Interesse do
+]
+
+com a França - ANR 2021”
+Seletor +
+
+DO
+Botões
+
+rss ATA
+“Sim” e “Não” para manifestar interesse.
+
+Avaliador
+
+Texto
+
+Prazo para
+
+Texto em
+
+Ex: “Prazo: 16/05/2024”, em vermelho se estiver
+
+manifestação
+
+destaque
+
+próximo do vencimento.
+
+1.2 Etapas de Avaliação Para cada projeto listado, o sistema deve apresentar as etapas de
+avaliação disponíveis com os seguintes campos:
+
+-)
+Etapa
+Título da
+Etapa
+
+Situação
+
+FAPITECISE
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+Tipo
+
+Observações
+
+Texto
+
+oo
+a
+Ex: “1 - Avaliação Técnica”, “2 - Avaliação” etc.
+
+Ícone + Data
+
+||Exibe data da última atualização e status atual.
+
+.
+- |IBotão
+Botão de ação |.
+os,
+
+Avaliar
+
+Redireciona o avaliador para o formulário da etapa
+
+correspondente.
+
+1.3 Botão “Anterior” Localizado no canto inferior esquerdo da tela. Deve redirecionar o
+usuário para a tela anterior sem perder dados selecionados.
+
+2. Requisitos não Funcionais
+2.1 Responsividade
+
+e
+
+A interface deve se adaptar para diferentes tamanhos de tela (desktop, tablet,
+mobile).
+
+e
+
+Os botões e colunas devem se reorganizar verticalmente em telas menores.
+
+2.2 Acessibilidade
+
+e
+
+Todos os botões devem possuir aria-labels descritivos.
+
+e
+
+À cor vermelha do prazo deve seguir diretrizes de contraste para destaque
+
+acessível.
+
+e
+
+Ícones devem conter tooltips explicativos (ex: “Clique para avaliar”).
+
+2.3 Usabilidade
+
+e
+
+Obotão “Avaliar” deve ser visível somente para projetos com avaliação pendente
+ou em andamento.
+
+e
+
+À manifestação de interesse deve registrar a ação imediatamente com feedback
+visual (ícone verde/vermelho).
+
+e
+
+Prazo de manifestação deve mudar de cor conforme aproximação da data (verde >
+
+10 dias, amarelo < 10 dias, vermelho = vencido).
+
+3. API (Sugestão de Integração)
+
+-)
+
+FAPITECISE
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+3.1 Listar Projetos Disponíveis para Avaliação
+GET /api/projetos/avaliacoes-disponiveis
+3.2 Registrar Interesse como Avaliador
+POST /api/projetos/:1d/interesse-avaliador
+3.3 Obter Etapas de Avaliação do Projeto
+GET /api/projetos/:1d/etapas-avaliacao
+3.4 Acessar Formulário de Avaliação
+GET /api/avaliacoes/:etapa 1d/formulario
+
+FAPITEC início — dashboard
+
+Tela inicial do sistema, com informações resumidas sobre atualizações recentes, status de
+
+indicadores, gráficos e acesso rápido às funcionalidades principais (Editais, Cadastros e
+Configuração).
+
+1. Requisitos Funcionais
+1.1 Exibição de Indicadores e Atualizações A tela deve exibir os seguintes cards de
+informações com indicadores atualizados:
+Indicador
+
+Progresso ISO 27001
+
+Vo
+
+Status numérico
+
+Tipo
+
+Observações
+
+Gráfico de pizza com valor
+
+Ex: “65%” — exibir em tom
+
+percentual
+
+violeta.
+
+Valor absoluto com gráfico de |Ex: “5.000” e gráfico simples à
+linha
+
+direita.
+
+Status do gráfico
+
+Card com barra de progresso
+
+|Ex: “65%” — tom laranja.
+
+Não conformidades
+
+Gráfico de pizza com texto
+
+tratadas
+
+percentual
+
+Ex: “65%” — tom verde.
+
+1.2 Visualização de Gráficos Detalhados Exibir abaixo do bloco de indicadores:
+
+Componente
+
+Tipo
+
+Observações
+
+-)
+
+FAPITECISE
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+Componente
+
+Tipo
+
+Observações
+
+Gráfico circular com
+
+Donut chart
+
+Exibir dados em 3 faixas percentuais (ex: 60%,
+
+u
+
+legenda
+Gráficos de barra e
+
+linh
+
+inhas
+
+40%, 20%).
+
+Imagens/ícones| Títulos e datas visíveis abaixo de cada gráfico.
+
+1.3 Navegação para Funcionalidades Três botões principais na parte inferior da tela:
+Botão
+
+Texto
+
+Ação ao clicar
+
+Editais
+
+Visualizar|Redireciona para módulo de editais
+
+Cadastros
+
+Visualizar|Redireciona para módulo de cadastros
+
+Configuração|| Visualizar|Redireciona para módulo de configurações
+
+2. Requisitos não Funcionais
+2.1 Design e Responsividade
+
+e
+
+A tela deve ser responsiva para se adaptar a dispositivos móveis, tablets e
+desktops.
+
+e
+
+Os cards devem se reorganizar verticalmente em telas menores.
+
+2.2 Acessibilidade
+
+e
+
+Todos os gráficos e botões devem ter descrições alternativas acessíveis (arialabel).
+
+e
+
+Contraste entre texto e fundo deve estar de acordo com a WCAG 2.1.
+
+2.3 Usabilidade
+e
+
+Gráficos e cards devem ser interativos ou apresentar tooltips explicativos ao
+passar o cursor.
+
+e
+
+O botão “Visualizar” deve ser clicável em toda a sua extensão para facilitar o
+acesso.
+
+FAPITECISE
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+3. API (Sugestão de Integração)
+3.1 Obter Indicadores Gerais GET /api/dashboard/indicadores
+3.2 Obter Gráficos Detalhados GET /api/dashboard/graficos
+3.3 Acessar Funcionalidades Botões com redirecionamento para os módulos
+correspondentes:
+
+e
+
+[editais
+
+e
+
+[cadastros
+
+e
+
+[configuracoes
+
+Editais
+
+Esta tela é utilizada para a visualização e gerenciamento de propostas submetidas em
+resposta a editais específicos. A interface permite acessar os dados das propostas, bem
+como os formulários de avaliação e a lista de avaliadores associados ao edital.
+
+1. Requisitos Funcionais
+1.1 Visualização das Propostas A tela deve exibir uma tabela com os editais disponíveis.
+Para cada edital listado, deve ser possível acessar:
+Campo
+
+Tipo
+
+ítulo do Edita
+
+Títul
+
+Edital
+
+T
+
+Descrição
+
+Ex: “17/2020 - [APQ] Cooperação Internacional
+
+exto
+
+com a França - ANR 2021”
+
+Propostas
+
+Botão
+a
+
+Formulário de
+
+Botão
+
+Abre o modelo/formulário usado pelos avaliadores
+
+Avaliação
+
+“Visualizar”
+
+para pontuar as propostas
+
+Botão
+
+Mostra os avaliadores associados ao edital e seus
+
+“Visualizar”
+
+respectivos status
+
+Avaliadores
+
+os,
+
+Visualizar
+
+Redireciona para a lista de propostas submetidas ao
+j
+
+edital
+
+-)
+
+FAPITECISE
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+1.2 Filtros Botão de filtro localizado no topo da tabela deve permitir filtragem por:
+Título do edital
+
+Status do edital (ativo, encerrado, em avaliação)
+Tipo de chamada (APQ, ARC, etc.)
+
+1.3 Criação de Edital Botão “Criar edital” no canto superior direito:
+Ao ser clicado, deve redirecionar para um formulário de cadastro de novo edital.
+Deve conter campos obrigatórios como título, descrição, vigência, regras e
+critérios de avaliação.
+1.4 Navegação
+
+Botão “Anterior” no canto inferior esquerdo retorna para a tela anterior do fluxo
+de navegação.
+
+Botões “Visualizar” devem abrir as respectivas funcionalidades sem perda dos
+dados já carregados.
+
+2. Requisitos não Funcionais
+2.1 Design e Responsividade
+
+Os botões e colunas devem ser organizados para se adaptarem a diferentes
+resoluções de tela.
+Disposição em colunas horizontais no desktop, reorganização vertical em
+dispositivos móveis.
+2.2 Acessibilidade
+
+Os botões “Visualizar” devem possuir aria-label com descrição detalhada (ex.:
+“Visualizar propostas do edital Cooperação Internacional 2021").
+Textos com bom contraste e tamanho adequado para leitura em qualquer
+dispositivo.
+2.3 Usabilidade
+
+Exibir tooltips ao passar o mouse sobre os ícones (ex.: “Clique para visualizar os
+formulários de avaliação”).
+Indicadores visuais para distinguir editais em andamento, finalizados ou
+pendentes de avaliação.
+
+-)
+
+FAPITECISE
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+3. API (Sugestão de Integração)
+3.1 Listar Editais GET /api/editais
+Retorna todos os editais disponíveis para visualização.
+3.2 Visualizar Propostas do Edital GET /api/editais/[1d
+
+| /propostas
+
+Retorna as propostas submetidas a um edital específico.
+3.3 Visualizar Formulário de Avaliação GET /api/editais/(1d|/formulario-avaliacao
+3.4 Visualizar Avaliadores do Edital GET /api/editais/(1d
+
+| /avaliadores
+
+3.5 Criar Novo Edital POST /api/editais
+
+Solicitação LGPD + Plano Orçamentário
+
+À tela consolida dois formulários distintos: o primeiro relacionado ao atendimento das
+solicitações da LGPD (Lei Geral de Proteção de Dados), e o segundo voltado para o
+preenchimento de um plano orçamentário, segmentado em itens de consumo e itens
+permanentes.
+
+1. Requisitos Funcionais
+1.1 Formulário de Solicitação LGPD
+
+Campo
+
+Tipo
+
+Nome
+
+C
+
+End
+
+d
+
+PO de
+
+Componente
+de
+
+text
+
+Obrigatório
+
+de
+
+text
+
+Obrigatório e validado
+
+AAPO “emo
+
+C
+
+livre
+
+de
+
+DERrEçO ce
+mail
+
+e-
+
+Observações
+
+dmpo e 1eMto
+(email)
+
+Motivo do contato
+
+Grupo de botões de |Seis opções: saber mais, exclusão, revogação,
+o
+a.
+a
+opção
+atualização, portabilidade, revisão
+
+Envolve dados
+
+Botões de rádio
+
+Deve acionar ícone informativo ao lado
+
+-)
+
+FAPITECISE
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+Campo
+
+Tipo
+
+sensíveis?
+
+(Sim/Não)
+
+Descrição da
+
+Campo de texto
+
+solicitação
+
+expandido
+
+Anexos
+
+Upload de arquivos
+
+d
+
+PO de
+
+Componente
+
+Declaração final
+
+Texto fixo com
+
+destaque
+
+Observações
+
+Multilinha (obrigatório)
+
+Botão “+ Anexar arquivos” — aceitar: .pdf, .jpg,
+.png
+
+Deve ser exibido em vermelho
+
+Validações adicionais:
+e
+
+Campos obrigatórios devem ser validados antes do envio.
+
+e
+
+Impedir upload de documentos com dados pessoais como RG, CPF e CNH.
+
+e
+
+Exibir mensagem de erro caso o e-mail esteja inválido ou algum campo
+
+obrigatório esteja vazio.
+
+1.2 Plano Orçamentário
+1.2.1 Itens de Consumo
+
+Campo
+
+Tipo
+
+Regras
+
+Nome
+
+Campo texto|Obrigatório
+
+Valor
+
+Numérico
+
+|Formato R$ xx,xx
+
+Quantidade|Numérico |
+
+|Inteiro positivo
+
+Valor total
+
+|Calculado
+
+||Valor x Quantidade
+
+Descrição
+
+|[Texto curto
+
+Opcional
+
+1.2.2 Itens Permanentes
+
+-)
+
+FAPITECISE
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+Mesma estrutura do grupo anterior, permitindo pelo menos 3 linhas de preenchimento.
+1.2.3 Valor total orçamentário
+e
+
+Campo calculado automaticamente (soma dos valores totais de ambos os grupos).
+
+e
+
+Deve ser exibido em destaque.
+
+2. Requisitos não Funcionais
+2.1 Responsividade
+
+e
+
+Tela deve se adaptar para exibição em celulares e tablets sem distorcer os campos.
+
+e
+
+Agrupar campos de cada grupo com bordas ou separadores visuais.
+
+2.2 Acessibilidade
+
+e
+
+Todos os campos devem ter labels associados e leitura compatível com leitores de
+tela.
+
+e
+
+O ícone informativo ao lado da pergunta sobre dados sensíveis deve ser acessível
+(com aria-label e role="tooltip").
+
+2.3 Segurança
+e
+
+Bloquear upload de arquivos com extensão não permitida.
+
+e
+
+Proteger campos de texto contra injeção de script.
+
+e
+
+Garantir que o botão de envio só esteja habilitado após o preenchimento
+obrigatório e aceite da declaração.
+
+3. API (Sugestão de Integração)
+3.1 Submissão da Solicitação LGPD POST /api/lgpd/solicitacoes
+3.2 Envio do Plano Orçamentário POST /api/orcamento/plano
+
+-)
+
+FAPITECISE
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+Criar edital
+
+A tela permite o cadastro inicial de um novo edital na plataforma da FAPITEC/SE,
+incluindo dados essenciais sobre o período de vigência, modelo de formulário, relatórios
+exigidos, parâmetros de elegibilidade e exigências adicionais para empresas e
+documentação complementar.
+
+1. Requisitos Funcionais
+1.1 Seção: Formulário Base
+Campo
+
+Tipo de Componente
+
+Observações
+
+Nome do edital
+
+Campo de texto livre
+
+Obrigatório
+
+Período De / Até |
+
+|Campo de data (duplo)
+
+|Calendário pop-up
+
+Anexar PDF
+
+Botão de upload
+
+Anexa arquivo do edital em PDF
+
+Descrição
+
+C
+
+Obrigatório
+
+Modelo
+
+Botões de rádio (1 a 6) |Escolha obrigatória de um único modelo
+
+d
+
+oe y e
+
+formulário
+
+de
+
+text
+
+“mPo “IeMtO
+
+ampliado
+
+Relatórios a serem
+
+Dropdown numérico
+
+Define quantidade de campos ativos para
+
+feitos
+
+(14)
+
+relatórios abaixo
+
+-)
+
+FAPITECISE
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+Campo
+
+Tipo de Componente
+
+Observações
+
+Nota de corte
+
+Dropdown numérico
+
+Valores predefinidos, exemplo: 30, 40, 50
+
+Relatório 1-4
+
+Campos de data
+
+Valor global
+
+Exibidos conforme número selecionado no
+
+campo anterior
+
+Campo numérico
+
+Unidade monetária oculta, presume-se em
+
+(dropdown)
+
+R$
+
+1.2 Seção: Proponente Base
+Tipo de Componente Observações
+
+Campo
+
+Título para elegibilidade Dropdown
+
+Ex.: Doutor, Mestre, Graduado
+
+1.3 Seção: Empresa
+Tipo de Componente Observações
+
+Campo
+
+Exigir empresa vinculada Checkbox
+
+Habilita/Desabilita os campos abaixo
+
+Porte
+
+Dropdown
+
+Ex.: MEI, ME, EPP
+
+Enquadramento
+
+Dropdown
+
+Ex.: Simples Nacional, Lucro Presumido
+
+1.4 Seção: Documentações Complementares
+
+Campo
+Exigir
+
+Tipo de
+
+p
+
+Componente
+
+Observações
+
+.
+documentação
+
+Checkbox
+
+pos
+Torna obrigatória a seção abaixo
+
+Documento 1
+
+Checkbox
+
+Pode haver mais campos dinâmicos
+
+-)
+
+FAPITECISE
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+Tipo de
+
+Campo
+
+Componente
+
+Observações
+
+posteriormente
+
+2. Requisitos não Funcionais
+2.1 Responsividade
+
+e
+
+Todos os grupos são empilháveis verticalmente em dispositivos móveis.
+
+e
+
+Espaçamento entre blocos garante boa legibilidade.
+
+2.2 Acessibilidade
+
+e
+
+Labels visíveis em todos os campos.
+
+e
+
+Campos obrigatórios com marcação visual clara.
+
+e
+
+Compatível com leitura por teclado e leitores de tela.
+
+2.3 Validações
+e
+
+Nome do edital e descrição são obrigatórios.
+
+e
+
+Ao selecionar “Relatórios a serem feitos”, o sistema habilita exatamente aquela
+quantidade de campos de data.
+
+e
+
+Validação automática de datas: “De” não pode ser posterior a “Até”.
+
+e
+
+O botão “Concluir” deve permanecer desabilitado enquanto houver campos
+obrigatórios não preenchidos.
+
+3. API (Sugestão de Integração)
+3.1 Criação de novo edital
+POST /api/editais/criar
+
+Usuários
+
+-)
+
+FAPITECISE
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+À tela permite consultar usuários cadastrados na plataforma da FAPITEC/SE,
+possibilitando a aplicação de filtros por título acadêmico, área de conhecimento e estado,
+bem como a visualização detalhada dos contatos.
+
+1. Requisitos Funcionais
+1.1 Filtros de Busca
+
+Campo
+
+Tipo de Componente
+
+Campo de busca
+
+Campo de texto com ícone de
+
+geral
+
+lupa
+
+Título
+
+Campo de texto livre
+
+Área de
+
+]
+
+conhecimento
+Estado
+
+Campo de texto livre
+
+Campo de texto livre
+
+Observações
+
+Busca por nome
+
+Exemplo: Doutor, Mestre
+
+Exemplo: Engenharias, Ciências
+aro
+
+Biológicas
+Exemplo: SE, SP, RJ
+
+1.2 Tabela de Usuários
+
+Coluna |
+
+|Conteúdo
+
+Observações
+
+Nome
+
+Nome completo do usuário
+
+|Exemplo na imagem: Carlos Silva
+
+Formação|Grau de formação
+
+Exemplo: Mestrado
+
+Contatos ||E-mail e telefone de contato||Exemplo: email Ofapitec.com / (79)999999999
+
+Perfil
+
+Ícone clicável
+
+Acesso à página de perfil detalhado
+
+2. Requisitos não Funcionais
+2.1 Responsividade
+
+e
+
+Tabela adaptável ao tamanho da tela.
+
+e
+
+Filtros ajustáveis em layout vertical para mobile.
+
+-)
+
+FAPITECISE
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+2.2 Acessibilidade
+
+e
+
+Campos com labels visíveis e foco acessível por teclado.
+
+e
+
+Ícone de perfil com descrição alternativa para leitores de tela.
+
+2.3 Validações
+e
+
+Filtros aplicados com busca automática ou via botão (não visível na imagem,
+pode ser implícito).
+
+e
+
+Dados protegidos conforme LGPD: uso limitado à função administrativa do
+sistema.
+
+3. Comportamentos Esperados
+e
+
+Áo digitar nos campos de filtro, a tabela se atualiza com os resultados
+
+compatíveis.
+
+e
+
+O clique no ícone de “Perfil” redireciona o usuário à página de detalhes do
+cadastro selecionado.
+
+e
+
+A tecla “Anterior” retorna à tela anterior do sistema.
+
+4. API (Sugestão de Integração)
+
+4.1 Consulta de usuários GET /api/usuarios
+Informações Pessoais
+
+Corresponde à primeira etapa do formulário de cadastro de usuário da FAPITEC/SE,
+permitindo o preenchimento dos dados pessoais obrigatórios e complementares para a
+criação ou atualização de perfis na plataforma.
+
+1. Requisitos Funcionais
+1.1 Aba Ativa
+e
+
+Aba: Informações Pessoais
+
+e
+
+Abas subsequentes (inativas):
+o
+
+Acadêmico(s)/Profissionais
+
+-)
+o
+
+FAPITECISE
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+Documentação Digital
+
+1.2 Campos do Formulário
+
+Campo
+
+Con Donente
+
+Obrigatório|Observações
+
+Nome Completo
+
+Campo de texto
+
+Sim
+
+Texto livre
+
+Nome Social
+
+Campo de texto
+
+Não
+
+Opcional
+
+CPF
+
+Campo numérico |
+
+|Sim
+
+Máscara de CPF
+
+Gênero
+
+Menu suspenso
+
+Sim
+
+Masculino, Feminino, Outro
+
+Etnia
+
+Menu suspenso
+
+Sim
+
+oO classificação do
+
+Data de Nascimento |
+
+||Campo de data
+
+Sim
+
+Com ícone de calendário
+
+País (nascimento)
+
+Campo de texto
+
+Sim
+
+Ex: Brasil
+
+UF (nascimento)
+
+Menu suspenso
+
+Sim
+
+Todas as ufs brasileiras
+
+NA
+
+Campo de texto
+
+Sim
+
+Texto livre
+
+RG
+
+Campo de texto
+
+Sim
+
+Documento de identidade
+
+Órgão Emissor
+
+Campo de texto
+
+Sim
+
+Ex: SSP, DETRAN
+
+UF do Órgão Emissor |Menu suspenso
+
+Sim
+
+Todas as ufs brasileiras
+
+E-mail
+
+Campo de texto
+
+Sim
+
+Formato válido de e-mail
+
+Telefone Celular
+
+Campo de texto
+
+Sim
+
+Com DDD
+
+Endereço residencial
+
+|[Campo de texto
+
+Sim
+
+Texto livre
+
+-)
+
+FAPITECISE
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+Campo
+
+Cos vonente
+
+Obrigatório|Observações
+
+CEP
+
+Campo numérico |
+
+|Sim
+
+Máscara de CEP
+
+Bairro
+
+Campo de texto
+
+Sim
+
+Texto livre
+
+País
+
+Campo de texto
+
+Sim
+
+Ex: Brasil
+
+Município (residência) |[Campo de texto
+
+Sim
+
+Texto livre
+
+UF (residência)
+
+Sim
+
+Todas as ufs brasileiras
+
+Menu suspenso
+
+2. Requisitos não Funcionais
+2.1 Usabilidade
+
+e
+
+Campos obrigatórios indicados com asterisco vermelho (*).
+
+e
+
+Utilização de máscaras para CPF, CEP e telefone celular.
+
+e
+
+Botão “Voltar” posicionado no rodapé inferior direito para retorno à tela anterior.
+
+2.2 Responsividade
+
+e
+
+Layout adaptável a dispositivos móveis e telas de diferentes resoluções.
+
+e
+
+Organização em colunas para visualização clara e objetiva.
+
+2.3 Validação
+e
+
+Campos obrigatórios não podem ser deixados em branco.
+
+e
+
+Validação automática para formatos de CPF, e-mail, data e telefone.
+
+3. Comportamentos Esperados
+e
+
+Preenchimento sequencial dos campos.
+
+e
+
+Exibição de mensagens de erro ou aviso em campos inválidos ou não
+preenchidos.
+
+e
+
+O botão “Voltar” retorna à etapa anterior do fluxo de cadastro.
+
+FAPITECISE
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+Cadastro de usuário da FAPITEC/SE, destinada ao preenchimento das informações
+acadêmicas do usuário, incluindo titulação e formação em andamento.
+
+1. Requisitos Funcionais
+1.1 Aba Ativa
+
+e
+
+Aba: Acadêmico(s)/Profissionais
+
+e
+
+Abas subsequentes (inativas):
+o
+
+e
+
+Documentação Digital
+
+Abaanterior (inativa): Informações Pessoais
+
+1.2 Campos do Formulário
+Tipo
+
+Campo
+
+d
+
+(PD fe
+
+Componente
+
+Obrigatório|/Observações
+Opções: Doutor, Mestre, Pós-
+
+Maior titulação
+
+Botões de
+
+Sim
+
+seleção
+
+graduação/Hspecialização,
+Graduação/Bacharel, Ensino
+Médio/Técnico, Ensino Fundamental II
+
+Nome do Curso
+
+Campo
+
+.
+Titulação
+
+texto
+
+da Maior
+
+Instituição que
+
+P
+
+Campo
+
+Concedeu a
+
+to
+
+de
+
+de
+
+Sim
+
+Texto livre
+
+Sim
+
+Nome da instituição de ensino
+
+Sim
+
+Intervalo de 1 a 12
+
+Sim
+
+Ex: 2024
+
+Titulação
+
+A
+
+j
+
+-
+
+Mês de Titulação
+
+-
+
+Ano de Titulação
+
+[Campo
+V.
+
+numérico
+
+[Campo
+Vo
+
+numérico
+
+-)
+Tipo
+
+Campo
+N
+
+d
+
+(Po de
+
+Componente
+
+do
+
+C
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+Obrigatório|/Observações
+
+|-AMPO Ce
+
+d
+
+Ingo
+
+Texto livre
+
+Do Ca Matietia numérico
+|-AMPo
+Atual
+
+Não
+
+Ex: 2023
+
+ome CO MIO
+
+C
+
+FAPITECISE
+
+em Andamento |
+
+lltexto
+
+Ano
+
+|C
+
+da
+
+Matrícula
+
+C
+
+Período da
+
+amo
+
+,
+Matrícula Atual
+
+numérico ou
+
+Grande Área
+
+IC
+
+de
+
+tan e tea Ce
+
+Ex: 1o, 2o semestre
+
+ampo de
+
+Não
+
+Ex: Engenharias, Ciências Humanas, etc.
+
+ampo de
+
+d
+
+Não
+
+Ex: Engenharia Elétrica, Sociologia etc.
+
+d
+
+Não
+
+Local de realização do curso
+
+e
+Não
+
+.
+]
+j
+Seleção de unidades federativas
+
+Não
+
+Campo repetido (validar duplicidade no
+
+texto
+
+d
+
+Conhecimento
+
+texto
+
+Sub-área
+
+C
+
+d
+
+M area e
+
+conhecimento
+
+texto
+C
+
+Município (curso) oxto o te
+UF (curso)
+
+Menu
+suspenso
+
+Ano de Matrícula [Campo
+Atual
+
+-
+
+||Não
+
+numérico
+
+DU
+
+layout)
+
+2. Requisitos não Funcionais
+2.1 Usabilidade
+
+e
+
+Campos obrigatórios indicados com asterisco vermelho (*).
+
+e
+
+Uso deradio buttons para seleção da titulação.
+
+e
+
+Interface limpa, organizada em duas colunas principais.
+
+2.2 Responsividade
+
+e
+
+Layout adaptável a dispositivos móveis.
+
+FAPITECISE
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+e
+
+Organização intuitiva das seções em blocos.
+
+2.3 Validação
+e
+
+Campos obrigatórios não podem ser deixados em branco.
+
+e
+
+Mês e ano de titulação devem ser coerentes entre si.
+
+e
+
+Exibição de mensagens de erro em caso de preenchimento inválido.
+
+3. Comportamentos Esperados
+e
+
+Ao selecionar uma titulação, os campos de curso e instituição tornam-se
+obrigatórios.
+
+e
+
+O botão “Voltar” retorna à tela anterior “Informações Pessoais”.
+
+e
+
+O sistema deve armazenar os dados localmente antes de passar à próxima aba
+
+Cadastro de usuário da FAPITEC/SE, destinada à submissão e validação dos documentos
+comprobatórios necessários para a efetivação do cadastro.
+
+1. Requisitos Funcionais
+1.1 Aba Ativa
+
+e
+
+Aba: Documentação Digital
+
+e
+
+Abas anteriores (inativas):
+o
+
+Informações Pessoais
+
+o
+
+Acadêmico(s)/Profissionais
+
+1.2 Seção: Documentos Enviados
+
+Documento
+
+Componente
+
+|Status
+
+Ação
+
+RG e CPF
+
+Cartão de
+
+Aguardando
+
+Validar /
+
+Exibe data de envio
+
+documento
+
+análise
+
+Recusar
+
+e nome do usuário
+
+eu
+
+s
+
+,
+
+disponível
+
+Observações
+
+-)
+
+FAPITECISE
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLOGICA DO ESTADO DE SERGIPE
+
+ACã
+
+Documento
+
+Componente
+
+|Status
+
+Comprovante de
+
+Cartão de
+
+Validado em
+
+conclusão de curso
+
+||documento
+
+16/05/2024
+
+Comprovante de
+
+Cartão de
+
+Validado em
+
+residência
+
+documento
+
+16/05/2024
+
+A
+
+Soo ,
+
+Observações
+
+disponível
+Visualizar
+
+Exibe data e usuário
+
+responsável
+o
+
+Visualizar
+
+Exibe data e usuário
+
+1.3 Botões e Navegação
+Botão
+
+Ação
+
+Visualizar|Fxibe o documento anexado
+
+Validar
+
+||Aprova o documento enviado
+
+Recusar
+
+|Reprova o documento (com justificativa)
+
+Voltar
+
+Retorna para a aba anterior (Acadêmico/Profissionais)
+
+2. Requisitos não Funcionais
+2.1 Usabilidade
+
+e
+
+Cores de status:
+o
+
+Verde com ícone para documentos validados.
+
+o
+
+Cinza para status pendente.
+
+o
+
+Vermelho para opção de recusa.
+
+,
+
+responsável
+
+e
+
+Feedback visual imediato após a ação de validação ou recusa.
+
+e
+
+Nomes de usuários destacados em roxo para fácil identificação.
+
+2.2 Responsividade
+
+e
+
+Cartões se reorganizam verticalmente em dispositivos móveis.
+
+e
+
+Textos e botões adaptáveis à largura da tela.
+
+-)
+
+FAPITECISE
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+2.3 Validação
+e
+
+Botões de ação (Validar/Recusar) apenas disponíveis para documentos com status
+
+“Aguardando análise”.
+e
+
+Histórico de validação não editável após confirmação.
+
+3. Comportamentos Esperados
+
+e
+
+Após validação de um documento, o status deve ser alterado para “Validado” com
+data correspondente.
+
+e
+
+Após recusa, deve ser solicitado um motivo via pop-up/modal (não visível na
+imagem, mas recomendável).
+
+e
+
+Obotão “Voltar” retorna à etapa anterior do formulário.
+
+Fluxo de validação edital
+
+Esta tela é apresentada ao usuário ao acessar ou realizar o primeiro login na plataforma,
+sendo necessária a anuência do Termo de Uso para continuidade no sistema.
+
+1. Requisitos Funcionais
+1.1 Exibição do Documento
+
+Elemento
+Visualizador
+
+Descrição
+de
+
+oa ! tator de
+embutido
+
+PDF
+
+Apresenta o documento do Termo de Uso em formato PDF
+
+Controle de navegação do
+
+||Ferramentas de zoom, rotação, mudança de página e modo de
+
+PDF
+
+visualização
+
+Numeração de páginas
+
+Indicação da página atual e total (Ex: 1 de 3)
+
+-)
+Elemento
+
+Documento exibido
+
+FAPITECISE
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+Descrição
+
+Logotipo institucional no cabeçalho (FAPITEC/SE),
+conteúdo rolável
+
+1.2 Ação de Concordância
+Botão
+
+Função
+
+Cor / Estilo
+
+Concordo com Termo de
+
+Registra a aceitação formal do
+
+Botão verde com ícone
+
+Uso
+
+usuário
+
+/
+
+2. Requisitos não Funcionais
+2.1 Usabilidade
+
+e
+
+O botão de concordância só se torna clicável após o carregamento completo do
+documento.
+
+e
+
+Feedback visual imediato após clique, com transição automática para a próxima
+etapa do sistema.
+
+e
+
+Visualização centralizada do documento com barra de rolagem vertical.
+
+2.2 Responsividade
+
+e
+
+Adaptação completa da visualização do PDF para diferentes tamanhos de tela.
+
+e
+
+Comportamento responsivo do botão “Concordo com Termo de Uso” no rodapé
+da tela.
+
+3. Comportamentos Esperados
+
+e
+
+Ao clicar em “Concordo com Termo de Uso”, o sistema registra a data/hora da
+concordância e libera o acesso à próxima funcionalidade.
+
+e
+
+Caso o usuário não aceite o termo, a navegação é bloqueada, retornando à tela de
+login ou página inicial.
+
+-)
+
+FAPITECISE
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+Solicitação LGPD — Plataforma FAPITEC/SE
+
+Formulário digital destinado ao atendimento das demandas relacionadas à Lei Geral de
+Proteção
+
+de
+
+Dados
+
+Pessoais
+
+(LGPD),
+
+possibilitando
+
+ao
+
+titular
+
+do
+
+dado
+
+realizar
+
+requisições como confirmação de acesso, exclusão, portabilidade, atualização, entre
+outras.
+
+1. Requisitos Funcionais
+1.1 Identificação do Titular
+
+Campo
+
+Tipo
+
+||Obrigatoriedade||Máscara/Validação
+
+Nome
+
+Texto
+
+|Sim
+
+Endereço de e-mail)E-mail|Sim
+
+Livre
+Formato padrão de e-mail
+
+1.2 Motivo do Contato
+Tipo de Componente Opções disponíveis
+
+Radio button
+
+Saber mais sobre o tratamento dos meus dados
+Solicitar exclusão dos meus dados
+Revogar o consentimento de tratamento de dados
+Atualizar os meus dados
+Portabilidade dos meus dados
+
+Revisão de decisões automatizadas
+
+1.3 Dados Sensíveis
+Campo
+
+Tipo
+
+Obrigatoriedade
+
+-)
+
+FAPITECISE
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+Campo
+
+Tipo
+
+Obrigatoriedade
+
+A sua so ici
+licitaçã
+l
+ação envolve
+
+Radio button
+
+Sim
+
+dados sensíveis?
+
+Tooltip explicativo
+
+ooitip
+
+X
+
+AP
+
+Ícone informativo com definição de dado
+
+”
+
+sensível conforme LGPD
+
+1.4 Descrição da Solicitação
+
+Campo
+
+Tipo
+
+Obrigatoriedade
+
+Descrição da solicitação ||Área de texto|Sim
+
+1.5 Upload de Documentos
+Seção
+
+Conteúdo
+
+Alerta em
+
+“Não importar documentos como RG, CPF, CNH ou quaisquer outras
+
+destaque
+
+informações pessoais...”
+
+Documentos
+
+aceitos
+
+Botão de upload
+
+1) Procuração, 2) Ordem Judicial, 3) Comprovante de filiação
+
+|Botão azul com ícone “+” e texto: Anexar Arquivos
+
+2. Requisitos não Funcionais
+2.1 Usabilidade
+
+e
+
+Campos com foco automático ao navegar.
+
+e
+
+Botão de anexar arquivos com feedback visual.
+
+e
+
+Tooltip com definição técnica ao lado da pergunta de dados sensíveis.
+
+2.2 Acessibilidade
+e
+
+Alto contraste entre textos e fundo.
+
+-)
+
+FAPITECISE
+
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+e
+
+Textos explicativos claros.
+
+e
+
+Compatível com leitores de tela.
+
+3. Comportamentos Esperados
+e
+
+Envio da solicitação apenas com todos os campos obrigatórios preenchidos.
+
+e
+
+Validação de e-mail e seleção de ao menos um motivo.
+
+e
+
+Upload limitado aos arquivos indicados no aviso.
+e
+
+Armazenamento seguro das informações conforme exigências da LGPD.
+
+Módulo financeiro
+
+1. REQUISITOS FUNCIONAIS
+
+1.1 Gestão de Contas Bancárias Institucionais
+1.1.1 Cadastro de Contas Bancárias
+O sistema deve permitir o cadastro e gerenciamento de contas bancárias vinculadas à
+FAPITEC, incluindo:
+
+Campos obrigatórios:
+e
+
+Banco (código + nome)
+
+e
+
+Agência
+
+e
+
+Conta corrente
+
+e
+
+Tipo de conta (corrente, poupança, conta vinculada a convênio)
+
+e
+
+Fonte de recurso (ex: Tesouro Estadual, Convênio Federal, Emenda, etc.)
+
+e
+
+Identificação do convênio (quando aplicável)
+
+e
+
+Saldo inicial
+
+e
+
+Data de abertura
+
+e
+
+Status (Ativa / Inativa / Bloqueada)
+
+1.1.2 Controle por Fonte de Recurso
+
+-)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+Cada conta deve estar vinculada a uma fonte orçamentária específica
+Não deve permitir movimentações cruzadas entre fontes incompatíveis
+Deve permitir segregação por:
+o
+
+Projeto
+
+o
+
+Edital
+
+o
+
+Convênio
+
+1.2 Controle de Receitas (Entradas Financeiras)
+1.2.1 Tipos de Receitas
+
+O sistema deve permitir registro das seguintes receitas:
+Transferências governamentais
+
+Repasse de convênios
+Devoluções de projetos
+Rendimentos financeiros
+
+Outras receitas institucionais
+1.2.2 Cadastro de Receita
+Campos obrigatórios:
+Tipo da receita
+
+Fonte do recurso
+Conta bancária de destino
+Valor
+
+Data de recebimento
+Documento comprobatório (PDF/XML)
+Identificação do projeto (opcional)
+Histórico detalhado
+1.2.3 Conciliação Bancária de Receitas
+Permitir vinculação com extrato bancário
+
+=)
+e
+
+Identificar divergências
+
+e
+
+Marcar como:
+O
+
+Conciliado
+
+O
+
+Pendente
+
+O
+
+Divergente
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+1.3 Gestão de Despesas (Pagamentos)
+1.3.1 Cadastro de Despesa
+Campos obrigatórios:
+e
+
+Tipo de despesa:
+O
+
+Custeio
+
+O
+
+Capital
+
+O
+
+Bolsa
+
+O
+
+Serviço de terceiros
+
+e
+
+Favorecido (CPF/CNPJ)
+
+e
+
+Projeto/Edital vinculado
+
+e
+
+Fonte de recurso
+
+e
+
+Conta bancária
+
+e
+
+Valor bruto
+
+e
+
+Tributos incidentes
+
+e
+
+Valor líquido
+
+e
+
+Data prevista de pagamento
+
+e
+
+Documento fiscal (NF-e, recibo, contrato)
+
+1.4 Fluxo de Pagamento (Ciclo Completo)
+1.4.1 Etapas do Processo
+
+Cada despesa deve seguir obrigatoriamente o fluxo:
+
+-)
+1.
+
+Cadastro
+
+2.
+
+Validação documental
+
+3.
+
+Análise financeira
+
+4.
+
+Autorização
+
+5.
+
+Execução do pagamento
+
+6.
+
+Baixa financeira
+
+7.
+
+Conciliação bancária
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+1.4.2 Regras de Aprovação
+e
+
+e
+
+Definir níveis de aprovação:
+
+o
+
+Técnico
+
+o
+
+Financeiro
+
+o
+
+Diretoria
+
+Pagamentos acima de determinado valor exigem múltiplas aprovações
+
+1.5 Execução de Pagamentos
+1.5.1 Formas de Pagamento
+e
+
+TED
+
+e
+
+PIX
+
+e
+
+Ordem bancária
+
+e
+
+Transferência interna
+
+e
+
+Pagamento manual
+
+1.5.2 Integração Bancária
+e
+
+Possibilidade de geração de arquivo CNAB
+
+e
+
+Integração com apis bancárias (quando disponível)
+
+e
+
+Registro de comprovantes automáticos
+
+1.6 Controle Orçamentário por Projeto/Edital
+
+r At FAPITECISE
+
++) TESROLÊGICA DO ESTADO DE Senai” = v NÃO
+1.6.1 Planejamento Orçamentário
+e
+
+Definição de orçamento inicial por projeto
+
+e
+
+Classificação por:
+o
+
+Categoria econômica
+
+o
+
+Natureza da despesa
+
+o
+
+Elemento de despesa
+
+1.6.2 Execução Orçamentária
+e
+
+e
+
+Controle de:
+o
+
+Empenhado
+
+o
+
+Liquidado
+
+o
+
+Pago
+
+Bloqueio automático ao ultrapassar orçamento
+
+1.7 Gestão Fiscal e Tributária
+1.7.1 Retenções Automáticas
+O sistema deve calcular automaticamente:
+e
+
+INSS
+
+e
+
+ISS
+
+e
+
+IRRF
+
+e
+
+PIS/COFINS/CSLL (quando aplicável)
+
+1.7.2 Emissão de Relatórios Fiscais
+e
+
+Relatório de retenções
+
+e
+
+Declarações acessórias
+
+e
+
+Exportação para contabilidade
+
+1.8 Prestação de Contas
+1.8.1 Consolidação Financeira
+
+é At FAPITECISE
+
++) EONOLSCIDA DO ESTADO DE cemaee o
+e
+
+Agrupamento por projeto/editais
+
+e
+
+Totalizadores:
+
+o
+
+Receitas
+
+o
+
+Despesas
+
+o
+
+Saldo
+
+1.8.2 Anexação de Documentos
+e
+
+Notas fiscais
+
+e
+
+Comprovantes de pagamento
+
+e
+
+Contratos
+
+1.8.3 Relatórios
+e
+
+Relatório financeiro detalhado
+
+e
+
+Relatório sintético
+
+Relatório para órgãos de controle
+
+2. REGRAS DE NEGÓCIO (NÍVEL AVANÇADO)
+
+2.1 Segregação de Recursos Públicos
+e
+
+Não é permitido misturar recursos de diferentes fontes
+Cada transação deve estar vinculada a:
+o
+
+Fonte
+
+o
+
+Projeto
+
+o
+
+Conta bancária
+
+2.2 Rastreabilidade Total (Auditoria)
+e
+
+Toda operação deve gerar log contendo:
+o
+
+Usuário
+
+o
+
+Data/hora
+
+-)
+e
+
+o
+
+IP
+
+o
+
+Ação realizada
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+Nenhum dado financeiro pode ser excluído (apenas cancelado com histórico)
+
+2.3 Integridade Orçamentária
+e
+
+e
+
+Não permitir pagamento sem:
+o
+
+Dotação orçamentária disponível
+
+o
+
+Empenho registrado
+
+O sistema deve validar:
+
+Saldo disponível >= valor despesa
+
+2.4 Regra de Competência vs Caixa
+e
+
+Permitir controle em dois regimes:
+
+o
+
+Competência (data da despesa)
+
+o
+
+Caixa (data do pagamento)
+
+2.5 Controle de Limites Legais
+e
+
+Bloqueio automático de despesas fora do objeto do edital
+
+e
+
+Validação contra plano de trabalho aprovado
+
+2.6 Conciliação Bancária Obrigatória
+e
+
+Nenhuma despesa pode ser considerada finalizada sem conciliação
+
+e
+
+Divergências devem gerar pendências obrigatórias
+
+2.7 Controle de Documentação Fiscal
+e
+
+Toda despesa deve possuir documento válido
+
+e
+
+Validação de:
+
+6 FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+A
+
+o
+
+CNPJ emissor
+
+o
+
+Data
+
+o
+
+Valor
+
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+Possibilidade de integração futura com SEFAZ
+
+2.8 Regra de Prestação de Contas
+Só permite encerramento de projeto se:
+o
+
+100% das despesas conciliadas
+
+o
+
+Documentação anexada
+
+o
+
+Relatório aprovado
+
+3. REQUISITOS NÃO FUNCIONAIS
+
+3.1 Segurança
+Criptografia de dados sensíveis
+Controle de acesso por perfil (RBAC)
+Autenticação forte (2FA opcional)
+Conformidade com LGPD
+
+3.2 Performance
+
+Processamento de transações em < 2 segundos
+
+Suporte a múltiplos usuários simultâneos (> 1000)
+
+3.3 Disponibilidade
+SLA mínimo de 99,5%
+Backup automático diário
+Recuperação de desastre
+
+-)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+3.4 Escalabilidade
+e
+
+Arquitetura preparada para crescimento:
+o
+
+Microserviços
+
+o
+
+Banco relacional + armazenamento de documentos
+
+Módulo de folha de pagamento
+
+1. REQUISITOS FUNCIONAIS
+
+1.1 Cadastro de Vínculos de Pagamento
+1.1.1 Tipos de Vínculo
+
+O sistema deve permitir cadastro de diferentes tipos de beneficiários:
+e
+
+Bolsistas (pesquisa, extensão, inovação)
+
+e
+
+Prestadores de serviço (PF/PJ)
+
+e
+
+Servidores vinculados a projetos
+
+e
+
+Consultores
+
+e
+
+Avaliadores
+
+1.1.2 Dados do Beneficiário
+Campos obrigatórios:
+e
+
+Nome completo
+
+e
+
+CPF
+
+e
+
+Tipo de vínculo
+
+e
+
+Dados bancários:
+o
+
+Banco
+
+-)
+o
+
+Agência
+
+o
+
+Conta
+
+o
+
+Tipo de conta
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+Endereço completo
+E-mail
+Telefone
+
+1.1.3 Vinculação ao Projeto/Edital
+e
+
+Todo beneficiário deve estar vinculado a:
+o
+
+Projeto
+
+o
+
+Edital
+
+o
+
+Fonte de recurso
+
+Deve permitir múltiplos vínculos simultâneos (desde que permitido pelas regras)
+
+1.2 Estrutura de Rubricas (Eventos da Folha)
+1.2.1 Cadastro de Rubricas
+O sistema deve permitir cadastro parametrizado de eventos da folha:
+Tipos:
+e
+
+Proventos
+
+e
+
+Descontos
+
+e
+
+Informativos
+
+Campos:
+e
+
+Código da rubrica
+
+e
+
+Descrição
+
+e
+
+Tipo (Provento/Desconto)
+
+e
+
+Incidência:
+
+o
+
+INSS
+
+16 FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLOGICA DO ESTADO DE SERGIPE
+
+o
+
+IRRF
+
+o
+
+FGTS (se aplicável)
+
+Natureza (tributável / indenizatória)
+Fórmula de cálculo (configurável)
+
+1.3 Cálculo da Folha de Pagamento
+1.3.1 Geração da Folha
+O sistema deve permitir gerar a folha por:
+o
+
+Competência (mês/ano)
+
+o
+
+Projeto
+
+o
+
+Edital
+
+o
+
+Tipo de vínculo
+
+1.3.2 Composição do Cálculo
+Cada registro da folha deve conter:
+Valor base (bolsa, salário ou contrato)
+Proventos adicionais
+Descontos obrigatórios
+Descontos facultativos
+Encargos
+
+1.3.3 Cálculo Automático
+O sistema deve calcular automaticamente:
+INSS (quando aplicável)
+IRRF (baseado em tabela vigente)
+
+Outros encargos legais
+
+16 FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLOGICA DO ESTADO DE SERGIPE
+
+1.4 Gestão de Bolsas
+1.4.1 Tipos de Bolsa
+e
+
+Bolsa de iniciação científica
+
+e
+
+Bolsa de pesquisa
+
+e
+
+Bolsa de apoio técnico
+
+e
+
+Bolsa de inovação
+
+1.4.2 Regras de Bolsa
+
+e
+
+Bolsas não possuem vínculo empregatício
+
+e
+
+Não devem gerar encargos trabalhistas
+
+e
+
+Podem ter:
+
+o
+
+Valor fixo
+
+o
+
+Vigência definida
+
+o
+
+Suspensão ou cancelamento
+
+1.5 Controle de Frequência e Elegibilidade
+1.5.1 Validação de Pagamento
+e
+
+O pagamento só deve ocorrer se:
+o
+
+Relatório técnico aprovado
+
+o
+
+Situação do projeto ativa
+
+o
+
+Beneficiário ativo
+
+1.5.2 Suspensão de Pagamento
+e
+
+O sistema deve permitir:
+o
+
+Suspensão automática
+
+o
+
+Suspensão manual
+
+o
+
+Bloqueio por pendência
+
+=)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+1.6 Processamento de Pagamentos
+1.6.1 Geração de Pagamentos
+e
+
+Integrado ao módulo financeiro
+
+e
+
+Geração de:
+o
+
+Ordem de pagamento
+
+o
+
+Arquivo bancário (CNAB)
+
+o
+
+PIX
+
+1.6.2 Lote de Pagamento
+e
+
+Pagamentos devem ser agrupados por:
+o
+
+Conta bancária
+
+o
+
+Fonte de recurso
+
+o
+
+Projeto
+
+1.7 Contracheque / Demonstrativo
+1.7.1 Emissão
+e
+
+Disponibilizar contracheque contendo:
+o
+
+Proventos
+
+o
+
+Descontos
+
+o
+
+Valor líquido
+
+o
+
+Identificação do projeto
+
+1.7.2 Acesso
+e
+
+Disponível no portal do usuário
+
+e
+
+Histórico por competência
+
+=)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+1.8 Encargos e Obrigações Fiscais
+1.8.1 Apuração
+
+e
+
+Apuração automática de encargos:
+o
+
+INSS
+
+o
+
+IRRF
+
+o
+
+ISS (quando aplicável)
+
+1.8.2 Relatórios
+e
+
+Relatório de encargos por competência
+
+e
+
+Relatório por projeto/editais
+
+1.9 Prestação de Contas
+1.9.1 Consolidação
+e
+
+Totalização de:
+
+o
+
+Valores pagos
+
+o
+
+Encargos
+
+o
+
+Beneficiários
+
+1.9.2 Exportação
+e
+
+Exportação para:
+
+o
+
+PDF
+
+o
+
+Excel
+
+o
+
+Integração contábil
+
+2. REGRAS DE NEGÓCIO
+
+2.1 Segregação por Fonte de Recurso
+
+16 FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLOGICA DO ESTADO DE SERGIPE
+
+e
+
+e
+
+Cada folha deve respeitar:
+o
+
+Fonte orçamentária
+
+o
+
+Conta bancária
+
+Não pode haver mistura de fontes
+
+2.2 Regra de Bolsistas
+e
+
+Bolsistas:
+
+o
+
+Não possuem vínculo CLT
+
+o
+
+Não geram INSS/FGTS (salvo exceções legais)
+
+o
+
+Devem estar vinculados a edital ativo
+
+2.3 Controle de Competência
+e
+
+À folha deve ser processada por competência
+
+e
+
+Não permitir:
+o
+
+Duplicidade de pagamento na mesma competência
+
+2.4 Validação de Elegibilidade
+O sistema deve validar antes do pagamento:
+e
+
+Projeto ativo
+
+e
+
+Relatórios aprovados
+
+e
+
+Beneficiário regular
+
+2.5 Rastreabilidade e Auditoria
+e
+
+Toda alteração deve gerar log:
+o
+
+Usuário
+
+o
+
+Data/hora
+
+o
+
+Alteração realizada
+
+-)
+e
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+Não permitir exclusão de registros financeiros
+
+2.6 Cálculo Tributário Dinâmico
+e
+
+Tabelas de INSS e IRRF devem ser configuráveis
+
+e
+
+Permitir atualização sem alteração de código
+
+2.7 Bloqueio por Pendências
+e
+
+Pagamento deve ser bloqueado automaticamente se:
+o
+
+Documentação pendente
+
+o
+
+Relatório reprovado
+
+o
+
+Projeto suspenso
+
+2.8 Integração com Financeiro
+e
+
+Nenhum pagamento deve ser executado sem:
+o
+
+Registro financeiro
+
+o
+
+Dotação disponível
+
+2.9 Controle de Vigência
+e
+
+Pagamentos devem respeitar:
+o
+
+Data de início
+
+o
+
+Data de término do vínculo
+
+3. REQUISITOS NÃO FUNCIONAIS
+
+3.1 Segurança
+e
+
+Criptografia de dados pessoais
+
+e
+
+Controle de acesso por perfil
+
+16 FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLOGICA DO ESTADO DE SERGIPE
+
+e
+
+Conformidade com LGPD
+
+3.2 Performance
+
+e
+
+Processamento de folha em lote (> 1000 registros)
+
+e
+
+Tempo de processamento < 5 segundos
+
+3.3 Disponibilidade
+e
+
+Sistema disponível 24/7
+
+e
+
+Backup automático
+
+3.4 Escalabilidade
+Suporte a múltiplos projetos simultâneos
+Estrutura preparada para crescimento institucional
+
+Módulo fiscal
+
+fra
+
+1. REQUISITOS FUNCIONAIS
+
+..À Validação Fiscal
+
+e
+
+Verificação de integridade do documento (XML)
+
+e
+
+Validação de CNPJ junto à Receita
+
+e
+
+Verificação de duplicidade
+
+e
+
+Validação de consistência entre valores
+
+2. REQUISITOS NÃO FUNCIONAIS
+
+-)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+2.1 Segurança
+
+e
+
+Proteção de dados fiscais sensíveis
+
+e
+
+Controle de acesso por perfil
+
+e
+
+Conformidade com LGPD
+
+Módulo de mensageria
+(Integração whatsapp + Chat Web + Automação Inteligente)
+
+1. REQUISITOS FUNCIONAIS
+
+1.1 Integração com whatsapp (Meta API)
+1.1.1 Conexão com API Oficial
+O sistema deve integrar com a API oficial do whatsapp Business (Meta), permitindo:
+e
+
+Envio e recebimento de mensagens
+
+Suporte a múltiplos números (caso necessário)
+Gestão de sessões de conversa
+
+1.1.2 Tipos de Mensagens Suportadas
+e
+
+Texto
+
+e
+
+Imagem
+
+e
+
+Documento (PDF, DOC, etc.)
+
+e
+
+Áudio
+
+e
+
+Botões interativos
+
+e
+
+Listas interativas
+
+1.1.3 Templates Oficiais (HSM)
+
+-)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+e
+
+Cadastro de templates aprovados pelo Meta
+
+e
+
+Uso para:
+
+o
+
+Notificações de edital
+
+o
+
+Status de projeto
+
+o
+
+Alertas de prazos
+
+o
+
+Recuperação de senha
+
+1.2 Chat Online no Site da FAPITEC
+1.2.1] Widget de Atendimento
+e
+
+Chat flutuante no site institucional
+
+e
+
+Identificação do usuário:
+o
+
+Nome
+
+o
+
+E-mail
+
+o
+
+CPF (opcional)
+
+1.2.2 Integração com Sistema
+
+e
+
+Se usuário autenticado:
+o
+
+e
+
+Vincular chat ao perfil
+
+Se visitante:
+o
+
+Criar sessão temporária
+
+1.3 Central de Atendimento (Inbox Unificado)
+1.3.1 Painel de Conversas
+
+e
+
+e
+
+Visualização de todas as conversas:
+o
+
+Whatsapp
+
+o
+
+Chat do site
+
+Filtros:
+
+-)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+o
+
+Status (aberto, pendente, encerrado)
+
+o
+
+Canal
+
+o
+
+Usuário
+
+o
+
+Projeto/Edital
+
+1.3.2 Distribuição de Atendimento
+e
+
+Atribuição manual ou automática de atendentes
+
+e
+
+Filas de atendimento por:
+
+o
+
+Tipo de demanda
+
+o
+
+Área (financeiro, edital, suporte técnico)
+
+1.4 Chatbot Inteligente (IA)
+1.4.1 Atendimento Automatizado
+
+O sistema deve permitir chatbot com capacidade de:
+e
+
+Responder perguntas frequentes
+
+e
+
+Orientar usuários
+
+e
+
+Navegar em fluxos de atendimento
+
+1.4.2 Integração com Dados do Sistema
+
+O chatbot deve consultar:
+e
+
+Status de projetos
+
+e
+
+Situação de inscrição em editais
+
+e
+
+Pendências (relatórios, documentos)
+
+e
+
+Dados do usuário autenticado
+
+1.4.3 Fluxos Conversacionais
+e
+
+Criação de fluxos com:
+
+=)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+O
+
+Perguntas e respostas
+
+o
+
+Condições lógicas
+
+o
+
+Encaminhamento para humano
+
+1.5 Disparo de Mensagens Automáticas
+1.5.1 Eventos do Sistema
+O sistema deve disparar mensagens automaticamente em eventos como:
+e
+
+Inscrição em edital
+
+e
+
+Aprovação/reprovação de projeto
+
+e
+
+Prazo de relatório próximo
+
+e
+
+Pendências financeiras
+
+e
+
+Pagamentos realizados
+
+1.5.2 Segmentação
+e
+
+Envio por:
+
+o
+
+Projeto
+
+o
+
+Edital
+
+o
+
+Perfil de usuário
+
+o
+
+Região
+
+1.6 Histórico e Registro de Conversas
+1.6.1 Armazenamento
+e
+
+Todas as conversas devem ser armazenadas
+
+e
+
+Vinculação com:
+
+o
+
+Usuário
+
+o
+
+Projeto
+
+o
+
+Edital
+
+-)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+1.6.2 Consulta
+e
+
+Busca por:
+o
+
+Palavra-chave
+
+o
+
+CPF
+
+o
+
+Número de telefone
+
+o
+
+ID do projeto
+
+1.7 Integração com Módulos Internos
+1.7.1 Integrações
+
+O módulo deve integrar com:
+e
+
+Cadastro de usuários
+
+e
+
+Editais
+
+e
+
+Projetos
+
+e
+
+Financeiro
+
+e
+
+Relatórios técnicos
+
+1.7.2 Ações Automatizadas
+Exemplo:
+
+e
+
+Usuário pergunta: “Meu pagamento saiu?”
+
+e
+
+Sistema responde consultando módulo financeiro
+
+1.8 Gestão de Atendentes
+1.8.1 Perfis
+e
+
+Administrador
+
+e
+
+Atendente
+
+e
+
+Supervisor
+
+-)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+1.8.2 Monitoramento
+e
+
+Tempo médio de resposta
+
+e
+
+Conversas por atendente
+
+e
+
+Taxa de resolução
+
+1.9 Notificações Internas
+e
+
+e
+
+Alertas para atendentes:
+o
+
+Nova mensagem
+
+o
+
+Mensagem não respondida
+
+Alertas para gestores:
+
+o
+
+SLA violado
+
+2. REGRAS DE NEGÓCIO
+
+2.1 Identificação do Usuário
+
+e
+
+Se número estiver vinculado:
+o
+
+e
+
+Identificar automaticamente o usuário
+
+Caso contrário:
+o
+
+Solicitar identificação
+
+2.2 Prioridade de Atendimento
+
+e
+
+Classificação automática:
+o
+
+Alta: problemas financeiros/pagamento
+
+o
+
+Média: dúvidas operacionais
+
+o
+
+Baixa: Informações gerais
+
+16 FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+A
+
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+2.3 SLA de Atendimento
+e
+
+Definir tempo máximo de resposta
+
+e
+
+Escalonamento automático se ultrapassar
+
+2.4 Transição Bot — Humano
+e
+
+e
+
+Deve ocorrer quando:
+
+o
+
+Bot não entende
+
+o
+
+Usuário solicita atendente
+
+Transferência com histórico completo
+
+2.5 Controle de Horário
+e
+
+Definir horário de atendimento humano
+
+e
+
+Fora do horário:
+o
+
+Atendimento automático
+
+2.6 Consentimento LGPD
+e
+
+Usuário deve aceitar:
+o
+
+e
+
+Uso de dados para comunicação
+
+Registro de consentimento
+
+2.7 Rastreabilidade
+e
+
+Todas as mensagens devem conter:
+o
+
+Data/hora
+
+o
+
+Canal
+
+o
+
+Origem (bot/humano)
+
+2.8 Limites da API do whatsapp
+
+16 FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLOGICA DO ESTADO DE SERGIPE
+
+e
+
+Respeitar:
+
+o
+
+Janela de 24h
+
+o
+
+Uso de templates fora da janela
+
+2.9 Segurança
+e
+
+Não exibir dados sensíveis sem autenticação
+Criptografia de mensagens sensíveis
+
+3. REQUISITOS NÃO FUNCIONAIS
+
+3.1 Performance
+Tempo de resposta do chatbot < 2 segundos
+
+Suporte a múltiplas conversas simultâneas
+
+3.2 Disponibilidade
+
+e
+
+Sistema disponível 24/7
+
+e
+
+Alta disponibilidade para atendimento
+
+3.3 Escalabilidade
+e
+
+Suporte a grande volume de mensagens
+
+e
+
+Arquitetura baseada em filas (ex: rabbitmg/Kafka)
+
+3.4 Segurança
+e
+
+Criptografia de dados
+
+e
+
+Controle de acesso por perfil
+
+e
+
+Conformidade com LGPD
+Módulo de chatbot inteligente
+
+-)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+(Integração com openai + Dados Internos + Automação de Processos)
+
+1. REQUISITOS FUNCIONAIS
+
+1.1 Integração com openai (IA Conversacional)
+1.1.1 Conexão com API de TA
+O sistema deve integrar com a API da openai para processamento de linguagem
+natural, permitindo:
+
+e
+
+Interpretação de perguntas em linguagem natural
+Geração de respostas contextualizadas
+Suporte multilíngue (português prioritário)
+
+1.1.2 Tipos de Interação
+
+Perguntas abertas (ex: “Qual o status do meu projeto?”)
+Comandos operacionais (ex: “Quero enviar meu relatório”)
+Navegação assistida (ex: “Como participar de um edital?”)
+
+1.2 Base de Conhecimento (Knowledge Base)
+1.2.1 Conteúdos Institucionais
+O chatbot deve ser treinado com:
+e
+
+Editais
+
+e
+
+Manuais do sistema
+
+e
+
+Fags
+
+e
+
+Normativas da FAPITEC
+
+e
+
+Regras de prestação de contas
+
+1.2.2 Atualização Dinâmica
+e
+
+Permitir atualização sem necessidade de reprogramação
+
+-)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+Indexação automática de novos documentos
+
+1.3 Integração com Dados do Sistema
+1.3.1 Consulta em Tempo Real
+O chatbot deve acessar:
+Dados de usuários
+Projetos
+Editais
+Relatórios técnicos
+
+Situação financeira
+
+1.3.2 Respostas Personalizadas
+Exemplo:
+
+Usuário: “Meu projeto foi aprovado? ”
+Resposta baseada em dados reais do sistema.
+
+1.4 Execução de Ações via Chat
+1.4.1 Ações Disponíveis
+
+O chatbot deve permitir executar ações como:
+Consultar status de projeto
+Verificar pendências
+
+Gerar relatórios
+Iniciar submissões
+
+Atualizar dados cadastrais (com validação)
+
+1.4.2 Confirmação de Segurança
+
+Ações sensíveis devem exigir confirmação:
+o
+
+Token
+
+-)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+o
+
+Login ativo
+
+o
+
+Verificação adicional
+
+1.5 Fluxos Inteligentes (Conversação Guiada)
+1.5.1 Fluxos Pré-definidos
+e
+
+Inscrição em edital
+
+e
+
+Prestação de contas
+
+e
+
+Suporte técnico
+
+e
+
+Dúvidas financeiras
+
+1.5.2 Decisão Dinâmica
+e
+
+O chatbot deve:
+o
+
+Interpretar intenção (NLP)
+
+o
+
+Escolher fluxo automaticamente
+
+o
+
+Adaptar respostas
+
+1.6 Aprendizado e Melhoria Contínua
+
+1.6.1 Feedback do Usuário
+
+e
+
+Avaliação da resposta ( E / 3)
+
+e
+
+Registro de falhas
+
+1.6.2 Treinamento Contínuo
+e
+
+Ajuste de respostas com base em interações
+
+e
+
+Curadoria por equipe administrativa
+
+1.7 Integração com Mensageria
+1.7.1 Canais
+
+-)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+O chatbot deve funcionar em:
+e
+
+Whatsapp (Meta)
+
+e
+
+Chat do site
+
+e
+
+Painel interno
+
+1.7.2 Continuidade de Conversa
+e
+
+Manter contexto entre mensagens
+
+e
+
+Histórico persistente
+
+1.8 Transferência para Atendimento Humano
+
+1.8.1 Escalonamento
+e
+
+e
+
+Quando:
+o
+
+TJÃ não entender
+
+o
+
+Usuário solicitar
+
+Transferir para atendente
+
+1.8.2 Contexto Completo
+e
+
+Histórico enviado ao atendente
+
+e
+
+Identificação do usuário
+
+1.9 Logs e Auditoria
+1.9.1 Registro de Interações
+e
+
+Pergunta
+
+e
+
+Resposta
+
+e
+
+Tempo de resposta
+
+e
+
+Fonte da resposta (IA ou sistema)
+
+-)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+1.9.2 Auditoria
+e
+
+Rastreabilidade completa
+
+e
+
+Exportação para análise
+
+2. REGRAS DE NEGÓCIO (NÍVEL AVANÇADO)
+
+2.1 Controle de Acesso a Dados
+
+e
+
+Dados sensíveis só podem ser exibidos se:
+o
+
+Usuário autenticado
+
+o
+
+Permissão validada
+
+2.2 Priorização de Respostas
+
+Ordem de prioridade:
+1.
+
+Dados do sistema (tempo real)
+
+2.
+
+Base Institucional
+
+3.
+
+TA generativa
+
+2.3 Limitação de Ações Automatizadas
+
+e
+
+Ações críticas devem exigir validação:
+o
+
+Ex: alteração de dados financeiros
+
+2.4 Contexto Conversacional
+e
+
+O chatbot deve manter contexto:
+
+o
+
+Últimas interações
+
+o
+
+Dados do usuário
+
+o
+
+Fluxo atual
+
+-)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+2.5 Tratamento de Erros
+Caso não entenda:
+o
+
+Solicitar reformulação
+
+o
+
+Oferecer opções
+
+o
+
+Encaminhar para humano
+
+2.6 Segurança e LGPD
+Não expor:
+
+o
+
+Dados financeiros sensíveis
+
+o
+
+Documentos pessoais
+
+Sem autenticação válida
+
+2.7 Versionamento de Respostas
+Respostas institucionais devem ser versionadas
+Garantir consistência jurídica
+
+2.8 Limite de Uso
+Controle de:
+
+o
+
+Número de requisições
+
+o
+
+Custos de API (openai)
+
+2.9 Independência de Canal
+O comportamento do chatbot deve ser consistente:
+o
+
+Whatsapp
+
+o
+
+Site
+
+o
+
+Sistema interno
+
+-)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+3. REQUISITOS NÃO FUNCIONAIS
+
+3.1 Performance
+e
+
+Tempo de resposta < 2 segundos (consultas simples)
+
+e
+
+<5 segundos (consultas complexas com IA)
+
+3.2 Disponibilidade
+e
+
+Funcionamento 24/7
+
+e
+
+Alta disponibilidade
+
+3.3 Escalabilidade
+e
+
+Suporte a milhares de usuários simultâneos
+
+e
+
+Uso de filas e cache
+
+3.4 Segurança
+e
+
+Criptografia de dados
+
+e
+
+Tokens de autenticação
+
+e
+
+Controle de sessão
+
+3.5 Monitoramento
+e
+
+Logs de uso
+
+e
+
+Métricas:
+
+o
+
+Taxa de acerto
+
+o
+
+Tempo de resposta
+
+o
+
+Interações por usuário
+
+Módulo de relatórios e bi — fapitec/se
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+(Relatórios Operacionais + Analíticos + Plataforma de BI + Construtor de Relatórios
+Dinâmicos)
+
+1. REQUISITOS FUNCIONAIS
+
+1.1 Catálogo de Relatórios Institucionais
+O sistema deve disponibilizar um conjunto amplo de relatórios pré-configurados,
+organizados por módulos:
+
+1.1.1 Relatórios de Editais
+
+e
+
+Listagem de editais por período
+
+e
+
+Editais ativos, encerrados e em avaliação
+
+e
+
+Número de propostas por edital
+
+e
+
+Taxa de aprovação/reprovação
+
+e
+
+Distribuição por área de conhecimento
+
+e
+
+Distribuição geográfica (estado, município)
+
+e
+
+Ranking de editais por investimento
+
+1.1.2 Relatórios de Proponentes
+
+e
+
+Cadastro de usuários por perfil
+
+e
+
+Distribuição por titulação (Doutor, Mestre, etc.)
+
+e
+
+Participação por região
+
+e
+
+Histórico de participação em editais
+
+e
+
+Taxa de sucesso por proponente
+
+1.1.3 Relatórios de Projetos
+
+Projetos submetidos por período
+Projetos aprovados x reprovados
+
+=)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+Projetos em andamento
+Projetos finalizados
+
+Projetos com pendências
+Indicadores de desempenho por projeto
+
+1.1.4 Relatórios de Avaliação
+Avaliadores ativos
+
+Avaliações realizadas por avaliador
+Tempo médio de avaliação
+
+Notas atribuídas (média, desvio padrão)
+Ranking de avaliadores
+Análise de divergência entre avaliadores
+
+1.1.5 Relatórios Financeiros
+Execução orçamentária por projeto
+Receitas vs despesas
+Saldo por fonte de recurso
+Despesas por categoria (custeio, capital)
+Pagamentos realizados por período
+Despesas por fornecedor
+
+1.1.6 Relatórios Fiscais
+Tributos retidos por período
+Retenções por fornecedor
+Guias emitidas e pagas
+Pendências fiscais
+
+Relatórios para órgãos reguladores
+
+-)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+1.1.7 Relatórios de Folha de Pagamento
+Pagamentos por bolsista
+Total pago por projeto
+Encargos por período
+
+Histórico de pagamentos individuais
+
+1.1.8 Relatórios de Prestação de Contas
+Projetos com prestação aprovada
+Projetos com pendência
+Valores executados vs planejados
+Inconsistências detectadas
+
+1.1.9 Relatórios de LGPD
+Solicitações recebidas
+Tipos de solicitações
+
+Tempo de atendimento
+Status das solicitações
+
+1.1.10 Relatórios de Atendimento (Chatbot e Mensageria)
+Volume de atendimentos
+Tempo médio de resposta
+
+Taxa de resolução automática (IA)
+Atendimentos por canal (whatsapp, site)
+Principais dúvidas dos usuários
+
+1.2 Filtros e Parâmetros Avançados
+
+6
+
+FAPITECISE
+
++) TESROLÊGICA DO ESTADO DE Senai” = v NÃO
+Todos os relatórios devem permitir:
+e
+
+Filtro por período (data inicial/final)
+
+e
+
+Filtro por edital
+
+e
+
+Filtro por projeto
+
+e
+
+Filtro por usuário
+
+e
+
+Filtro por região
+
+e
+
+Filtro por fonte de recurso
+
+e
+
+Filtros combinados (multi-dimensional)
+
+1.3 Exportação de Relatórios
+e
+
+PDF (formato institucional)
+
+e
+
+Excel (dados tabulares)
+
+e
+
+CSV
+
+e
+
+JSON (para integração)
+
+1.4 Agendamento de Relatórios
+e
+
+e
+
+e
+
+Programação automática:
+
+o
+
+Diário
+
+o
+
+Semanal
+
+o
+
+Mensal
+
+Envio por:
+
+o
+
+E-mail
+
+o
+
+Download automático
+
+Configuração por usuário
+
+1.5 Construtor de Relatórios Dinâmicos (Self-Service BJ)
+1.5.1 Criação de Relatórios Personalizados
+
+-)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+A FAPITEC deve poder criar relatórios sem necessidade de programação:
+
+e
+
+Seleção de fontes de dados
+
+e
+
+Seleção de campos
+
+e
+
+Definição de filtros
+
+e
+
+Agrupamentos
+
+e
+
+Ordenações
+
+1.5.2 Tipos de Visualização
+e
+
+Tabela
+
+e
+
+Gráfico de barras
+
+e
+
+Gráfico de linhas
+
+e
+
+Gráfico de pizza
+
+e
+
+KPI (indicadores)
+
+e
+
+Mapas geográficos
+
+1.5.3 Salvamento de Relatórios
+e
+
+Relatórios personalizados devem poder ser:
+
+o
+
+Salvos
+
+o
+
+Editados
+
+o
+
+Compartilhados
+
+1.6 Dashboards (BJ)
+1.6.1 Painéis Gerenciais
+e
+
+Dashboard executivo
+
+e
+
+Dashboard financeiro
+
+e
+
+Dashboard de projetos
+
+e
+
+Dashboard de desempenho institucional
+
+=)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+1.6.2 Indicadores (kpis)
+e
+
+Taxa de aprovação de projetos
+
+e
+
+Tempo médio de avaliação
+
+e
+
+Execução orçamentária (%)
+
+e
+
+Número de projetos ativos
+
+e
+
+Volume de investimento por área
+
+1.6.3 Atualização em Tempo Real
+e
+
+Dados atualizados automaticamente
+
+e
+
+Refresh configurável
+
+1.7 Integração com Dados
+e
+
+e
+
+Integração com todos os módulos:
+o
+
+Financeiro
+
+o
+
+Fiscal
+
+o
+
+Projetos
+
+o
+
+Editais
+
+o
+
+Chatbot
+
+Possibilidade de integração externa (futuro)
+
+1.8 Auditoria e Rastreabilidade
+e
+
+e
+
+Registro de:
+
+o
+
+Relatórios gerados
+
+o
+
+Usuários que acessaram
+
+o
+
+Alterações realizadas
+
+Histórico completo
+
+-)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+2. REGRAS DE NEGÓCIO
+
+2.1 Controle de Acesso
+e
+
+Relatórios devem respeitar permissões:
+
+o
+
+Usuário comum
+
+o
+
+Gestor
+
+o
+
+Administrador
+
+2.2 Integridade dos Dados
+
+e
+
+Relatórios devem refletir dados oficiais do sistema
+
+e
+
+Não permitir alteração direta via BI
+
+2.3 Versionamento
+e
+
+Relatórios institucionais devem ser versionados
+
+e
+
+Garantir consistência histórica
+
+2.4 Consolidação de Dados
+
+e
+
+Dados devem ser consolidados por:
+o
+
+Projeto
+
+o
+
+Edital
+
+o
+
+Período
+
+o
+
+Fonte de recurso
+
+2.5 Performance
+e
+
+Consultas complexas devem ser otimizadas
+
+e
+
+Uso de cache e banco analítico
+
+-)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+2.6 Segurança
+e
+
+Dados sensíveis protegidos
+
+e
+
+Logs de acesso obrigatórios
+
+2.7 Padronização Institucional
+e
+
+Relatórios oficiais devem seguir:
+
+o
+
+Layout padrão FAPITEC
+
+o
+
+Identidade visual
+
+2.8 Exportação Oficial
+e
+
+Relatórios exportados devem ser válidos para:
+o
+
+Auditoria
+
+o
+
+Prestação de contas
+
+3. REQUISITOS NÃO FUNCIONAIS
+
+3.1 Performance
+
+e
+
+Geração de relatórios simples < 2 segundos
+
+e
+
+Relatórios complexos < 10 segundos
+
+3.2 Escalabilidade
+e
+
+Suporte a grande volume de dados históricos
+
+e
+
+Arquitetura preparada para BI
+
+3.3 Disponibilidade
+e
+
+Sistema disponível 24/7
+
+-)
+e
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+Alta disponibilidade
+
+3.4 Segurança
+Controle de acesso
+Criptografia de dados
+
+Conformidade com LGPD
+
+4. ARQUITETURA DE BI (ALTO NÍVEL)
+
+4.1 Camadas
+
+1.
+
+Banco transacional (sistema principal)
+
+2.
+
+Data Warehouse (dados consolidados)
+
+3.
+
+Camada analítica (BJ)
+
+4-
+
+Interface de visualização
+
+MÓDULO DE WORKFLOW E PROCESSOS — FAPITEC/SE
+(Orquestração de Fluxos, SLA, Tarefas e Automação Institucional)
+
+1. REQUISITOS FUNCIONAIS
+
+1.1 Motor de Workflow Configurável
+1.1.1 Modelagem de Fluxos
+
+O sistema deve permitir a criação e configuração de fluxos de processo de forma
+dinâmica, sem necessidade de programação:
+Definição de etapas (stages)
+
+Sequenciamento de etapas
+Fluxos lineares e condicionais
+
+Possibilidade de fluxos paralelos
+
+-)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+1.1.2 Elementos do Workflow
+
+Cada workflow deve conter:
+
+Nome do processo (ex: “Avaliação de Projeto”)
+Tipo (Edital, Financeiro, Fiscal, etc.)
+
+Etapas configuráveis
+Regras de transição
+Usuários/responsáveis por etapa
+
+1.1.3 Tipos de Etapas
+Aprovação
+Análise técnica
+
+Revisão
+Execução
+
+Validação documental
+Encerramento
+
+1.1.4 Regras de Transição
+
+Condições baseadas em:
+o
+
+Status
+
+o
+
+Dados do sistema
+
+o
+
+Perfis de usuário
+
+Exemplo:
+
+o
+
+Senota > corte — avançar
+
+o
+
+Se pendência — retornar etapa
+
+1.2 SLA por Etapa
+
+=)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+1.2.1 Definição de SLA
+
+Cada etapa deve possuir:
+o
+
+Tempo máximo de execução (horas/dias)
+
+o
+
+Data limite automática
+
+1.2.2 Tipos de SLA
+
+SLA padrão (fixo)
+SLA dinâmico (baseado em regras)
+SLA por tipo de processo
+
+1.2.3 Monitoramento de SLA
+Status por etapa:
+o
+
+Dentro do prazo
+
+o
+
+Próximo do vencimento
+
+o
+
+Atrasado
+
+1.3 Notificações Automáticas por Evento
+1.3.1 Eventos Monitorados
+O sistema deve disparar notificações em:
+Início de etapa
+
+Conclusão de etapa
+Mudança de status
+Aproximação de prazo
+
+Atraso de SLA
+
+1.3.2 Canais de Notificação
+E-mail
+
+-)
+Whatsapp (integração Meta)
+Notificação interna (sistema)
+
+1.3.3 Configuração
+Permitir configurar:
+
+o
+
+Quem recebe
+
+o
+
+Tipo de evento
+
+o
+
+Canal
+
+1.4 Escalonamento Automático
+1.4.1 Regras de Escalonamento
+
+Caso SLA seja violado:
+o
+
+Notificar superior
+
+o
+
+Reatribuir tarefa
+
+o
+
+Escalar para gestor
+
+1.4.2 Níveis de Escalonamento
+Nível 1: Responsável direto
+Nível 2: Supervisor
+Nível 3: Diretoria
+
+1.4.3 Ações Automáticas
+Mudança de prioridade
+Registro de ocorrência
+Geração de alerta institucional
+
+1.5 Gestão de Tarefas Internas
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+=)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+1.5.1 Criação de Tarefas
+Manual
+
+Automática (via workflow)
+
+1.5.2 Atributos da Tarefa
+Título
+Descrição
+
+Responsável
+Prazo
+
+Status:
+o
+
+Aberta
+
+o
+
+Em andamento
+
+o
+
+Concluída
+
+o
+
+Atrasada
+
+1.5.3 Acompanhamento
+Lista de tarefas por usuário
+Filtros:
+
+o
+
+Status
+
+o
+
+Prazo
+
+o
+
+Processo
+
+1.6 Painel de Processos (Monitoramento)
+1.6.1 Visão Geral
+Lista de todos os processos ativos
+Status por etapa
+Indicadores de SLA
+
+-)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+1.6.2 Indicadores
+Processos em andamento
+Processos atrasados
+Tempo médio por etapa
+
+Gargalos operacionais
+
+1.7 Histórico e Auditoria de Processos
+
+1.7.1 Registro Completo
+Cada processo deve registrar:
+Etapas percorridas
+Usuários envolvidos
+Datas e horários
+Decisões tomadas
+
+1.7.2 Visualização
+Linha do tempo (timeline)
+
+Logs detalhados
+
+1.8 Integração com Módulos do Sistema
+Editais (avaliação)
+Projetos (execução)
+Financeiro (pagamentos)
+Fiscal (validação)
+
+Chatbot (interações)
+
+2. REGRAS DE NEGÓCIO
+
+-)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+2.1 Execução Obrigatória de Fluxo
+
+Nenhum processo pode “pular etapas”
+Sequência deve ser respeitada
+
+2.2 Controle de Responsabilidade
+Cada etapa deve ter um responsável definido
+Não permitir etapa sem responsável
+
+2.3 SLA Obrigatório
+Toda etapa deve possuir SLA configurado
+Sistema deve monitorar automaticamente
+
+2.4 Escalonamento Automático
+
+Ao atingir SLA:
+o
+
+Acionar regras sem intervenção humana
+
+2.5 Rastreabilidade Total
+Todas as ações devem ser registradas
+Não permitir exclusão de histórico
+
+2.6 Regras Condicionais
+Fluxos devem se adaptar dinamicamente:
+
+o
+
+Ex: reprovação — fluxo alternativo
+
+2.1 Controle de Permissões
+Apenas usuários autorizados podem:
+
+-)
+o
+
+Executar etapas
+
+o
+
+Aprovar decisões
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+2.8 Integração com Dados
+Workflow deve reagir a:
+o
+
+Dados financeiros
+
+o
+
+Status de projeto
+
+o
+
+Documentos
+
+2.9 Paralelismo Controlado
+Permitir etapas simultâneas quando necessário
+Sincronização obrigatória antes de avançar
+
+3. REQUISITOS NÃO FUNCIONAIS
+
+3.1 Performance
+
+Processamento de eventos em tempo real (< 1s)
+Alta eficiência em múltiplos fluxos simultâneos
+
+3.2 Escalabilidade
+Suporte a milhares de processos simultâneos
+Arquitetura orientada a eventos
+
+3.3 Disponibilidade
+Operação contínua 24/7
+Tolerância a falhas
+
+-)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+3.4 Segurança
+Controle de acesso por perfil
+Logs auditáveis
+Conformidade com LGPD
+
+4. ARQUITETURA (ALTO NÍVEL)
+
+4.1 Componentes
+
+Motor de Workflow (engine)
+Serviço de eventos
+Fila de processamento (ex: rabbitmg)
+Banco de processos
+API de integração
+
+4.2 Modelo de Execução
+Event-driven (orientado a eventos)
+
+Processamento assíncrono
+Persistência de estado
+
+Módulo de integrações externas — fapitec/se
+(Bancos, Receita Federal, SEFAZ, Gov.br e Sistemas Contábeis)
+
+1. REQUISITOS FUNCIONAIS
+
+1.1 Integração com Instituições Bancárias
+1.1.1 Integração via API Bancária
+O sistema deve permitir integração direta com APIs de instituições financeiras,
+possibilitando:
+
+-)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+Consulta de saldo em tempo real
+Consulta de extrato bancário
+Realização de transferências (PIX, TED)
+Confirmação de pagamentos
+
+Recebimento de notificações (webhooks)
+
+1.1.2 Integração via CNAB
+O sistema deve suportar geração e leitura de arquivos CNAB:
+CNAB 240 e CNAB 400
+
+Geração de arquivos de remessa
+Leitura de arquivos de retorno
+Processamento automático de pagamentos
+
+1.1.3 Conciliação Bancária Automática
+Conciliação entre:
+o
+
+Movimentações do sistema
+
+o
+
+Extrato bancário
+
+Identificação de divergências
+Classificação automática (conciliado / pendente)
+
+1.2 Integração com Receita Federal (CNPJ/CPF)
+1.2.1 Consulta de Dados Cadastrais
+O sistema deve permitir:
+Consulta de CNPJ:
+o
+
+Situação cadastral
+
+o
+
+Razão social
+
+o
+
+CNAE
+
+16 FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLOGICA DO ESTADO DE SERGIPE
+
+e
+
+Consulta de CPF (quando permitido)
+
+1.2.2 Validação Automática
+
+e
+
+Validação no cadastro de:
+o
+
+Usuários
+
+o
+
+Empresas
+
+o
+
+Fornecedores
+
+1.2.3 Atualização de Dados
+
+e
+
+Atualização automática de dados cadastrais
+
+e
+
+Registro de alterações históricas
+
+1.3 Integração com SEFAZ (Notas Fiscais)
+1.3.1 Consulta de Notas Fiscais
+e
+
+Consulta de NF-e e NFS-e via chave de acesso
+
+e
+
+Download de XML
+
+e
+
+Armazenamento seguro
+
+1.3.2 Validação de Documentos
+e
+
+Validação de autenticidade
+
+e
+
+Verificação de status (autorizada, cancelada, etc.)
+
+e
+
+Conferência de valores
+
+1.3.3 Importação Automática
+e
+
+Importação de dados da nota fiscal para o sistema
+
+e
+
+Associação com despesas
+
+-)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+1.4 Integração com gov.br (Login Único)
+1.4.1 Autenticação via gov.br
+
+O sistema deve permitir login utilizando a conta gov.br:
+e
+
+Autenticação via O Auth2
+
+e
+
+Recuperação de dados básicos do usuário
+
+1.4.2 Níveis de Segurança
+e
+
+Integração com níveis:
+o
+
+Bronze
+
+o
+
+Prata
+
+o
+
+Ouro
+
+1.4.3 Vinculação de Conta
+e
+
+Associação entre conta gov.br e usuário do sistema
+
+e
+
+Evitar duplicidade de cadastro
+
+1.5 Integração com Sistemas Contábeis
+1.5.1 Exportação de Dados
+e
+
+Exportação para sistemas contábeis:
+
+o
+
+Lançamentos financeiros
+
+o
+
+Tributos
+
+o
+
+Pagamentos
+
+1.5.2 Padrões de Integração
+e
+
+Arquivos:
+
+o
+
+CSV
+
+o
+
+TXT estruturado
+
+-)
+o
+e
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+XML
+
+APIs (quando disponível)
+
+1.5.3 Integração com Contabilidade Pública
+e
+
+e
+
+Compatibilidade com:
+o
+
+PCASP
+
+o
+
+Plano de contas governamental
+
+Classificação contábil automática
+
+1.6 Gerenciamento de Integrações
+1.6.1 Painel de Integrações
+e
+
+Visualização de todas as Integrações ativas
+
+e
+
+Status:
+o
+
+Ativo
+
+o
+
+Inativo
+
+o
+
+Com erro
+
+1.6.2 Configuração
+e
+
+Parametrização de:
+o
+
+URLs
+
+o
+
+Tokens
+
+o
+
+Certificados digitais
+
+1.6.3 Logs de Integração
+e
+
+Registro de:
+
+o
+
+Requisições
+
+o
+
+Respostas
+
+-)
+o
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+Erros
+
+1.7 Processamento Assíncrono
+e
+
+Integrações devem operar via filas (queue)
+
+e
+
+Reprocessamento automático em caso de falha
+
+e
+
+Retry configurável
+
+2. REGRAS DE NEGÓCIO (NÍVEL AVANÇADO)
+
+2.1 Validação Obrigatória
+e
+
+Não permitir cadastro sem validação de:
+o
+
+CPF/CNPJ (quando aplicável)
+
+2.2 Confiabilidade de Dados
+
+e
+
+Dados externos devem ser:
+o
+
+Validados
+
+o
+
+Registrados
+
+o
+
+Versionados
+
+2.3 Tolerância a Falhas
+e
+
+Em caso de indisponibilidade externa:
+
+o
+
+Registrar erro
+
+o
+
+Permitir reprocessamento
+
+2.4 Segurança de Integração
+
+e
+
+Uso de:
+o
+
+Tokens
+
+=)
+o
+
+Certificados digitais
+
+o
+
+HTTPS obrigatório
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+2.5 Auditoria Completa
+e
+
+Todas integrações devem gerar logs:
+o
+
+Data/hora
+
+o
+
+Origem
+
+o
+
+Resultado
+
+2.6 Consistência de Dados
+e
+
+Dados importados devem ser reconciliados com sistema interno
+
+2.7 Controle de Taxa (Rate Limit)
+e
+
+Respeitar limites das APIs externas
+
+e
+
+Implementar controle de requisições
+
+2.8 Independência de Integração
+e
+
+Falha em integração não deve parar o sistema
+
+2.9 Atualização Automática
+e
+
+Dados críticos devem ser atualizados periodicamente
+
+3. REQUISITOS NÃO FUNCIONAIS
+
+3.1 Performance
+
+e
+
+Tempo de resposta de integrações síncronas < 3s
+
+e
+
+Processamento assíncrono eficiente
+
+-)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+3.2 Escalabilidade
+e
+
+Suporte a alto volume de requisições
+
+e
+
+Arquitetura baseada em filas
+
+3.3 Disponibilidade
+e
+
+Sistema resiliente a falhas externas
+
+e
+
+Monitoramento contínuo
+
+3.4 Segurança
+e
+
+Criptografia de dados
+
+e
+
+Controle de acesso
+
+e
+
+Conformidade com LGPD
+
+MÓDULO DE BI E DADOS — FAPITEC/SE
+(Data Warehouse + ETL + KPIs + Dashboards Executivos + Histórico Analítico)
+
+1. REQUISITOS FUNCIONAIS
+
+1.1 Data Warehouse Estruturado
+1.1.1 Repositório Analítico Central
+
+O sistema deve possuir um Data Warehouse (DW) dedicado, separado do banco
+transacional, com objetivo de:
+e
+
+Consolidação de dados históricos
+
+e
+
+Otimização de consultas analíticas
+
+e
+
+Suporte a relatórios complexos
+
+1.1.2 Modelagem de Dados
+
+-)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+O DW deve ser estruturado utilizando modelo dimensional:
+e
+
+e
+
+Tabelas fato:
+o
+
+Projetos
+
+o
+
+Pagamentos
+
+o
+
+Avaliações
+
+o
+
+Editais
+
+Tabelas dimensão:
+o
+
+Tempo
+
+o
+
+Usuários
+
+o
+
+Região
+
+o
+
+Área de conhecimento
+
+o
+
+Fonte de recurso
+
+1.1.3 Granularidade
+
+e
+
+Dados armazenados em nível detalhado (linha a linha)
+
+e
+
+Possibilidade de agregação por:
+
+o
+
+Dia
+
+o
+
+Mês
+
+o
+
+Ano
+
+o
+
+Projeto
+
+o
+
+Edital
+
+1.2 ETL (Processo de Carga de Dados)
+1.2.1 Extração
+
+e
+
+Coleta de dados de:
+o
+
+Banco transacional
+
+o
+
+Sistemas externos
+
+-)
+o
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+APIs integradas
+
+1.2.2 Transformação
+e
+
+Limpeza de dados
+
+e
+
+Padronização
+
+e
+
+Validação de consistência
+
+e
+
+Enriquecimento de dados
+
+1.2.3 Carga
+e
+
+Inserção no Data Warehouse
+
+e
+
+Atualização incremental
+
+e
+
+Controle de duplicidade
+
+1.2.4 Frequência
+
+e
+
+e
+
+Carga:
+o
+
+Diária
+
+o
+
+Horária (para dados críticos)
+
+Configurável por tipo de dado
+
+1.3 Indicadores Estratégicos (KPIs Institucionais)
+1.3.1 KPIs de Gestão
+
+e
+
+Número de editais lançados
+
+e
+
+Número de projetos aprovados
+
+e
+
+Taxa de aprovação (%)
+
+e
+
+Tempo médio de avaliação
+
+1.3.2 KPIs Financeiros
+
+=)
+e
+
+Execução orçamentária (%)
+
+e
+
+Valor investido por área
+
+e
+
+Custo médio por projeto
+
+e
+
+Desvio orçamentário
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+1.3.3 KPIs de Desempenho
+e
+
+Projetos concluídos com sucesso
+
+e
+
+Projetos com atraso
+
+e
+
+Índice de entrega de relatórios
+
+1.3.4 KPIs de Atendimento
+
+e
+
+Volume de atendimentos
+
+e
+
+Taxa de resolução via chatbot
+
+e
+
+Tempo médio de resposta
+
+1.4 Dashboards Executivos
+1.4.1 Painel Executivo (Alta Gestão)
+
+e
+
+Visão consolidada da FAPITEC
+
+e
+
+Indicadores estratégicos
+
+e
+
+Alertas críticos
+
+1.4.2 Painel Financeiro
+e
+
+Execução orçamentária
+
+e
+
+Fluxo de caixa
+
+e
+
+Distribuição de recursos
+
+1.4.3 Painel de Projetos
+
+-)
+e
+
+Status dos projetos
+
+e
+
+Evolução temporal
+
+e
+
+Distribuição geográfica
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+1.4.4 Painel Operacional
+
+e
+
+Processos em andamento
+
+e
+
+Gargalos
+
+e
+
+SLA
+
+1.4.5 Características
+e
+
+Interativos
+
+e
+
+Filtros dinâmicos
+
+e
+
+Drill-down (navegação detalhada)
+
+1.5 Histórico Analítico (Longitudinal)
+1.5.1 Armazenamento Histórico
+e
+
+Dados mantidos por múltiplos anos
+
+e
+
+Não sobrescrever histórico
+
+1.5.2 Análise Temporal
+e
+
+Comparação entre períodos
+
+e
+
+Evolução de indicadores
+
+e
+
+Tendências
+
+1.5.3 Séries Históricas
+e
+
+Gráficos de longo prazo
+
+e
+
+Identificação de padrões
+
+-)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+1.6 Camada de Consulta Analítica
+1.6.1 Query Engine
+e
+
+Interface para execução de consultas analíticas
+
+e
+
+Suporte a consultas complexas
+
+1.6.2 Self-Service BI
+e
+
+Usuários autorizados podem:
+o
+
+Criar consultas
+
+o
+
+Gerar relatórios
+
+o
+
+Criar dashboards
+
+1.7 Governança de Dados
+1.7.1 Qualidade de Dados
+e
+
+Regras de validação
+
+e
+
+Monitoramento de inconsistências
+
+1.7.2 Catálogo de Dados
+e
+
+Definição de:
+
+o
+
+Campos
+
+o
+
+Indicadores
+
+o
+
+Origem dos dados
+
+1.7.3 Linhagem de Dados (Data Lineage)
+e
+
+Rastrear origem dos dados
+
+e
+
+Saber como foram transformados
+
+16 FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLOGICA DO ESTADO DE SERGIPE
+
+1.8 Integração com Outros Módulos
+e
+
+Financeiro
+
+e
+
+Fiscal
+
+e
+
+Projetos
+
+e
+
+Editais
+
+e
+
+Workflow
+
+e
+
+Chatbot
+
+2. REGRAS DE NEGÓCIO (NÍVEL AVANÇADO)
+
+2.1 Separação de Ambientes
+
+e
+
+Banco transacional £ Data Warehouse
+Não impactar performance operacional
+
+2.2 Atualização Controlada
+
+e
+
+Dados do DW devem ser atualizados via ETL
+
+e
+
+Não permitir alteração manual direta
+
+2.3 Consistência de Indicadores
+e
+
+KPIs devem ter definição única
+
+e
+
+Evitar divergência entre relatórios
+
+2.4 Segurança de Dados
+
+e
+
+Dados sensíveis devem ser mascarados
+
+e
+
+Controle de acesso por perfil
+
+2.5 Versionamento
+
+6 FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+A
+
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+e
+
+Indicadores e modelos devem ser versionados
+
+e
+
+Garantir histórico confiável
+
+2.6 Auditoria Analítica
+e
+
+Registro de:
+
+o
+
+Consultas realizadas
+
+o
+
+Dashboards acessados
+
+o
+
+Alterações
+
+2.7 Performance Analítica
+
+e
+
+Consultas complexas devem ser otimizadas
+
+e
+
+Uso de índices e agregações
+
+2.8 Disponibilidade de Dados
+
+e
+
+Dados devem estar sempre disponíveis para análise
+
+e
+
+Alta confiabilidade
+
+2.9 Governança Institucional
+e
+
+KPIs devem seguir padrões institucionais
+
+Validação por equipe gestora
+
+3. REQUISITOS NÃO FUNCIONAIS
+
+3.1 Performance
+
+Consultas simples < 2 segundos
+Consultas complexas < 10) segundos
+
+=)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+3.2 Escalabilidade
+e
+
+Suporte a grandes volumes de dados históricos
+
+e
+
+Arquitetura escalável
+
+3.3 Disponibilidade
+e
+
+Sistema disponível 24/7
+
+e
+
+Alta disponibilidade
+
+3.4 Segurança
+Criptografia de dados
+
+Controle de acesso
+e
+
+LGPD
+
+4. ARQUITETURA
+
+4.1 Camadas
+
+1.
+
+Fonte de dados (sistema principal)
+
+2.
+
+ETL (processamento)
+
+3.
+
+Data Warehouse
+
+4.
+
+Camada de BI
+
+5-
+
+Interface de visualização
+
+4.2 Tecnologias Sugeridas
+e
+
+Banco: PostgreSQL / Data Warehouse
+
+e
+
+ETL: Airflow / scripts automatizados
+
+e
+
+BI: Metabase / Power BI/ ferramenta própria
+
+-)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+MÓDULO DE IA E AUTOMAÇÃO - FAPITEC/SE
+(Treinamento Contínuo + RAG + Análise Inteligente + Apoio à Decisão +
+
+Classificação Automática)
+
+1. REQUISITOS FUNCIONAIS
+
+1.1 Treinamento Contínuo do Chatbot
+1.1.1 Aprendizado Baseado em Interações
+
+O sistema deve permitir que o chatbot evolua continuamente com base em:
+e
+
+Histórico de conversas
+
+Feedback dos usuários (positivo/negativo)
+Correções manuais por administradores
+
+1.1.2 Curadoria de Conteúdo
+e
+
+Interface administrativa para:
+
+o
+
+Ajustar respostas
+
+o
+
+Inserir conhecimento institucional
+
+o
+
+Corrigir falhas da IA
+
+1.1.3 Versionamento de Treinamento
+Manter histórico de versões do modelo/respostas
+
+Possibilidade de rollback
+
+1.2 Base Vetorial (RAG — Retrieval Augmented Generation)
+1.2.1 Indexação de Documentos
+
+O sistema deve permitir indexar documentos institucionais:
+e
+
+Editais
+
+e
+
+Projetos
+
+-)
+e
+
+Relatórios
+
+e
+
+Normativas
+
+e
+
+FAQs
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+1.2.2 Geração de Embeddings
+e
+
+Conversão dos documentos em vetores semânticos
+
+e
+
+Armazenamento em banco vetorial
+
+1.2.3 Busca Semântica
+e
+
+Recuperação de informações por similaridade
+
+e
+
+Respostas baseadas em conteúdo real
+
+1.2.4 Respostas Contextualizadas
+e
+
+Combinar:
+o
+
+Dados do sistema
+
+o
+
+Documentos indexados
+
+o
+
+TA generativa
+
+1.3 Automação de Análise de Projetos
+1.3.1 Análise de Conteúdo
+
+O sistema deve analisar automaticamente propostas submetidas:
+e
+
+Texto do projeto
+
+e
+
+Objetivos
+
+e
+
+Metodologia
+
+e
+
+Orçamento
+
+1.3.2 Avaliação Assistida
+
+/
+FAPITECISE
+16
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLOGICA DO ESTADO DE SERGIPE
+
+e
+
+Geração de:
+o
+
+Resumo automático
+
+o
+
+Pontos fortes
+
+o
+
+Pontos de atenção
+
+o
+
+Riscos identificados
+
+1.3.3 Pré-Classificação
+e
+
+Sugestão de enquadramento do projeto:
+
+o
+
+Área de conhecimento
+
+o
+
+Tipo de edital
+
+o
+
+Grau de aderência
+
+1.4 Sugestão Automática de Decisões
+1.4.1 Apoio à Avaliação
+
+O sistema deve sugerir:
+e
+
+Aprovação ou reprovação (como sugestão)
+
+e
+
+Prioridade do projeto
+
+e
+
+Classificação comparativa
+
+1.4.2 Justificativas Automatizadas
+e
+
+Gerar textos explicativos:
+o
+
+Baseados nos critérios do edital
+
+o
+
+Baseados nos dados do projeto
+
+1.4.3 Score Inteligente
+e
+
+Atribuição de pontuação baseada em:
+
+o
+
+Critérios técnicos
+
+-)
+o
+
+Histórico
+
+o
+
+Dados comparativos
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+1.5 Classificação Inteligente de Propostas
+1.5.1 Classificação Automática
+e
+
+Classificar projetos por:
+
+o
+
+Área temática
+
+o
+
+Nível de imovação
+
+o
+
+Complexidade
+
+o
+
+Impacto esperado
+
+1.5.2 Clusterização
+e
+
+Agrupar projetos semelhantes
+
+e
+
+Identificar padrões
+
+1.5.3 Priorização
+e
+
+Sugerir ranking de projetos
+
+e
+
+Apoiar decisões estratégicas
+
+1.6 Monitoramento e Feedback
+
+1.6.1 Avaliação da IA
+e
+
+Métricas:
+
+o
+
+Taxa de acerto
+
+o
+
+Precisão das sugestões
+
+o
+
+Uso das recomendações
+
+1.6.2 Ajuste Contínuo
+
+6 FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+A
+
+e
+
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+Aprimoramento com base em:
+
+o
+
+Decisões reais
+
+o
+
+Feedback institucional
+
+1.7 Integração com Módulos do Sistema
+e
+
+Editais (regras e critérios)
+
+e
+
+Projetos (dados e conteúdo)
+
+e
+
+Workflow (decisões)
+
+e
+
+Chatbot (interação)
+
+e
+
+BI (análise de dados)
+
+2. REGRAS DE NEGÓCIO (NÍVEL AVANÇADO)
+
+2.1 IA como Apoio, não Decisão Final
+
+Decisões finais devem ser humanas
+IA atua como recomendação
+
+2.2 Transparência das Sugestões
+
+e
+
+Toda sugestão deve conter:
+o
+
+Justificativa
+
+o
+
+Dados utilizados
+
+2.3 Controle de Viés
+e
+
+Monitorar possíveis vieses da IA
+
+e
+
+Ajustar modelos quando necessário
+
+2.4 Segurança de Dados
+
+-)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+e
+
+Não utilizar dados sensíveis sem autorização
+
+e
+
+Anonimização quando necessário
+
+2.5 Versionamento de Modelos
+e
+
+Registrar:
+
+o
+
+Versão do modelo
+
+o
+
+Dados utilizados
+
+2.6 Limitação de Uso
+e
+
+Controle de custo (Open AT)
+
+e
+
+Limite de requisições
+
+2.7 Validação Institucional
+e
+
+Sugestões devem seguir regras dos editais
+
+e
+
+Não contrariar normas legais
+
+2.8 Rastreabilidade
+e
+
+Registrar:
+o
+
+Entrada
+
+o
+
+Processamento
+
+o
+
+Saída da IA
+
+2.9 Governança de IA
+e
+
+Definir responsáveis pela gestão da IA
+
+e
+
+Políticas de uso
+
+3. REQUISITOS NÃO FUNCIONAIS
+
+-)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+3.1 Performance
+
+e
+
+Respostas da IA < 5 segundos
+
+e
+
+Processamento de análise em lote otimizado
+
+3.2 Escalabilidade
+e
+
+Suporte a grande volume de dados
+
+e
+
+Arquitetura distribuída
+
+3.3 Disponibilidade
+e
+
+Operação contínua
+
+e
+
+Alta disponibilidade
+
+3.4 Segurança
+Criptografia
+Controle de acesso
+e
+
+LGPD
+
+EN
+
+4. ARQUITETURA (ALTO NÍVEL)
+
+1 Componentes
+
+e
+
+APIde IA (OpenAT ou similar)
+
+e
+
+Banco vetorial (embeddings)
+
+e
+
+Serviço de processamento de IA
+
+e
+
+Pipeline de treinamento
+
+e
+
+Camada de integração
+
+-)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+4.2 Fluxo
+1.
+
+Entrada de dados
+
+2.
+
+Processamento (TA + RAG)
+
+3.
+
+Geração de resposta
+
+4.
+
+Armazenamento e feedback
+
+Módulo de gestão documental — fapitec/se
+(Versionamento + Assinatura Digital + OCR + Classificação Inteligente + Fluxos de
+Aprovação)
+
+1. REQUISITOS FUNCIONAIS
+
+1.1 Versionamento de Documentos
+1.1.1 Controle de Versões
+
+O sistema deve permitir o verstonamento completo de documentos:
+Criação automática de versões a cada atualização
+Identificação de versão (vl, v2, v3...)
+Registro de data/hora e usuário responsável
+
+1.1.2 Histórico de Alterações
+
+Armazenamento de todas as versões anteriores
+Comparação entre versões
+Recuperação de versões anteriores
+
+1.1.3 Controle de Edição
+Bloqueio de edição simultânea (lock)
+Controle de quem pode editar
+
+-)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+1.2 Assinatura Digital (ICP-Brasil)
+1.2.1 Assinatura Eletrônica
+
+O sistema deve permitir assinatura digital com validade jurídica:
+e
+
+Padrão ICP-Brasil
+
+e
+
+Certificados digitais (Al e A3)
+
+1.2.2 Tipos de Assinatura
+e
+
+Assinatura simples (usuário autenticado)
+
+e
+
+Assinatura avançada
+
+e
+
+Assinatura qualificada (ICP-Brasil)
+
+1.2.3 Fluxo de Assinatura
+e
+
+Definição de ordem de assinaturas
+
+e
+
+Múltiplos signatários
+
+e
+
+Notificação para assinatura pendente
+
+1.2.4 Validação
+
+e
+
+Verificação de autenticidade
+
+e
+
+Registro de hash do documento
+
+e
+
+Auditoria da assinatura
+
+1.3 OCR (Leitura Automática de Documentos)
+1.3.1 Extração de Dados
+
+O sistema deve permitir leitura automática de documentos:
+e
+
+PDFs
+
+e
+
+Imagens (JPG, PNG)
+
+-)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+1.3.2 Dados Extraídos
+e
+
+Nome
+
+e
+
+CPF/CNPJ
+
+e
+
+Valores
+
+e
+
+Datas
+
+e
+
+Conteúdo textual
+
+1.3.3 Integração com Sistema
+e
+
+Preenchimento automático de campos
+
+e
+
+Validação de dados extraídos
+
+1.3.4 Correção Manual
+e
+
+Permitir ajuste dos dados após leitura
+
+1.4 Classificação Automática de Arquivos
+1.4.1 Classificação Inteligente
+
+O sistema deve classificar automaticamente documentos com base em:
+e
+
+Conteúdo
+
+e
+
+Tipo de arquivo
+
+e
+
+Palavras-chave
+
+1.4.2 Categorias
+e
+
+Documentos pessoais
+
+e
+
+Notas fiscais
+
+e
+
+Contratos
+
+e
+
+Relatórios
+
+=)
+e
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+Comprovantes
+
+1.4.3 Organização
+
+e
+
+Estrutura de pastas automatizada
+
+e
+
+Indexação para busca
+
+1.5 Trilhas de Aprovação Documental
+1.5.1 Fluxo de Aprovação
+e
+
+Definição de etapas de aprovação
+
+e
+
+Encadeamento de responsáveis
+
+1.5.2 Status do Documento
+e
+
+Emanálise
+
+e
+
+Aprovado
+
+e
+
+Reprovado
+
+e
+
+Pendente de ajustes
+
+1.5.3 Controle de Aprovação
+e
+
+Registro de:
+
+o
+
+Usuário
+
+o
+
+Data
+
+o
+
+Decisão
+
+o
+
+Justificativa
+
+1.5.4 Integração com Workflow
+e
+
+Integração com módulo de processos
+
+e
+
+Automação de etapas
+
+=)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+1.6 Repositório Central de Documentos
+1.6.1 Armazenamento
+e
+
+Armazenamento seguro em nuvem
+
+e
+
+Organização por:
+
+o
+
+Usuário
+
+o
+
+Projeto
+
+o
+
+Edital
+
+1.6.2 Busca Avançada
+e
+
+Busca por:
+o
+
+Nome
+
+o
+
+Tipo
+
+o
+
+Conteúdo (OCR)
+
+o
+
+Data
+
+1.7 Controle de Acesso
+e
+
+Permissões por:
+
+o
+
+Perfil
+
+o
+
+Projeto
+
+o
+
+Tipo de documento
+
+2. REGRAS DE NEGÓCIO
+
+2.1 Integridade Documental
+
+e
+
+Documentos não podem ser alterados após assinatura
+
+e
+
+Alterações geram nova versão
+
+=)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+2.2 Validade Jurídica
+
+e
+
+Assinaturas devem seguir padrões legais
+
+e
+
+Garantir autenticidade
+
+2.3 Rastreabilidade Total
+e
+
+Registrar:
+
+o
+
+Upload
+
+o
+
+Alterações
+
+o
+
+Assinaturas
+
+o
+
+Aprovações
+
+2.4 Segurança de Dados
+e
+
+Criptografia de documentos
+
+e
+
+Controle de acesso rigoroso
+
+2.5 Automação de Processos
+e
+
+Classificação e OCR automáticos
+
+e
+
+Integração com workflow
+
+2.6 Versionamento Obrigatório
+e
+
+Nenhum documento pode ser sobrescrito
+
+2.7 Auditoria
+e
+
+Logs completos para auditoria
+
+e
+
+Exportação para órgãos de controle
+
+-)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+2.8 LGPD
+e
+
+Proteção de dados pessoais
+
+e
+
+Controle de acesso e retenção
+
+2.9 Consistência
+e
+
+Documento deve estar vinculado a:
+o
+
+Projeto
+
+o
+
+Usuário
+
+o
+
+Processo
+
+3. REQUISITOS NÃO FUNCIONAIS
+
+3.1 Performance
+
+e
+
+Upload rápido (< 3 segundos)
+
+e
+
+(OCR eficiente
+
+3.2 Escalabilidade
+e
+
+Suporte a grande volume de documentos
+
+e
+
+Armazenamento escalável
+
+3.3 Disponibilidade
+e
+
+Acesso contínuo 24/7
+
+3.4 Segurança
+e
+
+Criptografia
+
+e
+
+Backup automático
+
+e
+
+LGPD
+
+-)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+Módulo de governança e controle — fapitec/se
+(Auditoria Completa + Perfis Institucionais + Logs Imutáveis + Compliance +
+Integridade de Dados)
+
+1. REQUISITOS FUNCIONAIS
+
+1.1 Trilha Completa de Auditoria (Nível TCE)
+1.1.1 Registro de Ações
+
+O sistema deve registrar todas as ações realizadas pelos usuários:
+Criação, edição e exclusão de dados
+Aprovações e rejeições
+Acessos ao sistema
+Alterações financeiras
+
+Interações com documentos
+
+1.1.2 Detalhamento do Log
+
+Cada registro deve conter:
+Usuário responsável
+Data e hora
+Endereço IP
+Ação realizada
+
+Módulo afetado
+Dados antes e depois da alteração
+
+1.1.3 Consulta e Filtros
+Busca por:
+
+o
+
+Usuário
+
+-)
+e
+
+o
+
+Período
+
+o
+
+Tipo de ação
+
+o
+
+Módulo
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+Visualização em formato de timeline
+
+1.2 Controle de Perfis Institucionais (Hierarquia)
+1.2.1 Gestão de Perfis
+O sistema deve permitir criação de perfis com permissões específicas:
+e
+
+Administrador
+
+e
+
+Gestor
+
+e
+
+Técnico
+
+e
+
+Avaliador
+
+e
+
+Usuário externo
+
+1.2.2 Hierarquia Organizacional
+e
+
+e
+
+Definição de níveis:
+
+o
+
+Operacional
+
+o
+
+Gerencial
+
+o
+
+Diretoria
+
+Permissões baseadas em hierarquia
+
+1.2.3 Controle de Acesso
+e
+
+e
+
+Permissões por:
+
+o
+
+Módulo
+
+o
+
+Ação (ler, editar, aprovar, excluir)
+
+Controle granular
+
+16 FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLOGICA DO ESTADO DE SERGIPE
+
+1.3 Logs Imutáveis (Compliance)
+1.3.1 Imutabilidade
+e
+
+Logs não podem ser alterados ou excluídos
+
+e
+
+Armazenamento seguro
+
+1.3.2 Assinatura de Logs
+
+e
+
+Uso de hash para garantir integridade
+
+e
+
+Registro de cadeia de eventos
+
+1.3.3 Armazenamento
+e
+
+Logs armazenados em ambiente seguro e redundante
+
+e
+
+Retenção conforme legislação
+
+1.4 Relatórios para Órgãos de Controle
+1.4.1 Relatórios de Auditoria
+
+e
+
+Relatório de atividades por usuário
+
+e
+
+Relatório de alterações críticas
+
+e
+
+Relatório de acessos
+
+1.4.2 Relatórios Financeiros e Operacionais
+e
+
+Execução orçamentária
+
+e
+
+Pagamentos realizados
+
+e
+
+Prestação de contas
+
+1.4.3 Exportação
+e
+
+Formatos:
+
+o
+
+PDF
+
+A
+
+o
+o
+e
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+CSV
+
+Padrões compatíveis com TCE/CGU
+
+1.5 Controle de Integridade dos Dados
+1.5.1 Validação de Dados
+e
+
+Verificação automática de:
+
+o
+
+Consistência
+
+o
+
+Duplicidade
+
+o
+
+Integridade referencial
+
+1.5.2 Monitoramento
+e
+
+Detecção de:
+
+o
+
+Alterações indevidas
+
+o
+
+Inconsistências
+
+o
+
+Falhas de sistema
+
+1.5.3 Alertas
+e
+
+Notificação automática em caso de:
+o
+
+Erros críticos
+
+o
+
+Tentativas de fraude
+
+o
+
+Violações de integridade
+
+1.6 Monitoramento e Compliance
+1.6.1 Painel de Governança
+e
+
+Indicadores de:
+
+o
+
+Segurança
+
+6
+FUNDAÇÃO
+DE APOIO À PESQUISA E À INOVAÇÃO
+fá
+TECNOLÓGICA DO ESTADO DE SERGIPE
+o
+
+Auditoria
+
+o
+
+Integridade
+
+1.6.2 Alertas
+e
+
+Alertas em tempo real para:
+
+o
+
+Acessos suspeitos
+
+o
+
+Alterações críticas
+
+o
+
+Violação de regras
+
+1.7 Integração com Módulos do Sistema
+e
+
+Financeiro (auditoria de pagamentos)
+
+e
+
+Workflow (controle de processos)
+
+e
+
+Documental (assinaturas e aprovações)
+
+e
+
+BlI(relatórios)
+
+2. REGRAS DE NEGÓCIO
+
+2.1 Imutabilidade de Registros
+
+e
+
+Nenhum log pode ser alterado ou excluído
+Apenas novos registros podem ser adicionados
+
+2.2 Auditoria Obrigatória
+
+e
+
+Toda ação relevante deve ser registrada
+
+e
+
+Não permitir ações sem log
+
+2.3 Segregação de Funções
+e
+
+Separação entre:
+
+-)
+e
+
+o
+
+Quem executa
+
+o
+
+Quem aprova
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+Evitar conflitos de interesse
+
+2.4 Controle de Acesso Rigoroso
+e
+
+Acesso baseado em perfil e hierarquia
+
+e
+
+Princípio do menor privilégio
+
+2.5 Integridade dos Dados
+e
+
+Dados devem ser consistentes e validados
+
+e
+
+Não permitir inconsistências
+
+2.6 Conformidade Legal
+e
+
+Adequação à:
+o
+
+LGPD
+
+o
+
+Normas do TCE
+
+o
+
+Normas da CGU
+
+2.7 Rastreabilidade Total
+e
+
+Todas ações devem ser rastreáveis
+
+e
+
+Histórico completo
+
+2.8 Monitoramento Contínuo
+
+e
+
+Sistema deve monitorar atividades em tempo real
+
+2.9 Retenção de Dados
+e
+
+Logse dados devem ser mantidos conforme legislação
+
+-)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+3. REQUISITOS NÃO FUNCIONAIS
+
+3.1 Performance
+
+e
+
+Registro de logs em tempo real (< 1s)
+
+e
+
+Consultas rápidas
+
+3.2 Escalabilidade
+e
+
+Suporte a grande volume de logs
+
+e
+
+Arquitetura escalável
+
+3.3 Disponibilidade
+e
+
+Sistema disponível 24/7
+
+e
+
+Alta disponibilidade
+
+3.4 Segurança
+Criptografia de dados
+
+Controle de acesso
+e
+
+LGPD
+
+4. ARQUITETURA (ALTO NÍVEL)
+
+4.1 Componentes
+
+e
+
+Serviço de auditoria
+
+e
+
+Banco de logs (imutável)
+
+e
+
+Sistema de monitoramento
+
+e
+
+Serviço de autenticação
+
+-)
+e
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+Dashboard de governança
+
+4.2 Tecnologias Sugeridas
+
+e
+
+Logs: banco append-only / blockchain-like
+
+e
+
+Monitoramento: ferramentas de observabilidade
+
+e
+
+Segurança: criptografia e controle de acesso
+
+Módulo de operação e suporte — fapitec/se
+(Monitoramento + Alertas + Logs Técnicos + Help Desk + Documentação Técnica)
+
+1. REQUISITOS FUNCIONAIS
+
+1.1 Painel de Monitoramento do Sistema
+
+1.1.1 Dashboard Operacional
+O sistema deve disponibilizar painel em tempo real contendo:
+e
+
+Status geral do sistema (online/offline)
+
+e
+
+Uso de CPU, memória e disco
+
+e
+
+Tempo de resposta das APIs
+
+e
+
+Volume de requisições
+
+e
+
+Número de usuários ativos
+
+1.1.2 Monitoramento por Serviço
+e
+
+Monitoramento individual de:
+
+o
+
+Backend
+
+o
+
+Banco de dados
+
+o
+
+APIs externas
+
+o
+
+Serviços de integração
+
+=)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+1.1.3 Indicadores
+e
+
+Disponibilidade (% uptime)
+
+e
+
+Latência média
+
+e
+
+Taxa de erros
+
+1.2 Alertas de Falhas
+1.2.1 Tipos de Alertas
+
+O sistema deve gerar alertas automáticos para:
+
+e
+
+Queda de sistema
+
+e
+
+Lentidão
+
+e
+
+Erros críticos
+
+e
+
+Falha em integrações
+
+e
+
+Falhas de processamento
+
+1.2.2 Canais de Alerta
+e
+
+E-mail
+
+e
+
+Notificação interna
+
+e
+
+WhatsApp (opcional)
+
+1.2.3 Configuração
+e
+
+Definir:
+
+o
+
+Limites (thresholds)
+
+o
+
+Responsáveis
+
+o
+
+Níveis de criticidade
+
+1.3 Logs Técnicos (Erros e Performance)
+
+-)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+1.3.1 Registro de Logs
+
+O sistema deve registrar:
+e
+
+Erros de aplicação
+
+e
+
+Exceções
+
+e
+
+Logs de performance
+
+e
+
+Logs de integração
+
+1.3.2 Detalhamento
+Cada log deve conter:
+e
+
+Data/hora
+
+e
+
+Serviço afetado
+
+e
+
+Tipo deerro
+
+e
+
+Stack trace (quando aplicável)
+
+e
+
+Usuário impactado (se houver)
+
+1.3.3 Consulta e Análise
+e
+
+e
+
+Filtros por:
+
+o
+
+Tipo de erro
+
+o
+
+Período
+
+o
+
+Serviço
+
+Busca avançada
+
+1.4 Central de Suporte Interno (Tickets)
+1.4.1 Abertura de Chamados
+
+e
+
+Usuários podem abrir tickets para:
+o
+
+Problemas técnicos
+
+o
+
+Dúvidas
+
+=)
+o
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+Solicitações
+
+1.4.2 Gestão de Chamados
+e
+
+Status:
+o
+
+Aberto
+
+o
+
+Em atendimento
+
+o
+
+Resolvido
+
+o
+
+Fechado
+
+1.4.3 Atribuição
+e
+
+Designação de responsáveis
+
+e
+
+Filas de atendimento
+
+1.4.4 SLA de Atendimento
+e
+
+Definição de prazos por tipo de chamado
+
+e
+
+Monitoramento de SLA
+
+1.4.5 Histórico
+e
+
+Registro completo de interações
+
+e
+
+Comunicação entre usuário e suporte
+
+1.5 Documentação Técnica do Sistema
+1.5.1 Documentação Funcional
+e
+
+Descrição de módulos
+
+e
+
+Fluxos do sistema
+
+e
+
+Regras de negócio
+
+=)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+1.5.2 Documentação Técnica
+e
+
+Arquitetura do sistema
+
+e
+
+APIs disponíveis
+
+e
+
+Estrutura de banco de dados
+
+1.5.3 Base de Conhecimento
+e
+
+Artigos técnicos
+
+e
+
+Guias de uso
+
+e
+
+FAQ técnico
+
+1.5.4 Atualização
+e
+
+Versionamento da documentação
+
+e
+
+Atualização contínua
+
+1.6 Integração com Monitoramento Externo
+e
+
+Integração com ferramentas externas (opcional):
+o
+
+Monitoramento de servidores
+
+o
+
+Logs centralizados
+
+1.7 Gestão de Incidentes
+1.7.1] Registro de Incidentes
+e
+
+Registro de falhas críticas
+
+e
+
+Classificação por severidade
+
+1.7.2 Tratamento
+e
+
+Acompanhamento até resolução
+
+e
+
+Registro de causa raiz
+
+-)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+1.7.3 Relatórios
+e
+
+Relatórios de incidentes
+
+e
+
+Indicadores de estabilidade
+
+2. REGRAS DE NEGÓCIO (NÍVEL AVANÇADO)
+
+2.1 Monitoramento Contínuo
+
+e
+
+Sistema deve operar com monitoramento 24/7
+
+2.2 Registro Obrigatório de Erros
+
+e
+
+Todo erro deve ser registrado
+
+e
+
+Não permitir falhas silenciosas
+
+2.3 SLA de Suporte
+e
+
+Chamados devem respeitar SLA definido
+
+e
+
+Alertas em caso de atraso
+
+2.4 Classificação de Incidentes
+e
+
+Incidentes devem ser classificados por:
+
+o
+
+Crítico
+
+o
+
+Alto
+
+o
+
+Médio
+
+o
+
+Baixo
+
+2.5 Rastreabilidade Técnica
+e
+
+Logs devem permitir identificar causa de falhas
+
+=)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+2.6 Segurança de Logs
+e
+
+Logs protegidos contra alteração
+
+e
+
+Controle de acesso
+
+2.7 Continuidade do Serviço
+e
+
+Sistema deve garantir alta disponibilidade
+
+2.8 Integração com Governança
+e
+
+Logs técnicos devem alimentar auditoria
+
+2.9 Documentação Obrigatória
+e
+
+Sistema deve possuir documentação atualizada
+
+3. REQUISITOS NÃO FUNCIONAIS
+
+3.1 Performance
+e
+
+Monitoramento em tempo real
+
+e
+
+Logs processados rapidamente
+
+3.2 Escalabilidade
+e
+
+Suporte a alto volume de logs e tickets
+
+3.3 Disponibilidade
+e
+
+Sistema disponível 24/7
+
+e
+
+Alta disponibilidade
+
+-)
+
+FAPITECISE
+FUNDAÇÃO DE APOIO À PESQUISA E À INOVAÇÃO
+TECNOLÓGICA DO ESTADO DE SERGIPE
+
+3.4 Segurança
+Criptografia de logs
+
+Controle de acesso
+LGPD
+
+4. ARQUITETURA (ALTO NÍVEL)
+
+4.1 Componentes
+
+Serviço de monitoramento
+Sistema de logs
+Central de tickets
+Base de conhecimento
+Dashboard operacional
+
+4.2 Tecnologias Sugeridas
+
+Logs: ELK Stack (Elastic, Logstash, Kibana)
+Monitoramento: Prometheus / Grafana
+
+Tickets: sistema interno ou integrado
+
+

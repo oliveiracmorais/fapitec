@@ -9,7 +9,6 @@ Este arquivo define as instrucoes do projeto para o Codex CLI.
 2. Priorize `CLI First -> Observability Second -> UI Third`
 3. Trabalhe por stories em `docs/stories/`
 4. Nao invente requisitos fora dos artefatos existentes
-5. Considere como referencia do projeto a documentacao oficial da FAPITEC-SE em `docs/stories/`
 <!-- AIOX-MANAGED-END: core -->
 
 <!-- AIOX-MANAGED-START: quality -->
@@ -19,12 +18,12 @@ Este arquivo define as instrucoes do projeto para o Codex CLI.
 - Rode `npm run typecheck`
 - Rode `npm test`
 - Atualize checklist e file list da story antes de concluir
-- Para backend Go, incluir verificacoes equivalentes quando a base estiver estruturada
 <!-- AIOX-MANAGED-END: quality -->
 
 ## Project Standards
 
 - Organizacao-alvo: `FAPITEC-SE`
+- Gerenciador de pacotes padrao: `pnpm`
 - Frontend padrao: `Next.js + React + Tailwind CSS + shadcn/ui`
 - Backend padrao: `Go`
 - Banco de dados padrao: `PostgreSQL`
