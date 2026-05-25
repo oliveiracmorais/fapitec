@@ -165,6 +165,19 @@ import { useStore } from '../../../stores/feature/store'
 - **Gates implementados em:** `.aiox-core/development/tasks/`
 - **Checklists relacionados:** `.aiox-core/product/checklists/`
 
+## Project Compliance
+
+A conformidade do código implementado com os requisitos do `docs/ProjetoFapitec.txt` é rastreada em:
+
+- **Matriz de Conformidade:** `docs/compliance/matriz-requisitos.md`
+
+### Regras
+
+- MUST: Toda nova story DEVE atualizar a matriz de conformidade
+- MUST: Requisitos marcados como ❌ ou ⚠️ DEVEM ser priorizados antes de novos desenvolvimento
+- MUST: Nenhum PR pode ser aberto com requisitos do módulo atual em status ❌ sem justificativa
+- SHOULD: A matriz DEVE ser revisada a cada release
+
 ---
 
 *Synkra AIOX Constitution v1.0.0*

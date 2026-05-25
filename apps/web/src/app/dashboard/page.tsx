@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 
 type UsuarioSessao = {
   id: number;
@@ -23,6 +24,7 @@ type Modulo = {
   descricao: string;
   status: string;
   icone: string;
+  rota?: string;
 };
 
 const modulosDisponiveis: Modulo[] = [
@@ -32,6 +34,7 @@ const modulosDisponiveis: Modulo[] = [
     descricao: "Gerenciamento de editais de pesquisa e inovação",
     status: "Em desenvolvimento",
     icone: "📋",
+    rota: "/editais",
   },
   {
     id: "inscricao",
@@ -105,7 +108,7 @@ export default function DashboardPage() {
               height={40}
               className="h-9 w-auto"
             />
-            <span className="hidden text-sm text-gray-400 sm:inline">
+            <span className="hidden text-sm text-gray-600 sm:inline">
               Plataforma integrada de gestão institucional
             </span>
           </div>
@@ -131,7 +134,7 @@ export default function DashboardPage() {
               <h1 className="text-xl font-bold text-gray-900">
                 Bem-vindo, {usuario.nome}
               </h1>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-600">
                 Gerencie seus projetos e editais na plataforma
               </p>
             </div>
@@ -154,21 +157,32 @@ export default function DashboardPage() {
 
         <h2 className="mb-4 text-lg font-bold text-gray-900">Módulos</h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {modulosDisponiveis.map((modulo) => (
-            <div
-              key={modulo.id}
-              className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
-            >
-              <div className="mb-3 text-2xl">{modulo.icone}</div>
-              <h3 className="font-bold text-gray-900">{modulo.nome}</h3>
-              <p className="mt-1 text-sm text-gray-500">{modulo.descricao}</p>
-              <div className="mt-4">
-                <span className="rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800">
-                  {modulo.status}
-                </span>
+          {modulosDisponiveis.map((modulo) => {
+            const Card = (
+              <div
+                className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
+              >
+                <div className="mb-3 text-2xl">{modulo.icone}</div>
+                <h3 className="font-bold text-gray-900">{modulo.nome}</h3>
+                <p className="mt-1 text-sm text-gray-600">{modulo.descricao}</p>
+                <div className="mt-4">
+                  <span className="rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800">
+                    {modulo.status}
+                  </span>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+
+            if (modulo.rota) {
+              return (
+                <Link key={modulo.id} href={modulo.rota as any}>
+                  {Card}
+                </Link>
+              );
+            }
+
+            return <div key={modulo.id}>{Card}</div>;
+          })}
         </div>
       </main>
     </div>

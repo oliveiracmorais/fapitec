@@ -1,10 +1,30 @@
 "use client";
 
-import { useState, FormEvent } from "react";
+import { useState, FormEvent, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import CampoFormulario from "../components/campo-formulario";
+
+declare global {
+  interface Window {
+    turnstile?: {
+      render: (
+        container: HTMLElement,
+        opts: {
+          sitekey: string;
+          callback: (token: string) => void;
+          "expired-callback"?: () => void;
+          "error-callback"?: () => void;
+        }
+      ) => void;
+    };
+  }
+}
+
+const SITEKEY =
+  process.env.NEXT_PUBLIC_TURNSTILE_SITEKEY ||
+  "1x00000000000000000000000000000000AA";
 
 type UsuarioSessao = {
   id: number;
@@ -27,26 +47,99 @@ export default function LoginPage() {
   const [senha, setSenha] = useState("");
   const [erro, setErro] = useState("");
   const [carregando, setCarregando] = useState(false);
+  const [tentativas, setTentativas] = useState(0);
+  const [captchaToken, setCaptchaToken] = useState("");
+  const [captchaIndisponivel, setCaptchaIndisponivel] = useState(false);
+
+  const captchaRef = useRef<HTMLDivElement>(null);
+
+  const mostrarCaptcha = tentativas >= 3;
+
+  useEffect(() => {
+    const el = captchaRef.current;
+    if (!mostrarCaptcha || !el || el.children.length > 0) return;
+
+    function renderizar() {
+      if (!window.turnstile) return;
+      try {
+        window.turnstile.render(el!, {
+          sitekey: SITEKEY,
+          callback: (token) => {
+            setCaptchaIndisponivel(false);
+            setCaptchaToken(token);
+          },
+          "expired-callback": () => setCaptchaToken(""),
+          "error-callback": () => setCaptchaIndisponivel(true),
+        });
+      } catch {
+        console.warn("[captcha] erro ao renderizar turnstile");
+      }
+    }
+
+    function startPolling() {
+      let tentativasPoll = 0;
+      const timer = setInterval(() => {
+        tentativasPoll++;
+        if (window.turnstile) {
+          clearInterval(timer);
+          renderizar();
+        } else if (tentativasPoll > 50) {
+          clearInterval(timer);
+          console.error("[captcha] script turnstile nao inicializou apos 10s");
+          setCaptchaIndisponivel(true);
+        }
+      }, 200);
+      return timer;
+    }
+
+    if (window.turnstile) {
+      renderizar();
+      return;
+    }
+
+    if (!document.querySelector('script[src*="turnstile"]')) {
+      const s = document.createElement("script");
+      s.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
+      s.async = true;
+      document.head.appendChild(s);
+    }
+
+    const timer = startPolling();
+    return () => clearInterval(timer);
+  }, [mostrarCaptcha]);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
+    if (mostrarCaptcha && !captchaToken && !captchaIndisponivel) return;
     setErro("");
     setCarregando(true);
 
     try {
+      const body: Record<string, string> = { cpf, senha };
+      if (mostrarCaptcha && !captchaIndisponivel) {
+        body.captcha_token = captchaToken;
+      }
+
       const res = await fetch("/api/v1/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cpf, senha }),
+        body: JSON.stringify(body),
       });
 
       const data = await res.json();
 
       if (!res.ok) {
+        if (data.erro?.includes("captcha")) {
+          setTentativas(3);
+        } else {
+          setTentativas((prev) => prev + 1);
+        }
         setErro(data.erro || "Erro ao autenticar");
         return;
       }
 
+      setTentativas(0);
+      setCaptchaToken("");
       salvarSessao(data as UsuarioSessao);
       router.push("/dashboard");
     } catch {
@@ -69,7 +162,7 @@ export default function LoginPage() {
             priority
           />
           <h1 className="text-xl font-bold text-brand-800">FAPITEC-SE</h1>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-600">
             Plataforma integrada de gestão institucional
           </p>
         </div>
@@ -102,9 +195,24 @@ export default function LoginPage() {
             </div>
           )}
 
+          {captchaIndisponivel && mostrarCaptcha && (
+            <div className="rounded-lg bg-yellow-50 p-3 text-sm text-yellow-800">
+              Captcha indisponível — prossiga sem verificação
+            </div>
+          )}
+
+          <div
+            ref={captchaRef}
+            className={`flex justify-center transition-all duration-300 ${
+              mostrarCaptcha
+                ? "max-h-20 opacity-100"
+                : "max-h-0 overflow-hidden opacity-0"
+            }`}
+          />
+
           <button
             type="submit"
-            disabled={carregando}
+            disabled={carregando || (mostrarCaptcha && !captchaToken && !captchaIndisponivel)}
             className="w-full rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {carregando ? "Entrando..." : "Entrar"}
@@ -118,7 +226,7 @@ export default function LoginPage() {
           >
             Esqueci minha senha
           </Link>
-          <p className="text-gray-500">
+          <p className="text-gray-600">
             Não tem cadastro?{" "}
             <Link
               href="/cadastro"

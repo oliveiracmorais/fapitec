@@ -17,4 +17,5 @@ type RepositorioDeEdital interface {
 	BuscarPorID(ctx context.Context, id int64) (*entidades.Edital, error)
 	Listar(ctx context.Context, filtros FiltrosListarEditais) ([]*entidades.Edital, error)
 	Atualizar(ctx context.Context, edital *entidades.Edital) error
+	Deletar(ctx context.Context, id int64) error
 }

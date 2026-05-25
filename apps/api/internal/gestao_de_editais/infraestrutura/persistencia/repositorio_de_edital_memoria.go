@@ -71,3 +71,11 @@ func (r *RepositorioDeEditalMemoria) Atualizar(ctx context.Context, edital *enti
 	r.editais[edital.ID] = edital
 	return nil
 }
+
+func (r *RepositorioDeEditalMemoria) Deletar(ctx context.Context, id int64) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	delete(r.editais, id)
+	return nil
+}

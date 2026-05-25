@@ -145,7 +145,7 @@ export default function CadastroPage() {
             priority
           />
           <h1 className="text-xl font-bold text-brand-800">Criar Conta</h1>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-600">
             Preencha os dados para se cadastrar na plataforma
           </p>
         </div>
@@ -238,7 +238,7 @@ export default function CadastroPage() {
             touched={touched.senha}
             required
           />
-          <p className="-mt-2 text-xs text-gray-400">
+          <p className="-mt-2 text-xs text-gray-600">
             Mínimo 8 caracteres, com letras maiúsculas, minúsculas, números e
             símbolos
           </p>
@@ -272,7 +272,7 @@ export default function CadastroPage() {
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-gray-500">
+        <p className="mt-6 text-center text-sm text-gray-600">
           Já tem conta?{" "}
           <Link
             href="/"

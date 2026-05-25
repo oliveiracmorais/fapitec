@@ -8,6 +8,19 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type Editai struct {
+	ID          int64
+	Nome        string
+	Descricao   string
+	DataInicio  pgtype.Date
+	DataFim     pgtype.Date
+	Status      string
+	TipoChamada string
+	NotaDeCorte int32
+	ValorGlobal int64
+	CriadoEm    pgtype.Timestamptz
+}
+
 type TokensRedefinicao struct {
 	ID          int64
 	UsuarioID   int64

@@ -7,24 +7,30 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"regexp"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/oliveiracmorais/fapitec/api/internal/auditoria/infraestrutura/adaptadores"
 	auditoriaPersistencia "github.com/oliveiracmorais/fapitec/api/internal/auditoria/infraestrutura/persistencia"
 	"github.com/oliveiracmorais/fapitec/api/internal/identidade_e_acesso/aplicacao/casos_de_uso"
 	"github.com/oliveiracmorais/fapitec/api/internal/identidade_e_acesso/aplicacao/dto"
-	gestaoEditais "github.com/oliveiracmorais/fapitec/api/internal/gestao_de_editais/aplicacao/casos_de_uso"
+	gestaoEditais 	"github.com/oliveiracmorais/fapitec/api/internal/gestao_de_editais/aplicacao/casos_de_uso"
 	gestaoEditaisDTO "github.com/oliveiracmorais/fapitec/api/internal/gestao_de_editais/aplicacao/dto"
+	gestaoEditaisRepositorios "github.com/oliveiracmorais/fapitec/api/internal/gestao_de_editais/dominio/repositorios"
 	gestaoEditaisPersistencia "github.com/oliveiracmorais/fapitec/api/internal/gestao_de_editais/infraestrutura/persistencia"
+	"github.com/oliveiracmorais/fapitec/api/internal/identidade_e_acesso/dominio/entidades"
 	"github.com/oliveiracmorais/fapitec/api/internal/identidade_e_acesso/dominio/repositorios"
 	emailService "github.com/oliveiracmorais/fapitec/api/internal/identidade_e_acesso/infraestrutura/email"
+	"github.com/oliveiracmorais/fapitec/api/internal/identidade_e_acesso/infraestrutura/verificacao"
 	"github.com/oliveiracmorais/fapitec/api/internal/identidade_e_acesso/infraestrutura/hash"
 	"github.com/oliveiracmorais/fapitec/api/internal/identidade_e_acesso/infraestrutura/persistencia"
+	sqlcgedital "github.com/oliveiracmorais/fapitec/api/internal/gestao_de_editais/infraestrutura/persistencia/sqlc"
 	sqlcpersistencia "github.com/oliveiracmorais/fapitec/api/internal/identidade_e_acesso/infraestrutura/persistencia/sqlc"
 )
 
 func main() {
 	hashService := hash.NovoServicoDeHashBcrypt()
+	turnstileVerificador := verificacao.NovoTurnstileVerificador()
 	emailLog := emailService.NovoServicoDeEmailLog()
 
 	auditRepo := auditoriaPersistencia.NovoRepositorioDeEventosMemoria()
@@ -32,6 +38,7 @@ func main() {
 
 	var repo repositorios.RepositorioDeUsuario
 	var tokenRepo repositorios.RepositorioDeTokenRedefinicao
+	var editalRepo gestaoEditaisRepositorios.RepositorioDeEdital
 
 	dbURL := os.Getenv("DATABASE_URL")
 	if dbURL == "" {
@@ -44,6 +51,10 @@ func main() {
 			queries := sqlcpersistencia.New(pool)
 			repo = persistencia.NovoRepositorioDeUsuarioSQLC(queries)
 			tokenRepo = persistencia.NovoRepositorioDeTokenRedefinicaoSQLC(queries)
+
+			queriesEdital := sqlcgedital.New(pool)
+			editalRepo = gestaoEditaisPersistencia.NovoRepositorioDeEditalSQLC(queriesEdital)
+
 			log.Println("Conectado ao PostgreSQL")
 		} else {
 			pool.Close()
@@ -56,19 +67,25 @@ func main() {
 		tokenRepo = persistencia.NovoRepositorioDeTokenRedefinicaoMemoria()
 	}
 
+	if editalRepo == nil {
+		log.Println("PostgreSQL indisponivel para editais — usando repositorio em memoria")
+		editalRepo = gestaoEditaisPersistencia.NovoRepositorioDeEditalMemoria()
+	}
+
 	cadastrar := casos_de_uso.NovoCadastrarUsuarioComAuditoria(repo, hashService, auditService)
 	autenticar := casos_de_uso.NovoAutenticarUsuarioComAuditoria(repo, hashService, auditService)
 	solicitarRedefinicao := casos_de_uso.NovoSolicitarRedefinicaoSenhaComAuditoria(repo, tokenRepo, emailLog, auditService)
 	redefinirSenha := casos_de_uso.NovoRedefinirSenhaComAuditoria(repo, tokenRepo, hashService, auditService)
 
-	editalRepo := gestaoEditaisPersistencia.NovoRepositorioDeEditalMemoria()
 	criarEdital := gestaoEditais.NovoEdital(editalRepo)
 	listarEditais := gestaoEditais.NovoListarEditais(editalRepo)
 	visualizarEdital := gestaoEditais.NovoVisualizarEdital(editalRepo)
+	atualizarEdital := gestaoEditais.NovoAtualizarEdital(editalRepo)
+	deletarEdital := gestaoEditais.NovoDeletarEdital(editalRepo)
 
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("POST /api/v1/cadastro", func(w http.ResponseWriter, r *http.Request) {
+	cadastroHandler := func(w http.ResponseWriter, r *http.Request) {
 		var req struct {
 			Nome             string `json:"nome"`
 			CPF              string `json:"cpf"`
@@ -102,7 +119,10 @@ func main() {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 		json.NewEncoder(w).Encode(saida)
-	})
+	}
+
+	mux.HandleFunc("POST /api/v1/cadastro", cadastroHandler)
+	mux.HandleFunc("POST /api/v1/register", cadastroHandler)
 
 	mux.HandleFunc("GET /api/v1/check-cpf", func(w http.ResponseWriter, r *http.Request) {
 		cpf := r.URL.Query().Get("cpf")
@@ -122,12 +142,23 @@ func main() {
 
 	mux.HandleFunc("POST /api/v1/login", func(w http.ResponseWriter, r *http.Request) {
 		var req struct {
-			CPF   string `json:"cpf"`
-			Senha string `json:"senha"`
+			CPF          string `json:"cpf"`
+			Senha        string `json:"senha"`
+			CaptchaToken string `json:"captcha_token"`
 		}
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 			http.Error(w, `{"erro":"requisicao invalida"}`, http.StatusBadRequest)
 			return
+		}
+
+		cpfLimpo := regexp.MustCompile(`\D`).ReplaceAllString(req.CPF, "")
+		usuario, _ := repo.BuscarPorCPF(r.Context(), cpfLimpo)
+		if usuario != nil && usuario.Tentativas >= 3 {
+			valido, _ := turnstileVerificador.Verificar(req.CaptchaToken)
+			if !valido {
+				http.Error(w, `{"erro":"Validacao de captcha falhou. Tente novamente."}`, http.StatusUnauthorized)
+				return
+			}
 		}
 
 		entrada := dto.AutenticarUsuarioEntrada{
@@ -145,7 +176,39 @@ func main() {
 		json.NewEncoder(w).Encode(saida)
 	})
 
-	mux.HandleFunc("POST /api/v1/solicitar-redefinicao-senha", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("GET /api/v1/user-profile", func(w http.ResponseWriter, r *http.Request) {
+		cpf := r.URL.Query().Get("cpf")
+		email := r.URL.Query().Get("email")
+
+		if cpf == "" && email == "" {
+			http.Error(w, `{"erro":"informe cpf ou email"}`, http.StatusBadRequest)
+			return
+		}
+
+		var usuario *entidades.Usuario
+		if cpf != "" {
+			usuario, _ = repo.BuscarPorCPF(context.Background(), cpf)
+		} else {
+			usuario, _ = repo.BuscarPorEmail(context.Background(), email)
+		}
+
+		if usuario == nil {
+			http.Error(w, `{"erro":"usuario nao encontrado"}`, http.StatusNotFound)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]any{
+			"id":          usuario.ID,
+			"nome":        usuario.Nome,
+			"documento":   usuario.CPF,
+			"email":       usuario.Email.String(),
+			"estrangeiro": usuario.Estrangeiro,
+			"criado_em":   usuario.CriadoEm.Format("2006-01-02T15:04:05-07:00"),
+		})
+	})
+
+	solicitarRedefinicaoHandler := func(w http.ResponseWriter, r *http.Request) {
 		var req struct {
 			Email string `json:"email"`
 		}
@@ -168,7 +231,10 @@ func main() {
 		json.NewEncoder(w).Encode(map[string]string{
 			"mensagem": "Se o e-mail estiver cadastrado, voce recebera um link de redefinicao de senha.",
 		})
-	})
+	}
+
+	mux.HandleFunc("POST /api/v1/solicitar-redefinicao-senha", solicitarRedefinicaoHandler)
+	mux.HandleFunc("POST /api/v1/reset-password", solicitarRedefinicaoHandler)
 
 	mux.HandleFunc("POST /api/v1/redefinir-senha", func(w http.ResponseWriter, r *http.Request) {
 		var req struct {
@@ -277,6 +343,47 @@ func main() {
 
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(saida)
+	})
+
+	mux.HandleFunc("PUT /api/v1/editais/{id}", func(w http.ResponseWriter, r *http.Request) {
+		idStr := r.PathValue("id")
+		var id int64
+		if _, err := fmt.Sscanf(idStr, "%d", &id); err != nil {
+			http.Error(w, `{"erro":"id invalido"}`, http.StatusBadRequest)
+			return
+		}
+
+		var req gestaoEditaisDTO.AtualizarEditalEntrada
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			http.Error(w, `{"erro":"requisicao invalida"}`, http.StatusBadRequest)
+			return
+		}
+
+		saida, err := atualizarEdital.Executar(context.Background(), id, req)
+		if err != nil {
+			http.Error(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusBadRequest)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(saida)
+	})
+
+	mux.HandleFunc("DELETE /api/v1/editais/{id}", func(w http.ResponseWriter, r *http.Request) {
+		idStr := r.PathValue("id")
+		var id int64
+		if _, err := fmt.Sscanf(idStr, "%d", &id); err != nil {
+			http.Error(w, `{"erro":"id invalido"}`, http.StatusBadRequest)
+			return
+		}
+
+		if err := deletarEdital.Executar(context.Background(), id); err != nil {
+			http.Error(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusNotFound)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNoContent)
 	})
 
 	mux.HandleFunc("GET /api/v1/health", func(w http.ResponseWriter, r *http.Request) {

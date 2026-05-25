@@ -110,7 +110,138 @@ curl -s http://localhost:8080/api/v1/auditoria | python3 -m json.tool
 
 ---
 
-## Cenário 5 — Validação de Conformidade (Story 1.10)
+## Cenário 5 — Endpoint Aliases (Conformidade com ProjetoFapitec.txt item 3.1)
+
+### 5.1 POST /api/v1/register (alias do /cadastro)
+
+Deve ter o mesmo comportamento de `POST /api/v1/cadastro`:
+
+```bash
+curl -s -X POST http://localhost:8080/api/v1/register \
+  -H "Content-Type: application/json" \
+  -d '{"nome":"Joao Aliasing","cpf":"111.222.333-44","email":"joao.alias@example.com","confirmacao_email":"joao.alias@example.com","senha":"Teste@123","confirmacao_senha":"Teste@123"}'
+```
+
+**Esperado:** HTTP 201, mesmo response de `/cadastro`.
+
+### Subcenários
+
+- [ ] **POST /api/v1/register com dados inválidos** → HTTP 400, mesma validação de `/cadastro`
+- [ ] **POST /api/v1/register com CPF duplicado** → `"CPF já cadastrado no sistema."`
+
+---
+
+### 5.2 POST /api/v1/reset-password (alias do /solicitar-redefinicao-senha)
+
+Deve ter o mesmo comportamento de `POST /api/v1/solicitar-redefinicao-senha`:
+
+```bash
+curl -s -X POST http://localhost:8080/api/v1/reset-password \
+  -H "Content-Type: application/json" \
+  -d '{"email":"joao.alias@example.com"}'
+```
+
+**Esperado:** HTTP 200, `{"mensagem":"Se o e-mail estiver cadastrado, voce recebera um link de redefinicao de senha."}`
+
+### Subcenários
+
+- [ ] **E-mail inexistente** → mesma resposta genérica (não vaza informação)
+- [ ] **Request sem body** → `{"erro":"requisicao invalida"}` (HTTP 400)
+
+---
+
+### 5.3 GET /api/v1/user-profile
+
+**Por CPF:**
+```bash
+# Primeiro crie um usuário e guarde o CPF:
+curl -s -X POST http://localhost:8080/api/v1/register \
+  -H "Content-Type: application/json" \
+  -d '{"nome":"Perfil Teste","cpf":"999.888.777-66","email":"perfil@example.com","confirmacao_email":"perfil@example.com","senha":"Teste@123","confirmacao_senha":"Teste@123"}'
+
+# Consulte por CPF:
+curl -s "http://localhost:8080/api/v1/user-profile?cpf=999.888.777-66"
+```
+
+**Esperado:** HTTP 200, JSON com `id`, `nome`, `documento`, `email`, `estrangeiro`, `criado_em`.
+
+**Por e-mail:**
+```bash
+curl -s "http://localhost:8080/api/v1/user-profile?email=perfil@example.com"
+```
+
+**Esperado:** Mesmo response da consulta por CPF.
+
+### Subcenários
+
+- [ ] **Sem parâmetros** → `{"erro":"informe cpf ou email"}` (HTTP 400)
+  ```bash
+  curl -s "http://localhost:8080/api/v1/user-profile"
+  ```
+- [ ] **CPF inexistente** → `{"erro":"usuario nao encontrado"}` (HTTP 404)
+  ```bash
+  curl -s "http://localhost:8080/api/v1/user-profile?cpf=000.000.000-00"
+  ```
+- [ ] **E-mail inexistente** → `{"erro":"usuario nao encontrado"}` (HTTP 404)
+  ```bash
+  curl -s "http://localhost:8080/api/v1/user-profile? email=inexistente@test.com"
+  ```
+
+---
+
+## Cenário 6 — Captcha (Turnstile) — Tentativas Excessivas
+
+**Pré-requisito:** Backend rodando com `TURNSTILE_SECRET_KEY` configurada (padrão: chave de teste).
+
+### 6.1 Captcha não aparece em tentativas normais
+
+```bash
+# Fazer login com credenciais inválidas 2 vezes — captcha NÃO deve aparecer
+curl -s -X POST http://localhost:8080/api/v1/login \
+  -H "Content-Type: application/json" \
+  -d '{"cpf":"000.000.000-00","senha":"errada"}'
+```
+
+**Esperado:** HTTP 401, sem campo `captcha_token` no body, captcha não visível no frontend.
+
+### 6.2 Captcha aparece após 3 tentativas falhas
+
+1. No navegador, tente fazer login 3 vezes com credenciais inválidas
+2. Na 4ª tentativa, o widget Turnstile deve aparecer acima do botão "Entrar"
+
+**Via curl (simulando com `captcha_token` inválido):**
+```bash
+curl -s -X POST http://localhost:8080/api/v1/login \
+  -H "Content-Type: application/json" \
+  -d '{"cpf":"000.000.000-00","senha":"errada","captcha_token":"token_invalido"}'
+```
+
+**Esperado:** HTTP 401, `{"erro":"Validacao de captcha falhou. Tente novamente."}`
+
+### 6.3 Captcha válido (chave de teste)
+
+Com a chave de teste configurada, qualquer token é aceito:
+
+```bash
+curl -s -X POST http://localhost:8080/api/v1/login \
+  -H "Content-Type: application/json" \
+  -d '{"cpf":"123.456.789-09","senha":"senha_correta","captcha_token":"token_teste"}'
+```
+
+**Esperado:** HTTP 200 (login bem-sucedido) — a chave de teste sempre aprova.
+
+### 6.4 Fluxo completo no frontend
+
+1. Abrir `http://localhost:3000`
+2. Tentar login 3 vezes com senha errada (ex: CPF `123.456.789-09`, senha `errada`)
+3. Observar contagem de tentativas no backend (`GET /api/v1/auditoria` deve mostrar 3 `falha_de_login`)
+4. Na 4ª tentativa, o widget Turnstile aparece
+5. Resolver o captcha (com chave de teste, qualquer clique funciona)
+6. Inserir senha correta → login autorizado
+
+---
+
+## Cenário 7 — Validação de Conformidade (Story 1.10)
 
 **Passaporte (via curl):**
 ```bash

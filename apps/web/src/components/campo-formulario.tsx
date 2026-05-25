@@ -53,7 +53,7 @@ export default function CampoFormulario({
           <button
             type="button"
             onClick={() => setMostrarSenha((v) => !v)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600 hover:text-gray-700"
             aria-label={mostrarSenha ? "Esconder senha" : "Mostrar senha"}
           >
             {mostrarSenha ? (
@@ -73,7 +73,7 @@ export default function CampoFormulario({
       </div>
 
       {temErro && (
-        <p className="mt-1 text-xs text-red-500">{erro}</p>
+        <p className="mt-1 text-xs text-red-700">{erro}</p>
       )}
     </div>
   );

@@ -55,7 +55,7 @@ export default function RecuperarSenhaPage() {
           <h1 className="text-xl font-bold text-brand-800">
             Recuperar Senha
           </h1>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-600">
             Informe seu e-mail para receber um link de redefinição
           </p>
         </div>
@@ -100,7 +100,7 @@ export default function RecuperarSenhaPage() {
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-gray-500">
+        <p className="mt-6 text-center text-sm text-gray-600">
           <Link
             href="/"
             className="font-medium text-brand-600 hover:text-brand-700"
