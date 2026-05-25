@@ -5,6 +5,10 @@
 *.key
 *.pem
 
+# TLS certificates (generated per environment)
+apps/api/nginx/certs/cert.pem
+apps/api/nginx/certs/key.pem
+
 # Dependencies (AIOX)
 node_modules/
 node_modules

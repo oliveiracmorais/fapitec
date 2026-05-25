@@ -7,7 +7,7 @@ import {
   modulos,
   obterSessaoDemonstrativa,
   podeAcessarModulo
-} from "../../../lib/catalogo-plataforma";
+} from "../../../../lib/catalogo-plataforma";
 
 export function generateStaticParams() {
   return modulos.map((modulo) => ({ id: modulo.id }));

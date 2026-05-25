@@ -23,7 +23,7 @@
 | FR11 | Senha armazenada com bcrypt ou Argon2 | ✅ | `hash/bcrypt.go` — bcrypt |
 | FR12 | Bloqueio após 5 tentativas falhas por 15min | ✅ | `entidades/usuario.go` — `Blquear`, `EstaBloqueado`, `RegistrarTentativaFalha` |
 | FR13 | Captcha em tentativas excessivas | ✅ | Cloudflare Turnstile — aparece após 3 tentativas falhas; chave de teste em dev |
-| FR14 | HTTPS | ⚠️ | APP usa HTTP em dev; HTTPS deve ser configurado em produção |
+| FR14 | HTTPS | ✅ | nginx como proxy reverso com TLS; dev local continua HTTP |
 
 ---
 

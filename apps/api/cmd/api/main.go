@@ -391,6 +391,44 @@ func main() {
 		json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
 	})
 
+	mux.HandleFunc("GET /api/v1/dashboard/indicadores", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]any{
+			"indicadores": []map[string]any{
+				{"id": "iso-27001", "nome": "Progresso ISO 27001", "valor": 65, "tipo": "porcentagem", "cor": "violeta"},
+				{"id": "nao-conformidades", "nome": "Não Conformidades Tratadas", "valor": 78, "tipo": "porcentagem", "cor": "verde"},
+				{"id": "valor-absoluto", "nome": "Valor em Projetos", "valor": 5000, "tipo": "numero", "cor": "azul"},
+				{"id": "status-geral", "nome": "Status Geral", "valor": 82, "tipo": "barra", "cor": "laranja"},
+			},
+		})
+	})
+
+	mux.HandleFunc("GET /api/v1/dashboard/graficos", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]any{
+			"graficos": []map[string]any{
+				{
+					"id": "donut", "tipo": "donut", "titulo": "Distribuição por Tipo de Projeto",
+					"faixas": []map[string]any{
+						{"nome": "Pesquisa", "valor": 60, "legenda": "60%"},
+						{"nome": "Inovação", "valor": 25, "legenda": "25%"},
+						{"nome": "Extensão", "valor": 15, "legenda": "15%"},
+					},
+				},
+				{
+					"id": "evolucao", "tipo": "linha", "titulo": "Evolução Mensal de Projetos",
+					"dados": []map[string]any{
+						{"mes": "Jan", "valor": 12},
+						{"mes": "Fev", "valor": 19},
+						{"mes": "Mar", "valor": 15},
+						{"mes": "Abr", "valor": 22},
+						{"mes": "Mai", "valor": 28},
+					},
+				},
+			},
+		})
+	})
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
