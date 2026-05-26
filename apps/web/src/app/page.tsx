@@ -229,7 +229,7 @@ export default function LoginPage() {
           <p className="text-gray-600">
             Não tem cadastro?{" "}
             <Link
-              href="/cadastro"
+              href="/registrar"
               className="font-medium text-brand-600 hover:text-brand-700"
             >
               Clique aqui

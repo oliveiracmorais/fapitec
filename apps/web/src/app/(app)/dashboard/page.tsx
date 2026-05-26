@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import GraficosSection from "../../../components/graficos-section";
 
 type UsuarioSessao = {
@@ -26,84 +25,84 @@ type Indicador = {
   cor: string;
 };
 
-type SecaoPainel = {
-  id: string;
-  nome: string;
-  descricao: string;
-  status: string;
-  icone: string;
-};
-
-const secoesPainelUsuario: SecaoPainel[] = [
-  {
-    id: "dados-empresa",
-    nome: "Dados da Empresa",
-    descricao: "Informações cadastrais da empresa ou instituição vinculada",
-    status: "Em planejamento",
-    icone: "🏢",
-  },
-  {
-    id: "acompanhamento-projetos",
-    nome: "Acompanhamento de Projetos",
-    descricao: "Acompanhe o status e andamento dos seus projetos",
-    status: "Em planejamento",
-    icone: "📊",
-  },
-];
-
 type Modulo = {
   id: string;
   nome: string;
   descricao: string;
   status: string;
   icone: string;
-  rota?: string;
 };
 
-const modulosDisponiveis: Modulo[] = [
+const modulos: Modulo[] = [
   {
-    id: "editais",
-    nome: "Editais",
+    id: "gestao-editais",
+    nome: "Gestão de Editais",
     descricao: "Gerenciamento de editais de pesquisa e inovação",
     status: "Em desenvolvimento",
     icone: "📋",
-    rota: "/editais",
   },
   {
-    id: "cadastros",
-    nome: "Cadastros",
-    descricao: "Cadastro de usuários, proponentes e instituições",
-    status: "Em planejamento",
-    icone: "👤",
-    rota: "/cadastro",
-  },
-  {
-    id: "configuracao",
-    nome: "Configuração",
-    descricao: "Configurações do sistema e preferências",
-    status: "Em planejamento",
-    icone: "⚙️",
-  },
-  {
-    id: "inscricao",
-    nome: "Inscrição",
-    descricao: "Inscrição em projetos e chamadas",
+    id: "inscricao-selecao",
+    nome: "Inscrição e Seleção de Propostas",
+    descricao: "Inscrição em chamadas e seleção de propostas",
     status: "Em planejamento",
     icone: "📝",
   },
   {
-    id: "bolsistas",
-    nome: "Bolsistas",
-    descricao: "Gestão de bolsistas e pesquisadores",
+    id: "contratacao-concessao",
+    nome: "Contratação e Concessão de Apoios",
+    descricao: "Contratação e concessão de apoios institucionais",
     status: "Em planejamento",
-    icone: "👥",
+    icone: "📑",
+  },
+  {
+    id: "financeiro-pagamentos",
+    nome: "Financeiro e Pagamentos",
+    descricao: "Gestão financeira e processamento de pagamentos",
+    status: "Em planejamento",
+    icone: "💰",
   },
   {
     id: "prestacao-contas",
     nome: "Prestação de Contas",
-    descricao: "Prestação de contas financeiras",
+    descricao: "Prestação de contas financeiras dos projetos",
     status: "Em planejamento",
-    icone: "💰",
+    icone: "🧾",
+  },
+  {
+    id: "tomada-contas-especial",
+    nome: "Tomada de Contas Especial",
+    descricao: "Processos de tomada de contas especial",
+    status: "Em planejamento",
+    icone: "🔍",
+  },
+  {
+    id: "comunicacao-institucional",
+    nome: "Comunicação Institucional",
+    descricao: "Comunicação e divulgação institucional",
+    status: "Em planejamento",
+    icone: "📢",
+  },
+  {
+    id: "relatorios-indicadores",
+    nome: "Relatórios e Painéis de Indicadores",
+    descricao: "Relatórios gerenciais e painéis de indicadores",
+    status: "Em planejamento",
+    icone: "📊",
+  },
+  {
+    id: "gestao-documental",
+    nome: "Gestão Documental",
+    descricao: "Gestão de documentos e arquivos digitais",
+    status: "Em planejamento",
+    icone: "📁",
+  },
+  {
+    id: "infraestrutura-suporte",
+    nome: "Infraestrutura, Suporte e Segurança",
+    descricao: "Infraestrutura, suporte técnico e segurança da informação",
+    status: "Em planejamento",
+    icone: "🛡️",
   },
 ];
 
@@ -197,13 +196,6 @@ export default function DashboardPage() {
               Gerencie seus projetos e editais na plataforma
             </p>
           </div>
-          <button
-            onClick={() => router.push("/cadastro")}
-            className="rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-700"
-            aria-label="Atualizar perfil do usuário"
-          >
-            Atualizar Perfil
-          </button>
         </div>
         <div className="mt-4 grid grid-cols-1 gap-3 border-t border-gray-100 pt-4 text-sm text-gray-600 sm:grid-cols-3">
           <div>
@@ -276,84 +268,30 @@ export default function DashboardPage() {
         </section>
       )}
 
-      <section aria-label="Painel do usuário" className="mb-8">
-        <h2 className="mb-4 text-lg font-bold text-gray-900">
-          Painel do Usuário
-        </h2>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          {secoesPainelUsuario.map((secao) => (
-            <div
-              key={secao.id}
-              className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition-all hover:shadow-md"
-              title={secao.descricao}
-            >
-              <div className="flex items-start gap-4">
-                <span className="text-2xl" aria-hidden="true">
-                  {secao.icone}
-                </span>
-                <div className="flex-1">
-                  <h3 className="font-bold text-gray-900">{secao.nome}</h3>
-                  <p className="mt-1 text-sm text-gray-600">
-                    {secao.descricao}
-                  </p>
-                  <div className="mt-3">
-                    <span className="rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800">
-                      {secao.status}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
       <GraficosSection />
 
       <h2 className="mb-4 text-lg font-bold text-gray-900">Módulos</h2>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {modulosDisponiveis.map((modulo) => {
-          const Card = (
-            <div
-              className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
-              role="button"
-              tabIndex={modulo.rota ? 0 : undefined}
-              aria-label={
-                modulo.rota
-                  ? `Acessar módulo ${modulo.nome}`
-                  : `${modulo.nome} — ${modulo.status}`
-              }
-              title={modulo.descricao}
-            >
-              <div className="mb-3 text-2xl" aria-hidden="true">
-                {modulo.icone}
-              </div>
-              <h3 className="font-bold text-gray-900">{modulo.nome}</h3>
-              <p className="mt-1 text-sm text-gray-600">
-                {modulo.descricao}
-              </p>
-              <div className="mt-4">
-                <span className="rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800">
-                  {modulo.status}
-                </span>
-              </div>
+        {modulos.map((modulo) => (
+          <div
+            key={modulo.id}
+            className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
+            title={modulo.descricao}
+          >
+            <div className="mb-3 text-2xl" aria-hidden="true">
+              {modulo.icone}
             </div>
-          );
-
-          if (modulo.rota) {
-            return (
-              <Link
-                key={modulo.id}
-                href={modulo.rota as any}
-                aria-label={`Visualizar ${modulo.nome}`}
-              >
-                {Card}
-              </Link>
-            );
-          }
-
-          return <div key={modulo.id}>{Card}</div>;
-        })}
+            <h3 className="font-bold text-gray-900">{modulo.nome}</h3>
+            <p className="mt-1 text-sm text-gray-600">
+              {modulo.descricao}
+            </p>
+            <div className="mt-4">
+              <span className="rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800">
+                {modulo.status}
+              </span>
+            </div>
+          </div>
+        ))}
       </div>
     </main>
   );
