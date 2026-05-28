@@ -28,6 +28,8 @@ Thumbs.db
 # AIOX Local (AIOX)
 .aiox-core/local/
 .aiox/install-log.txt
+.aiox/handoffs/
+apps/api/bin/
 
 .next/
 *.tsbuildinfo

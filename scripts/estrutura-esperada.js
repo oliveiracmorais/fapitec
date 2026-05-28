@@ -1,11 +1,12 @@
 const diretoriosObrigatorios = [
   'apps/web/src/app',
+  'apps/web/src/app/(app)',
+  'apps/web/src/app/(app)/modulos/[id]',
   'apps/web/src/componentes',
   'apps/web/src/modulos',
   'apps/web/src/aplicacao',
   'apps/web/src/infraestrutura',
   'apps/web/src/lib',
-  'apps/web/src/app/modulos/[id]',
   'apps/web/public',
   'apps/api/cmd/api',
   'apps/api/internal/identidade_e_acesso',
@@ -55,7 +56,7 @@ const arquivosObrigatorios = [
   'apps/web/tsconfig.json',
   'apps/web/src/app/layout.tsx',
   'apps/web/src/app/page.tsx',
-  'apps/web/src/app/modulos/[id]/page.tsx',
+  'apps/web/src/app/(app)/modulos/[id]/page.tsx',
   'apps/web/src/app/globals.css',
   'apps/web/src/lib/catalogo-plataforma.ts'
 ];

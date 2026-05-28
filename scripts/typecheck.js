@@ -5,10 +5,15 @@ const path = require('node:path');
 const { spawnSync } = require('node:child_process');
 
 const raiz = process.cwd();
-const tsc = path.join(raiz, 'node_modules', 'typescript', 'bin', 'tsc');
+const candidate = [
+  path.join(raiz, 'node_modules', 'typescript', 'bin', 'tsc'),
+  path.join(raiz, 'apps', 'web', 'node_modules', 'typescript', 'bin', 'tsc'),
+];
 
-if (!fs.existsSync(tsc)) {
-  console.log('typecheck: projeto web TypeScript detectado, mas dependências ainda não instaladas.');
+const tsc = candidate.find((p) => fs.existsSync(p));
+
+if (!tsc) {
+  console.log('typecheck: typescript ainda não instalado.');
   console.log('typecheck: execute pnpm install e depois pnpm --filter @fapitec/web run typecheck.');
   process.exit(0);
 }
