@@ -16,7 +16,8 @@ Preparar ambiente de homologação na Oracle Cloud VM e realizar deploy funciona
 - Migrações SQL automatizadas no deploy
 - Dozzle instalado para logs em tempo real (`/logs/`)
 - Estrutura reorganizada para `~/apps/fapitec/` na VM
-- **Cadastro e login funcionando** (CPF: `123.456.789-09`, senha: `Teste@123`)
+- **Cadastro e login funcionando** (CPF: `123.456.789-09`)
+- **Recuperação de senha testada** (solicitar token + redefinir senha + login)
 
 ### In Progress
 - *(none)*
@@ -26,10 +27,9 @@ Preparar ambiente de homologação na Oracle Cloud VM e realizar deploy funciona
 
 ## Credenciais de Teste
 - CPF: `123.456.789-09` (ou `12345678909`)
-- Senha: `Teste@123`
+- Senha: `NovaSenha@123`
 
 ## Próximos Passos
-- Testar recuperação de senha
 - Implementar autorização (Casdoor/Casbin)
 - Pipeline CI/CD
 - Módulos do negócio (bolsistas, prestação de contas)
