@@ -28,6 +28,12 @@ import (
 	sqlcpersistencia "github.com/oliveiracmorais/fapitec/api/internal/identidade_e_acesso/infraestrutura/persistencia/sqlc"
 )
 
+func jsonError(w http.ResponseWriter, msg string, code int) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+	fmt.Fprintln(w, msg)
+}
+
 func main() {
 	hashService := hash.NovoServicoDeHashBcrypt()
 	turnstileVerificador := verificacao.NovoTurnstileVerificador()
@@ -96,7 +102,7 @@ func main() {
 			Estrangeiro      bool   `json:"estrangeiro"`
 		}
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			http.Error(w, `{"erro":"requisicao invalida"}`, http.StatusBadRequest)
+			jsonError(w, `{"erro":"requisicao invalida"}`, http.StatusBadRequest)
 			return
 		}
 
@@ -112,7 +118,7 @@ func main() {
 
 		saida, err := cadastrar.Executar(context.Background(), entrada)
 		if err != nil {
-			http.Error(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusBadRequest)
+			jsonError(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusBadRequest)
 			return
 		}
 
@@ -147,7 +153,7 @@ func main() {
 			CaptchaToken string `json:"captcha_token"`
 		}
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			http.Error(w, `{"erro":"requisicao invalida"}`, http.StatusBadRequest)
+			jsonError(w, `{"erro":"requisicao invalida"}`, http.StatusBadRequest)
 			return
 		}
 
@@ -156,7 +162,7 @@ func main() {
 		if usuario != nil && usuario.Tentativas >= 3 {
 			valido, _ := turnstileVerificador.Verificar(req.CaptchaToken)
 			if !valido {
-				http.Error(w, `{"erro":"Validacao de captcha falhou. Tente novamente."}`, http.StatusUnauthorized)
+				jsonError(w, `{"erro":"Validacao de captcha falhou. Tente novamente."}`, http.StatusUnauthorized)
 				return
 			}
 		}
@@ -168,7 +174,7 @@ func main() {
 
 		saida, err := autenticar.Executar(context.Background(), entrada)
 		if err != nil {
-			http.Error(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusUnauthorized)
+			jsonError(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusUnauthorized)
 			return
 		}
 
@@ -181,7 +187,7 @@ func main() {
 		email := r.URL.Query().Get("email")
 
 		if cpf == "" && email == "" {
-			http.Error(w, `{"erro":"informe cpf ou email"}`, http.StatusBadRequest)
+			jsonError(w, `{"erro":"informe cpf ou email"}`, http.StatusBadRequest)
 			return
 		}
 
@@ -193,7 +199,7 @@ func main() {
 		}
 
 		if usuario == nil {
-			http.Error(w, `{"erro":"usuario nao encontrado"}`, http.StatusNotFound)
+			jsonError(w, `{"erro":"usuario nao encontrado"}`, http.StatusNotFound)
 			return
 		}
 
@@ -213,7 +219,7 @@ func main() {
 			Email string `json:"email"`
 		}
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			http.Error(w, `{"erro":"requisicao invalida"}`, http.StatusBadRequest)
+			jsonError(w, `{"erro":"requisicao invalida"}`, http.StatusBadRequest)
 			return
 		}
 
@@ -223,7 +229,7 @@ func main() {
 
 		err := solicitarRedefinicao.Executar(context.Background(), entrada)
 		if err != nil {
-			http.Error(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusBadRequest)
+			jsonError(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusBadRequest)
 			return
 		}
 
@@ -243,7 +249,7 @@ func main() {
 			ConfirmacaoSenha string `json:"confirmacao_senha"`
 		}
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			http.Error(w, `{"erro":"requisicao invalida"}`, http.StatusBadRequest)
+			jsonError(w, `{"erro":"requisicao invalida"}`, http.StatusBadRequest)
 			return
 		}
 
@@ -255,7 +261,7 @@ func main() {
 
 		err := redefinirSenha.Executar(context.Background(), entrada)
 		if err != nil {
-			http.Error(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusBadRequest)
+			jsonError(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusBadRequest)
 			return
 		}
 
@@ -268,7 +274,7 @@ func main() {
 	mux.HandleFunc("GET /api/v1/auditoria", func(w http.ResponseWriter, r *http.Request) {
 		eventos, err := auditRepo.Listar(context.Background())
 		if err != nil {
-			http.Error(w, `{"erro":"erro ao listar eventos de auditoria"}`, http.StatusInternalServerError)
+			jsonError(w, `{"erro":"erro ao listar eventos de auditoria"}`, http.StatusInternalServerError)
 			return
 		}
 		resp := make([]map[string]any, 0, len(eventos))
@@ -295,13 +301,13 @@ func main() {
 	mux.HandleFunc("POST /api/v1/editais", func(w http.ResponseWriter, r *http.Request) {
 		var req gestaoEditaisDTO.CriarEditalEntrada
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			http.Error(w, `{"erro":"requisicao invalida"}`, http.StatusBadRequest)
+			jsonError(w, `{"erro":"requisicao invalida"}`, http.StatusBadRequest)
 			return
 		}
 
 		saida, err := criarEdital.Executar(context.Background(), req)
 		if err != nil {
-			http.Error(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusBadRequest)
+			jsonError(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusBadRequest)
 			return
 		}
 
@@ -319,7 +325,7 @@ func main() {
 
 		saida, err := listarEditais.Executar(context.Background(), filtros)
 		if err != nil {
-			http.Error(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusInternalServerError)
+			jsonError(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusInternalServerError)
 			return
 		}
 
@@ -331,13 +337,13 @@ func main() {
 		idStr := r.PathValue("id")
 		var id int64
 		if _, err := fmt.Sscanf(idStr, "%d", &id); err != nil {
-			http.Error(w, `{"erro":"id invalido"}`, http.StatusBadRequest)
+			jsonError(w, `{"erro":"id invalido"}`, http.StatusBadRequest)
 			return
 		}
 
 		saida, err := visualizarEdital.Executar(context.Background(), id)
 		if err != nil {
-			http.Error(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusNotFound)
+			jsonError(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusNotFound)
 			return
 		}
 
@@ -349,19 +355,19 @@ func main() {
 		idStr := r.PathValue("id")
 		var id int64
 		if _, err := fmt.Sscanf(idStr, "%d", &id); err != nil {
-			http.Error(w, `{"erro":"id invalido"}`, http.StatusBadRequest)
+			jsonError(w, `{"erro":"id invalido"}`, http.StatusBadRequest)
 			return
 		}
 
 		var req gestaoEditaisDTO.AtualizarEditalEntrada
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			http.Error(w, `{"erro":"requisicao invalida"}`, http.StatusBadRequest)
+			jsonError(w, `{"erro":"requisicao invalida"}`, http.StatusBadRequest)
 			return
 		}
 
 		saida, err := atualizarEdital.Executar(context.Background(), id, req)
 		if err != nil {
-			http.Error(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusBadRequest)
+			jsonError(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusBadRequest)
 			return
 		}
 
@@ -373,12 +379,12 @@ func main() {
 		idStr := r.PathValue("id")
 		var id int64
 		if _, err := fmt.Sscanf(idStr, "%d", &id); err != nil {
-			http.Error(w, `{"erro":"id invalido"}`, http.StatusBadRequest)
+			jsonError(w, `{"erro":"id invalido"}`, http.StatusBadRequest)
 			return
 		}
 
 		if err := deletarEdital.Executar(context.Background(), id); err != nil {
-			http.Error(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusNotFound)
+			jsonError(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusNotFound)
 			return
 		}
 

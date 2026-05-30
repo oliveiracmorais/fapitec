@@ -1,0 +1,10 @@
+FROM alpine:3.21
+
+RUN apk add --no-cache ca-certificates tzdata
+ENV TZ=America/Sao_Paulo
+
+COPY api /app/api
+
+EXPOSE 8080
+
+ENTRYPOINT ["/app/api"]

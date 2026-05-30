@@ -11,7 +11,7 @@ const nextConfig = {
       },
     ];
   },
-  output: process.env.NEXT_STATIC_OUTPUT === "true" ? "export" : undefined,
+  output: process.env.NEXT_OUTPUT === "standalone" ? "standalone" : process.env.NEXT_STATIC_OUTPUT === "true" ? "export" : undefined,
 };
 
 export default nextConfig;
