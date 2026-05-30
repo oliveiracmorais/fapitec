@@ -9,11 +9,13 @@ Preparar ambiente de homologação na Oracle Cloud VM e realizar deploy funciona
 - Certificado SSL Let's Encrypt emitido para compusa.duckdns.org (válido até 26/08/2026)
 - Nginx configurado como reverse proxy: `/api/` → API Go (127.0.0.1:8080), demais rotas → Next.js (127.0.0.1:3000)
 - Dockerfiles de homologação criados (API e Web)
-- `docker-compose.homolog.yml` criado (PostgreSQL 16 + API Go + Next.js)
-- Script `scripts/deploy-homologacao.sh` criado
+- `docker-compose.homolog.yml` criado (PostgreSQL 16 + API Go + Web + Dozzle)
+- Script `scripts/deploy-homologacao.sh` criado (inclui cópia e execução de migrações SQL)
 - Correção de `http.Error()` → `jsonError()` para `Content-Type: application/json`
 - Correção de caminhos de assets estáticos do Next.js standalone
-- Migrações SQL executadas (usuários, tokens, editais)
+- Migrações SQL automatizadas no deploy
+- Dozzle instalado para logs em tempo real (`/logs/`)
+- Estrutura reorganizada para `~/apps/fapitec/` na VM
 - **Cadastro e login funcionando** (CPF: `123.456.789-09`, senha: `Teste@123`)
 
 ### In Progress
@@ -27,5 +29,7 @@ Preparar ambiente de homologação na Oracle Cloud VM e realizar deploy funciona
 - Senha: `Teste@123`
 
 ## Próximos Passos
-- Automatizar migrações SQL no script de deploy
-- Testar outras funcionalidades (recuperação de senha, editais)
+- Testar recuperação de senha
+- Implementar autorização (Casdoor/Casbin)
+- Pipeline CI/CD
+- Módulos do negócio (bolsistas, prestação de contas)

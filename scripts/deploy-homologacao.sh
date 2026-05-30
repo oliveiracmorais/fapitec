@@ -20,7 +20,7 @@ cd ../..
 echo "[3/4] Copiando artefatos para VM..."
 REMOTE="$SSH_USER@$VM_IP"
 
-ssh -i "$SSH_KEY" "$REMOTE" "mkdir -p $REMOTE_DIR/api $REMOTE_DIR/web"
+ssh -i "$SSH_KEY" "$REMOTE" "mkdir -p $REMOTE_DIR/api $REMOTE_DIR/web $REMOTE_DIR/api/db/migracoes"
 
 scp -i "$SSH_KEY" apps/api/bin/api-linux-arm64 "$REMOTE:$REMOTE_DIR/api/api"
 scp -i "$SSH_KEY" apps/api/Dockerfile.homolog "$REMOTE:$REMOTE_DIR/api/Dockerfile"
@@ -33,9 +33,10 @@ rsync -az --delete -e "ssh -i $SSH_KEY" apps/web/public/ "$REMOTE:$REMOTE_DIR/we
 
 scp -i "$SSH_KEY" docker-compose.homolog.yml "$REMOTE:$REMOTE_DIR/docker-compose.yml"
 scp -i "$SSH_KEY" .env.homolog "$REMOTE:$REMOTE_DIR/.env" 2>/dev/null || true
+rsync -az --delete -e "ssh -i $SSH_KEY" apps/api/db/migracoes/ "$REMOTE:$REMOTE_DIR/api/db/migracoes/"
 
-echo "[4/4] Realizando deploy na VM..."
-ssh -i "$SSH_KEY" "$REMOTE" "cd $REMOTE_DIR && docker compose pull && docker compose up -d --build"
+echo "[4/4] Realizando deploy e migracoes na VM..."
+ssh -i "$SSH_KEY" "$REMOTE" "cd $REMOTE_DIR && docker compose pull && docker compose up -d --build && echo 'Aguardando PostgreSQL...' && until docker compose exec -T postgres pg_isready -U fapitec 2>/dev/null; do sleep 1; done && echo 'Executando migracoes...' && for f in api/db/migracoes/*.sql; do echo \"  Aplicando \$f\" && cat \"\$f\" | docker compose exec -T postgres psql -U fapitec -d fapitec; done && echo 'Migracoes concluidas'"
 
 echo "=== Deploy concluido ==="
 echo "Acesse: https://compusa.duckdns.org"
