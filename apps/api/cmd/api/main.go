@@ -20,6 +20,7 @@ import (
 	gestaoEditaisPersistencia "github.com/oliveiracmorais/fapitec/api/internal/gestao_de_editais/infraestrutura/persistencia"
 	"github.com/oliveiracmorais/fapitec/api/internal/identidade_e_acesso/dominio/entidades"
 	"github.com/oliveiracmorais/fapitec/api/internal/identidade_e_acesso/dominio/repositorios"
+	"github.com/oliveiracmorais/fapitec/api/internal/identidade_e_acesso/dominio/servicos"
 	emailService "github.com/oliveiracmorais/fapitec/api/internal/identidade_e_acesso/infraestrutura/email"
 	"github.com/oliveiracmorais/fapitec/api/internal/identidade_e_acesso/infraestrutura/verificacao"
 	"github.com/oliveiracmorais/fapitec/api/internal/identidade_e_acesso/infraestrutura/hash"
@@ -37,7 +38,15 @@ func jsonError(w http.ResponseWriter, msg string, code int) {
 func main() {
 	hashService := hash.NovoServicoDeHashBcrypt()
 	turnstileVerificador := verificacao.NovoTurnstileVerificador()
-	emailLog := emailService.NovoServicoDeEmailLog()
+
+	var emailSvc servicos.ServicoDeEmail
+	if emailService.ConfigSMTPPresente() {
+		emailSvc = emailService.NovoServicoDeEmailSMTP()
+		log.Println("Servico de email SMTP configurado")
+	} else {
+		emailSvc = emailService.NovoServicoDeEmailLog()
+		log.Println("Servico de email: modo placeholder (sem configuracao SMTP)")
+	}
 
 	auditRepo := auditoriaPersistencia.NovoRepositorioDeEventosMemoria()
 	auditService := adaptadores.NovoRegistradorAuditoria(auditRepo)
@@ -80,7 +89,7 @@ func main() {
 
 	cadastrar := casos_de_uso.NovoCadastrarUsuarioComAuditoria(repo, hashService, auditService)
 	autenticar := casos_de_uso.NovoAutenticarUsuarioComAuditoria(repo, hashService, auditService)
-	solicitarRedefinicao := casos_de_uso.NovoSolicitarRedefinicaoSenhaComAuditoria(repo, tokenRepo, emailLog, auditService)
+	solicitarRedefinicao := casos_de_uso.NovoSolicitarRedefinicaoSenhaComAuditoria(repo, tokenRepo, emailSvc, auditService)
 	redefinirSenha := casos_de_uso.NovoRedefinirSenhaComAuditoria(repo, tokenRepo, hashService, auditService)
 
 	criarEdital := gestaoEditais.NovoEdital(editalRepo)

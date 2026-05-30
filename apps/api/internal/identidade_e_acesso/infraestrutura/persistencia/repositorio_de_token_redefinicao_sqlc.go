@@ -21,14 +21,15 @@ func NovoRepositorioDeTokenRedefinicaoSQLC(queries *sqlcpersistencia.Queries) *R
 func (r *RepositorioDeTokenRedefinicaoSQLC) Inserir(ctx context.Context, token objetos_de_valor.TokenRedefinicao) error {
 	params := sqlcpersistencia.InserirTokenRedefinicaoParams{
 		UsuarioID:  token.UsuarioID,
-		Token:      token.Token,
+		Token:      token.TokenHash,
 		ExpiradoEm: pgtype.Timestamptz{Time: token.ExpiradoEm, Valid: true},
 	}
 	return r.queries.InserirTokenRedefinicao(ctx, params)
 }
 
 func (r *RepositorioDeTokenRedefinicaoSQLC) BuscarPorToken(ctx context.Context, token string) (*objetos_de_valor.TokenRedefinicao, error) {
-	result, err := r.queries.BuscarTokenRedefinicao(ctx, token)
+	hash := objetos_de_valor.HashToken(token)
+	result, err := r.queries.BuscarTokenRedefinicao(ctx, hash)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, nil
@@ -36,7 +37,7 @@ func (r *RepositorioDeTokenRedefinicaoSQLC) BuscarPorToken(ctx context.Context, 
 		return nil, err
 	}
 	t := &objetos_de_valor.TokenRedefinicao{
-		Token:      result.Token,
+		TokenHash:  result.Token,
 		UsuarioID:  result.UsuarioID,
 		ExpiradoEm: result.ExpiradoEm.Time,
 	}
@@ -44,5 +45,6 @@ func (r *RepositorioDeTokenRedefinicaoSQLC) BuscarPorToken(ctx context.Context, 
 }
 
 func (r *RepositorioDeTokenRedefinicaoSQLC) Remover(ctx context.Context, token string) error {
-	return r.queries.ConsumirTokenRedefinicao(ctx, token)
+	hash := objetos_de_valor.HashToken(token)
+	return r.queries.ConsumirTokenRedefinicao(ctx, hash)
 }

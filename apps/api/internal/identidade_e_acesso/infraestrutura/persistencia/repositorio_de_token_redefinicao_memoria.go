@@ -21,14 +21,15 @@ func NovoRepositorioDeTokenRedefinicaoMemoria() *RepositorioDeTokenRedefinicaoMe
 func (r *RepositorioDeTokenRedefinicaoMemoria) Inserir(ctx context.Context, token objetos_de_valor.TokenRedefinicao) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	r.tokens[token.Token] = token
+	r.tokens[token.TokenHash] = token
 	return nil
 }
 
 func (r *RepositorioDeTokenRedefinicaoMemoria) BuscarPorToken(ctx context.Context, token string) (*objetos_de_valor.TokenRedefinicao, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
-	t, ok := r.tokens[token]
+	hash := objetos_de_valor.HashToken(token)
+	t, ok := r.tokens[hash]
 	if !ok {
 		return nil, nil
 	}
@@ -38,6 +39,7 @@ func (r *RepositorioDeTokenRedefinicaoMemoria) BuscarPorToken(ctx context.Contex
 func (r *RepositorioDeTokenRedefinicaoMemoria) Remover(ctx context.Context, token string) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	delete(r.tokens, token)
+	hash := objetos_de_valor.HashToken(token)
+	delete(r.tokens, hash)
 	return nil
 }
