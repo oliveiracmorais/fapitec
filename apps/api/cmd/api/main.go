@@ -10,6 +10,7 @@ import (
 	"regexp"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/joho/godotenv"
 	"github.com/oliveiracmorais/fapitec/api/internal/auditoria/infraestrutura/adaptadores"
 	auditoriaPersistencia "github.com/oliveiracmorais/fapitec/api/internal/auditoria/infraestrutura/persistencia"
 	"github.com/oliveiracmorais/fapitec/api/internal/identidade_e_acesso/aplicacao/casos_de_uso"
@@ -36,6 +37,13 @@ func jsonError(w http.ResponseWriter, msg string, code int) {
 }
 
 func main() {
+	if err := godotenv.Load(); err != nil {
+		log.Println("Nenhum arquivo .env encontrado no diretorio atual, usando variaveis de ambiente")
+	}
+	if err := godotenv.Load("../../.env"); err != nil {
+		log.Println("Nenhum arquivo .env encontrado na raiz do monorepo, usando variaveis de ambiente")
+	}
+
 	hashService := hash.NovoServicoDeHashBcrypt()
 	turnstileVerificador := verificacao.NovoTurnstileVerificador()
 
