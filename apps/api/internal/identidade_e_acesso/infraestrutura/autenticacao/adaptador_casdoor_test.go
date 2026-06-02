@@ -118,14 +118,13 @@ func TestValidarJWT_TokenValido(t *testing.T) {
 
 	tokenStr := assinarJWT(t, privPEM, claims)
 
-	resultado, err := a.ValidarJWT(tokenStr)
+	claimsRetornados, err := a.ValidarJWT(tokenStr)
 	if err != nil {
 		t.Fatalf("ValidarJWT retornou erro para token valido: %v", err)
 	}
 
-	claimsRetornados, ok := resultado.(*casdoorsdk.Claims)
-	if !ok {
-		t.Fatal("resultado deve ser *casdoorsdk.Claims")
+	if claimsRetornados == nil {
+		t.Fatal("claims nao deve ser nil")
 	}
 
 	if claimsRetornados.Email != "teste@fapitec.se.gov.br" {
@@ -195,6 +194,7 @@ func TestVerificarPermissao(t *testing.T) {
 	defer mockServer.Close()
 
 	casdoorsdk.SetHttpClient(mockServer.Client())
+	t.Cleanup(func() { casdoorsdk.SetHttpClient(http.DefaultClient) })
 
 	a := NovoAdaptadorCasdoor(mockServer.URL, "client-id", "secret", "cert", "fapitec", "fapitec")
 
@@ -223,6 +223,7 @@ func TestVerificarPermissaoNegada(t *testing.T) {
 	defer mockServer.Close()
 
 	casdoorsdk.SetHttpClient(mockServer.Client())
+	t.Cleanup(func() { casdoorsdk.SetHttpClient(http.DefaultClient) })
 
 	a := NovoAdaptadorCasdoor(mockServer.URL, "client-id", "secret", "cert", "fapitec", "fapitec")
 

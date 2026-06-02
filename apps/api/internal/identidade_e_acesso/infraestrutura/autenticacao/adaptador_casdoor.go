@@ -3,6 +3,8 @@ package autenticacao
 import (
 	"context"
 	"fmt"
+	"log"
+	"strings"
 
 	"github.com/casdoor/casdoor-go-sdk/casdoorsdk"
 	"golang.org/x/oauth2"
@@ -18,7 +20,7 @@ func NovoAdaptadorCasdoor(endpoint, clientId, clientSecret, certificate, organiz
 	return &AdaptadorCasdoor{client: c, owner: organizationName}
 }
 
-func (a *AdaptadorCasdoor) ValidarJWT(token string) (any, error) {
+func (a *AdaptadorCasdoor) ValidarJWT(token string) (*casdoorsdk.Claims, error) {
 	return a.client.ParseJwtToken(token)
 }
 
@@ -51,6 +53,10 @@ func (a *AdaptadorCasdoor) GerarURLDeAutorizacao(redirectURI, state string) stri
 }
 
 func (a *AdaptadorCasdoor) CriarUsuario(ctx context.Context, nome, email, cpf, senha, perfil string) error {
+	if strings.HasPrefix(a.client.Endpoint, "http://") {
+		log.Printf("AVISO: Criando usuario no Casdoor via HTTP (sem SSL) — senha trafega em texto plano")
+	}
+
 	user := &casdoorsdk.User{
 		Owner:       a.owner,
 		Name:        cpf,

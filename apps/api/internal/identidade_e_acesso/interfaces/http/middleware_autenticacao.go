@@ -4,6 +4,8 @@ import (
 	"context"
 	"net/http"
 	"strings"
+
+	"github.com/casdoor/casdoor-go-sdk/casdoorsdk"
 )
 
 type contextKey string
@@ -11,7 +13,7 @@ type contextKey string
 const UsuarioContextKey contextKey = "usuario_casdoor"
 
 type ValidatorJWT interface {
-	ValidarJWT(token string) (any, error)
+	ValidarJWT(token string) (*casdoorsdk.Claims, error)
 }
 
 func AutenticacaoMiddleware(validator ValidatorJWT) func(http.Handler) http.Handler {

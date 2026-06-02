@@ -4,14 +4,16 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/casdoor/casdoor-go-sdk/casdoorsdk"
 )
 
 type mockValidator struct {
-	claims any
+	claims *casdoorsdk.Claims
 	err    error
 }
 
-func (m *mockValidator) ValidarJWT(token string) (any, error) {
+func (m *mockValidator) ValidarJWT(token string) (*casdoorsdk.Claims, error) {
 	return m.claims, m.err
 }
 
@@ -87,7 +89,8 @@ func TestAutenticacaoMiddleware_TokenInvalido(t *testing.T) {
 }
 
 func TestAutenticacaoMiddleware_TokenValido(t *testing.T) {
-	validator := &mockValidator{claims: "fake-claims", err: nil}
+	fakeClaims := &casdoorsdk.Claims{}
+	validator := &mockValidator{claims: fakeClaims, err: nil}
 	middleware := AutenticacaoMiddleware(validator)
 	var capturedReq *http.Request
 	handler := middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -113,7 +116,7 @@ func TestAutenticacaoMiddleware_TokenValido(t *testing.T) {
 	if claims == nil {
 		t.Error("claims devem estar presentes no contexto")
 	}
-	if claims != "fake-claims" {
-		t.Errorf("claims no contexto incorretos: esperado fake-claims, got %v", claims)
+	if claims != fakeClaims {
+		t.Errorf("claims no contexto incorretos: esperado %v, got %v", fakeClaims, claims)
 	}
 }

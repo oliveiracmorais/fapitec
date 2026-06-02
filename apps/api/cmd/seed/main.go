@@ -1,13 +1,26 @@
 package main
 
 import (
+	"crypto/rand"
 	"fmt"
 	"log"
+	"math/big"
 	"os"
 
 	"github.com/casdoor/casdoor-go-sdk/casdoorsdk"
 	"github.com/joho/godotenv"
 )
+
+const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$"
+
+func gerarSenha(tamanho int) string {
+	senha := make([]byte, tamanho)
+	for i := range senha {
+		n, _ := rand.Int(rand.Reader, big.NewInt(int64(len(charset))))
+		senha[i] = charset[n.Int64()]
+	}
+	return string(senha)
+}
 
 type perfilConfig struct {
 	Name        string
@@ -133,6 +146,9 @@ func main() {
 			}
 
 			roleID := fmt.Sprintf("%s/%s", orgName, perfil)
+			// ResourceType "modulo" deve estar alinhado ao modelo Casbin no Casdoor.
+			// O modelo padrao do Casdoor usa "ResourceType" como filtro de recurso.
+			// Se houver customizacao do modelo Casbin, ajustar este campo.
 			perm := &casdoorsdk.Permission{
 				Owner:        orgName,
 				Name:         permName,
@@ -162,12 +178,18 @@ func main() {
 	if err == nil && existingUser != nil && existingUser.Name != "" {
 		fmt.Printf("  Usuario admin ja existe: %s\n", adminName)
 	} else {
+		adminPassword := os.Getenv("CASDOOR_ADMIN_PASSWORD")
+		if adminPassword == "" {
+			adminPassword = gerarSenha(20)
+			fmt.Printf("  AVISO: Senha do admin gerada automaticamente (defina CASDOOR_ADMIN_PASSWORD via env var para controle): %s\n", adminPassword)
+		}
+
 		admin := &casdoorsdk.User{
 			Owner:       orgName,
 			Name:        adminName,
 			DisplayName: "Administrador FAPITEC",
 			Email:       "admin@fapitec.se.gov.br",
-			Password:    "Fapitec@2026",
+			Password:    adminPassword,
 			Type:        "administrador_fapitec",
 			IsAdmin:     true,
 		}
@@ -176,7 +198,7 @@ func main() {
 		if err != nil {
 			fmt.Printf("  ERRO ao criar usuario admin: %v\n", err)
 		} else if sucesso {
-			fmt.Printf("  Usuario admin criado: %s (email: admin@fapitec.se.gov.br, senha: Fapitec@2026)\n", adminName)
+			fmt.Printf("  Usuario admin criado: %s (email: admin@fapitec.se.gov.br)\n", adminName)
 			fmt.Println("  AVISO: Altere a senha do admin no primeiro acesso via UI do Casdoor!")
 		}
 	}

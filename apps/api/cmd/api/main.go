@@ -73,15 +73,16 @@ func main() {
 	}
 	log.Printf("AUTH_PROVIDER=%s", authProvider)
 
-	casdoorAdapter := autenticacao.NovoAdaptadorCasdoor(
-		os.Getenv("CASDOOR_ENDPOINT"),
-		os.Getenv("CASDOOR_CLIENT_ID"),
-		os.Getenv("CASDOOR_CLIENT_SECRET"),
-		os.Getenv("CASDOOR_CERTIFICATE"),
-		os.Getenv("CASDOOR_ORGANIZATION_NAME"),
-		os.Getenv("CASDOOR_ORGANIZATION_NAME"),
-	)
+	var casdoorAdapter *autenticacao.AdaptadorCasdoor
 	if authProvider == "casdoor" {
+		casdoorAdapter = autenticacao.NovoAdaptadorCasdoor(
+			os.Getenv("CASDOOR_ENDPOINT"),
+			os.Getenv("CASDOOR_CLIENT_ID"),
+			os.Getenv("CASDOOR_CLIENT_SECRET"),
+			os.Getenv("CASDOOR_CERTIFICATE"),
+			os.Getenv("CASDOOR_ORGANIZATION_NAME"),
+			os.Getenv("CASDOOR_ORGANIZATION_NAME"),
+		)
 		log.Printf("Adaptador Casdoor inicializado: AUTH_PROVIDER=casdoor, middlewares ativos")
 	}
 
@@ -211,7 +212,7 @@ func main() {
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(saida)
 		})
-		mux.HandleFunc("POST /api/v1/solicitar-redefinicao-senha", func(w http.ResponseWriter, r *http.Request) {
+		solicitarRedefinicaoHandler := func(w http.ResponseWriter, r *http.Request) {
 			var req struct {
 				Email string `json:"email"`
 			}
@@ -234,31 +235,9 @@ func main() {
 			json.NewEncoder(w).Encode(map[string]string{
 				"mensagem": "Se o e-mail estiver cadastrado, voce recebera um link de redefinicao de senha.",
 			})
-		})
-		mux.HandleFunc("POST /api/v1/reset-password", func(w http.ResponseWriter, r *http.Request) {
-			var req struct {
-				Email string `json:"email"`
-			}
-			if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-				jsonError(w, `{"erro":"requisicao invalida"}`, http.StatusBadRequest)
-				return
-			}
-
-			entrada := dto.SolicitarRedefinicaoSenhaEntrada{
-				Email: req.Email,
-			}
-
-			err := solicitarRedefinicao.Executar(context.Background(), entrada)
-			if err != nil {
-				jsonError(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusBadRequest)
-				return
-			}
-
-			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(map[string]string{
-				"mensagem": "Se o e-mail estiver cadastrado, voce recebera um link de redefinicao de senha.",
-			})
-		})
+		}
+		mux.HandleFunc("POST /api/v1/solicitar-redefinicao-senha", solicitarRedefinicaoHandler)
+		mux.HandleFunc("POST /api/v1/reset-password", solicitarRedefinicaoHandler)
 		mux.HandleFunc("POST /api/v1/redefinir-senha", func(w http.ResponseWriter, r *http.Request) {
 			var req struct {
 				Token            string `json:"token"`
@@ -312,10 +291,14 @@ func main() {
 		}
 		redirectURI := r.URL.Query().Get("redirect_uri")
 		if redirectURI == "" {
-			redirectURI = fmt.Sprintf("%s/api/v1/auth/callback", r.URL.Scheme+"://"+r.Host)
-			if r.URL.Scheme == "" {
-				redirectURI = fmt.Sprintf("http://%s/api/v1/auth/callback", r.Host)
+			scheme := r.URL.Scheme
+			if scheme == "" {
+				scheme = r.Header.Get("X-Forwarded-Proto")
 			}
+			if scheme == "" {
+				scheme = "http"
+			}
+			redirectURI = fmt.Sprintf("%s://%s/api/v1/auth/callback", scheme, r.Host)
 		}
 		state := r.URL.Query().Get("state")
 		if state == "" {
@@ -351,6 +334,17 @@ func main() {
 	})
 
 	mux.HandleFunc("GET /api/v1/user-profile", func(w http.ResponseWriter, r *http.Request) {
+		if claims, ok := r.Context().Value(interfacesHTTP.UsuarioContextKey).(*casdoorsdk.Claims); ok && authProvider == "casdoor" {
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(map[string]any{
+				"documento": claims.Name,
+				"nome":      claims.DisplayName,
+				"email":     claims.Email,
+				"perfil":    claims.Type,
+			})
+			return
+		}
+
 		cpf := r.URL.Query().Get("cpf")
 		email := r.URL.Query().Get("email")
 
@@ -555,10 +549,9 @@ func main() {
 	var handler http.Handler = mux
 	if authProvider == "casdoor" {
 		publicPaths := map[string]bool{
-			"/api/v1/health": true, "/api/v1/cadastro": true, "/api/v1/register": true,
-			"/api/v1/check-cpf": true, "/api/v1/check-email": true, "/api/v1/login": true,
-			"/api/v1/solicitar-redefinicao-senha": true, "/api/v1/reset-password": true,
-			"/api/v1/redefinir-senha": true, "/api/v1/auth/login": true,
+			"/api/v1/health":    true,
+			"/api/v1/check-cpf": true, "/api/v1/check-email": true,
+			"/api/v1/auth/login":    true,
 			"/api/v1/auth/callback": true,
 		}
 
@@ -580,17 +573,20 @@ func main() {
 				return
 			}
 
-			perfil := ""
+			var usuarioID, perfil string
 			if claims, ok := r.Context().Value(interfacesHTTP.UsuarioContextKey).(*casdoorsdk.Claims); ok {
+				usuarioID = claims.Name
 				perfil = claims.Type
 			}
 			if perfil == "" {
 				perfil = "proponente"
 			}
 
+			matched := false
 			for _, rp := range routePermissions {
 				if strings.HasPrefix(r.URL.Path, rp.prefix) {
-					permitido, err := casdoorAdapter.VerificarPermissao(r.Context(), "", perfil, rp.modulo, rp.operacao)
+					matched = true
+					permitido, err := casdoorAdapter.VerificarPermissao(r.Context(), usuarioID, perfil, rp.modulo, rp.operacao)
 					if err != nil || !permitido {
 						w.Header().Set("Content-Type", "application/json")
 						w.WriteHeader(http.StatusForbidden)
@@ -599,6 +595,12 @@ func main() {
 					}
 					break
 				}
+			}
+			if !matched {
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusForbidden)
+				w.Write([]byte(`{"erro":"acesso negado — rota sem permissao mapeada"}`))
+				return
 			}
 
 			mux.ServeHTTP(w, r)
