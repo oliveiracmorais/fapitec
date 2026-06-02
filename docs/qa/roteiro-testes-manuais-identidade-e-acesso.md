@@ -397,3 +397,4 @@ curl -s "http://localhost:8080/api/v1/check-cpf?cpf=52998224725"
 - **Senha admin seed**: definida via `CASDOOR_ADMIN_PASSWORD` ou gerada automaticamente
 - Ao alternar `AUTH_PROVIDER`, reinicie o backend
 - `POST /api/v1/cadastro` e `POST /api/v1/login` retornam **410** no modo Casdoor
+- Ao usar `docker compose up` (API via container Docker), o container `fapitec-api` publica a porta `8080` para o host — certifique-se de que o mapeamento `ports: ["8080:8080"]` está presente em `apps/api/docker-compose.yml`

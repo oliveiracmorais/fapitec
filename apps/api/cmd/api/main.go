@@ -567,12 +567,10 @@ func main() {
 		}
 
 		authMW := interfacesHTTP.AutenticacaoMiddleware(casdoorAdapter)
-		handler = authMW(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if publicPaths[r.URL.Path] {
-				mux.ServeHTTP(w, r)
-				return
-			}
 
+		// Rotas publicas bypassam autenticacao e autorizacao
+		// Rotas protegidas passam por authMW (valida JWT) + authZ (enforce)
+		protectedHandler := authMW(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			var usuarioID, perfil string
 			if claims, ok := r.Context().Value(interfacesHTTP.UsuarioContextKey).(*casdoorsdk.Claims); ok {
 				usuarioID = claims.Name
@@ -605,6 +603,14 @@ func main() {
 
 			mux.ServeHTTP(w, r)
 		}))
+
+		handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if publicPaths[r.URL.Path] {
+				mux.ServeHTTP(w, r)
+				return
+			}
+			protectedHandler.ServeHTTP(w, r)
+		})
 	}
 
 	port := os.Getenv("PORT")

@@ -33,7 +33,8 @@ func (a *AdaptadorCasdoor) TrocarCodigoPorToken(code string, state string) (stri
 }
 
 func (a *AdaptadorCasdoor) VerificarPermissao(ctx context.Context, usuarioID, perfil, modulo, operacao string) (bool, error) {
-	request := casdoorsdk.CasbinRequest{usuarioID, perfil, modulo, operacao}
+	fullUserID := fmt.Sprintf("%s/%s", a.owner, usuarioID)
+	request := casdoorsdk.CasbinRequest{fullUserID, modulo, operacao}
 	return a.client.Enforce("", "", "", "", a.owner, request)
 }
 
