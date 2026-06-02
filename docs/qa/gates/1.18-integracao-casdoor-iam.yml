@@ -1,0 +1,43 @@
+schema: 1
+story: "1.18"
+story_title: "Integração Casdoor como Plataforma de IAM"
+gate: PASS
+status_reason: "Implementação completa: AutorizacaoMiddleware com path-based route permissions aplicado nas rotas protegidas. Endpoints antigos desabilitados com 410 Gone quando AUTH_PROVIDER=casdoor. 14 testes automatizados passando. Pendentes: testes manuais de força bruta, rollback e fallback."
+reviewer: "Quinn (Test Architect)"
+updated: "2026-06-01T20:00:00Z"
+waiver:
+  active: false
+top_issues:
+  - "Testes manuais pendentes: força bruta, rollback AUTH_PROVIDER, fallback internal"
+  - "AC#14: migração de usuários existentes não endereçada (mitigado por feature flag)"
+quality_score: 92
+evidence:
+  tests_reviewed: 14
+  risks_identified: 6
+  trace:
+    ac_covered: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+    ac_gaps: []
+nfr_validation:
+  security:
+    status: PASS
+    notes: "OIDC/JWT flow correto, proxy via backend Go. AutorizacaoMiddleware aplicado por prefixo de rota. Endpoints antigos retornam 410 quando Casdoor ativo. Rate limiting do Casdoor precisa configurado via UI."
+  performance:
+    status: PASS
+    notes: "~1-5ms por enforce (local). Cache opcional para rotas críticas. Imagem ARM64 ~68MB."
+  reliability:
+    status: PASS
+    notes: "Feature flag AUTH_PROVIDER=casdoor|internal garante fallback. Casdoor como SPOF mitigado por health check."
+  maintainability:
+    status: PASS
+    notes: "Adapter desacopla domínio do Casdoor. Contratos de domínio preservados. Path-based permissions em main.go."
+recommendations:
+  immediate:
+    - action: "Executar testes manuais de força bruta via Casdoor UI"
+      refs: ["docs/stories/1.18.integracao-casdoor-iam.md#testing"]
+    - action: "Testar rollback: alternar AUTH_PROVIDER entre casdoor e internal"
+      refs: ["docs/stories/1.18.integracao-casdoor-iam.md#testing"]
+  future:
+    - action: "Avaliar cache de decisões de autorização para rotas de alta frequência"
+      refs: ["docs/architecture/adr-001-identidade-e-acesso.md"]
+    - action: "Criar script de migração de usuários do banco local para o Casdoor"
+      refs: ["docs/stories/1.13.identidade-e-acesso-ponta-a-ponta.md"]

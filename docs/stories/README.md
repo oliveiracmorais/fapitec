@@ -88,7 +88,8 @@ Objetivo:
 
 - Os PDFs em [docs/stories](/home/carlos/projetos/fapitec/docs/stories) continuam sendo a fonte original dos requisitos disponíveis até aqui.
 - As stories formais agora passam a ser redigidas em arquivos próprios, com critérios de aceite, checklist e file list.
-- A avaliação de `Casdoor` e `Casbin` deve acontecer antes da story de autorização por perfis.
+- A avaliação de `Casdoor` e `Casbin` foi concluída e documentada no ADR-001 (decidido em Casdoor-only).
+- A integração do Casdoor como plataforma IAM é a Story 1.18.
 - O backlog deve respeitar o cronograma mensal de entregas previsto no Termo de Referência.
 - As capacidades transversais devem ser implementadas de forma incremental, como fundação mínima para as ondas seguintes.
 - A validação da macroestrutura pela `FAPITEC-SE` pode gerar ajustes de nomenclatura, perfis, módulos ou prioridade, que devem ser registrados em story, ADR ou backlog conforme o impacto.
@@ -108,3 +109,4 @@ Objetivo:
 - [1.11.recuperacao-de-senha.md](/home/carlos/projetos/fapitec/docs/stories/1.11.recuperacao-de-senha.md)
 - [1.12.gestao-de-editais.md](/home/carlos/projetos/fapitec/docs/stories/1.12.gestao-de-editais.md)
 - [1.13.identidade-e-acesso-ponta-a-ponta.md](/home/carlos/projetos/fapitec/docs/stories/1.13.identidade-e-acesso-ponta-a-ponta.md)
+- [1.18.integracao-casdoor-iam.md](/home/carlos/projetos/fapitec/docs/stories/1.18.integracao-casdoor-iam.md)

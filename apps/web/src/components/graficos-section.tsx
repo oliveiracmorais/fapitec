@@ -88,57 +88,61 @@ export default function GraficosSection() {
         {graficos.map((grafico) => {
           if (grafico.tipo === "donut") {
             return (
-              <div
-                key={grafico.id}
-                className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm"
-                title={grafico.titulo}
-              >
-                <h3 className="mb-4 text-sm font-semibold text-gray-700">
-                  {grafico.titulo}
-                </h3>
-                <ResponsiveContainer width="100%" height={260}>
-                  <PieChart>
-                    <Pie
-                      data={grafico.faixas}
-                      dataKey="valor"
-                      nameKey="nome"
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={60}
-                      outerRadius={100}
-                      paddingAngle={3}
-                    >
-                      {grafico.faixas.map((_, i) => (
-                        <Cell
-                          key={i}
-                          fill={CORES_DONUT[i % CORES_DONUT.length]}
-                        />
-                      ))}
-                    </Pie>
-                    <Tooltip content={<CustomTooltip />} />
-                    <Legend
-                      formatter={(value: string) => (
-                        <span className="text-sm text-gray-600">{value}</span>
-                      )}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
+                <div
+                  key={grafico.id}
+                  className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm"
+                  title={grafico.titulo}
+                  role="region"
+                  aria-label={`Gráfico: ${grafico.titulo}`}
+                >
+                  <h3 className="mb-4 text-sm font-semibold text-gray-700">
+                    {grafico.titulo}
+                  </h3>
+                  <ResponsiveContainer width="100%" height={260}>
+                    <PieChart>
+                      <Pie
+                        data={grafico.faixas}
+                        dataKey="valor"
+                        nameKey="nome"
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={60}
+                        outerRadius={100}
+                        paddingAngle={3}
+                      >
+                        {grafico.faixas.map((_, i) => (
+                          <Cell
+                            key={i}
+                            fill={CORES_DONUT[i % CORES_DONUT.length]}
+                          />
+                        ))}
+                      </Pie>
+                      <Tooltip content={<CustomTooltip />} />
+                      <Legend
+                        formatter={(value: string) => (
+                          <span className="text-sm text-gray-600">{value}</span>
+                        )}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
             );
           }
 
           if (grafico.tipo === "linha") {
             return (
               <div
-                key={grafico.id}
-                className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm"
-                title={grafico.titulo}
-              >
-                <h3 className="mb-4 text-sm font-semibold text-gray-700">
-                  {grafico.titulo}
-                </h3>
-                <ResponsiveContainer width="100%" height={260}>
-                  <LineChart data={grafico.dados}>
+                  key={grafico.id}
+                  className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm"
+                  title={grafico.titulo}
+                  role="region"
+                  aria-label={`Gráfico: ${grafico.titulo}`}
+                >
+                  <h3 className="mb-4 text-sm font-semibold text-gray-700">
+                    {grafico.titulo}
+                  </h3>
+                  <ResponsiveContainer width="100%" height={260}>
+                    <LineChart data={grafico.dados}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
                     <XAxis
                       dataKey="mes"

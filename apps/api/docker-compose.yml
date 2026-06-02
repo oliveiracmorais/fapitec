@@ -46,11 +46,28 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./db/migracoes:/docker-entrypoint-initdb.d
+      - ./db/init-casdoor-db.sql:/docker-entrypoint-initdb.d/02-init-casdoor-db.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U fapitec"]
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - fapitec
+    restart: unless-stopped
+
+  casdoor:
+    image: casbin/casdoor:latest
+    container_name: fapitec-casdoor
+    ports:
+      - "8000:8000"
+    environment:
+      driverName: postgres
+      dataSourceName: "host=postgres port=5432 user=fapitec password=fapitec123 dbname=casdoor sslmode=disable"
+      dbName: casdoor
+    depends_on:
+      postgres:
+        condition: service_healthy
     networks:
       - fapitec
     restart: unless-stopped

@@ -1,0 +1,37 @@
+# Quality Gate — Story 1.16: Dashboard Conformidade
+gate_version: 1.0
+date: 2026-06-01
+reviewer: Quinn (Test Architect)
+
+story:
+  id: 1.16
+  title: "Dashboard — Conformidade com ProjetoFapitec.txt e Termo de Referência"
+  status: "Ready for Review"
+
+validations:
+  lint: PASS
+  typecheck: PASS
+  go_vet: PASS
+  go_test: PASS
+
+acceptance_criteria:
+  AC1_indicadores_cards: PASS
+  AC2_graficos_detalhados: PASS
+  AC3_modulos_clicaveis: PASS
+  AC4_botao_perfil: PASS
+  AC5_endpoints_backend: PASS
+  AC6_aria_labels: PASS
+  AC7_tooltips: PASS
+  AC8_responsivo: PASS
+
+gate_decision: PASS
+
+observations:
+  - "router.push type cast em page.tsx:255 — funcional, recomendado usar void router.push(url)"
+  - "Dados mockados — OK para fase atual, necessita dados reais em stories futuras"
+  - "Sem testes para cmd/api — aceitável para mock data, necessário quando evoluir"
+
+next_steps:
+  - "Revisão visual do dashboard em modo dev (responsivo + gráficos)"
+  - "Criar páginas para rotas dos módulos (/perfil, /inscricao, etc.)"
+  - "Migrar para Story 1.18 (Casdoor IAM) como próximo passo"

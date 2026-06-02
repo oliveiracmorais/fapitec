@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, FormEvent, useEffect } from "react";
+import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import CampoFormulario from "../../../../components/campo-formulario";
@@ -16,12 +16,6 @@ export default function NovoEditalPage() {
   });
   const [erro, setErro] = useState("");
   const [carregando, setCarregando] = useState(false);
-
-  useEffect(() => {
-    const sessao =
-      typeof window !== "undefined" && localStorage.getItem("sessao");
-    if (!sessao) router.replace("/");
-  }, [router]);
 
   function atualizar(chave: string, valor: string) {
     setForm((prev) => ({ ...prev, [chave]: valor }));

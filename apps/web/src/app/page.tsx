@@ -220,9 +220,24 @@ export default function LoginPage() {
         </form>
 
         <div className="mt-6 space-y-3 text-center text-sm">
+          <div className="relative mb-4">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="bg-white px-2 text-gray-500">ou</span>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => (window.location.href = "/api/v1/auth/login")}
+            className="w-full rounded-lg border border-brand-300 bg-white px-4 py-2.5 text-sm font-medium text-brand-700 transition-colors hover:bg-brand-50"
+          >
+            Entrar com FAPITEC (GovBr)
+          </button>
           <Link
             href="/recuperar-senha"
-            className="block text-brand-600 hover:text-brand-700"
+            className="block pt-4 text-brand-600 hover:text-brand-700"
           >
             Esqueci minha senha
           </Link>

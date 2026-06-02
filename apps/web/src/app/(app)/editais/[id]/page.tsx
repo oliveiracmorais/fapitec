@@ -34,13 +34,6 @@ export default function EditalDetalhePage() {
   const [carregando, setCarregando] = useState(true);
 
   useEffect(() => {
-    const sessao =
-      typeof window !== "undefined" && localStorage.getItem("sessao");
-    if (!sessao) {
-      router.replace("/");
-      return;
-    }
-
     if (!params?.id) return;
 
     fetch(`/api/v1/editais/${params.id}`)

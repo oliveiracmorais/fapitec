@@ -8,7 +8,9 @@ import (
 	"net/http"
 	"os"
 	"regexp"
+	"strings"
 
+	"github.com/casdoor/casdoor-go-sdk/casdoorsdk"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
 	"github.com/oliveiracmorais/fapitec/api/internal/auditoria/infraestrutura/adaptadores"
@@ -23,7 +25,9 @@ import (
 	"github.com/oliveiracmorais/fapitec/api/internal/identidade_e_acesso/dominio/repositorios"
 	"github.com/oliveiracmorais/fapitec/api/internal/identidade_e_acesso/dominio/servicos"
 	emailService "github.com/oliveiracmorais/fapitec/api/internal/identidade_e_acesso/infraestrutura/email"
+	"github.com/oliveiracmorais/fapitec/api/internal/identidade_e_acesso/infraestrutura/autenticacao"
 	"github.com/oliveiracmorais/fapitec/api/internal/identidade_e_acesso/infraestrutura/verificacao"
+	interfacesHTTP "github.com/oliveiracmorais/fapitec/api/internal/identidade_e_acesso/interfaces/http"
 	"github.com/oliveiracmorais/fapitec/api/internal/identidade_e_acesso/infraestrutura/hash"
 	"github.com/oliveiracmorais/fapitec/api/internal/identidade_e_acesso/infraestrutura/persistencia"
 	sqlcgedital "github.com/oliveiracmorais/fapitec/api/internal/gestao_de_editais/infraestrutura/persistencia/sqlc"
@@ -62,6 +66,24 @@ func main() {
 	var repo repositorios.RepositorioDeUsuario
 	var tokenRepo repositorios.RepositorioDeTokenRedefinicao
 	var editalRepo gestaoEditaisRepositorios.RepositorioDeEdital
+
+	authProvider := os.Getenv("AUTH_PROVIDER")
+	if authProvider == "" {
+		authProvider = "internal"
+	}
+	log.Printf("AUTH_PROVIDER=%s", authProvider)
+
+	casdoorAdapter := autenticacao.NovoAdaptadorCasdoor(
+		os.Getenv("CASDOOR_ENDPOINT"),
+		os.Getenv("CASDOOR_CLIENT_ID"),
+		os.Getenv("CASDOOR_CLIENT_SECRET"),
+		os.Getenv("CASDOOR_CERTIFICATE"),
+		os.Getenv("CASDOOR_ORGANIZATION_NAME"),
+		os.Getenv("CASDOOR_ORGANIZATION_NAME"),
+	)
+	if authProvider == "casdoor" {
+		log.Printf("Adaptador Casdoor inicializado: AUTH_PROVIDER=casdoor, middlewares ativos")
+	}
 
 	dbURL := os.Getenv("DATABASE_URL")
 	if dbURL == "" {
@@ -139,13 +161,133 @@ func main() {
 			return
 		}
 
+		if authProvider == "casdoor" {
+			perfil := "proponente"
+			if err := casdoorAdapter.CriarUsuario(context.Background(), req.Nome, req.Email, req.CPF, req.Senha, perfil); err != nil {
+				log.Printf("Aviso: usuario criado localmente mas falha ao criar no Casdoor: %v", err)
+			}
+		}
+
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 		json.NewEncoder(w).Encode(saida)
 	}
 
-	mux.HandleFunc("POST /api/v1/cadastro", cadastroHandler)
-	mux.HandleFunc("POST /api/v1/register", cadastroHandler)
+	if authProvider != "casdoor" {
+		mux.HandleFunc("POST /api/v1/cadastro", cadastroHandler)
+		mux.HandleFunc("POST /api/v1/register", cadastroHandler)
+		mux.HandleFunc("POST /api/v1/login", func(w http.ResponseWriter, r *http.Request) {
+			var req struct {
+				CPF          string `json:"cpf"`
+				Senha        string `json:"senha"`
+				CaptchaToken string `json:"captcha_token"`
+			}
+			if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+				jsonError(w, `{"erro":"requisicao invalida"}`, http.StatusBadRequest)
+				return
+			}
+
+			cpfLimpo := regexp.MustCompile(`\D`).ReplaceAllString(req.CPF, "")
+			usuario, _ := repo.BuscarPorCPF(r.Context(), cpfLimpo)
+			if usuario != nil && usuario.Tentativas >= 3 {
+				valido, _ := turnstileVerificador.Verificar(req.CaptchaToken)
+				if !valido {
+					jsonError(w, `{"erro":"Validacao de captcha falhou. Tente novamente."}`, http.StatusUnauthorized)
+					return
+				}
+			}
+
+			entrada := dto.AutenticarUsuarioEntrada{
+				CPF:   req.CPF,
+				Senha: req.Senha,
+			}
+
+			saida, err := autenticar.Executar(context.Background(), entrada)
+			if err != nil {
+				jsonError(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusUnauthorized)
+				return
+			}
+
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(saida)
+		})
+		mux.HandleFunc("POST /api/v1/solicitar-redefinicao-senha", func(w http.ResponseWriter, r *http.Request) {
+			var req struct {
+				Email string `json:"email"`
+			}
+			if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+				jsonError(w, `{"erro":"requisicao invalida"}`, http.StatusBadRequest)
+				return
+			}
+
+			entrada := dto.SolicitarRedefinicaoSenhaEntrada{
+				Email: req.Email,
+			}
+
+			err := solicitarRedefinicao.Executar(context.Background(), entrada)
+			if err != nil {
+				jsonError(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusBadRequest)
+				return
+			}
+
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(map[string]string{
+				"mensagem": "Se o e-mail estiver cadastrado, voce recebera um link de redefinicao de senha.",
+			})
+		})
+		mux.HandleFunc("POST /api/v1/reset-password", func(w http.ResponseWriter, r *http.Request) {
+			var req struct {
+				Email string `json:"email"`
+			}
+			if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+				jsonError(w, `{"erro":"requisicao invalida"}`, http.StatusBadRequest)
+				return
+			}
+
+			entrada := dto.SolicitarRedefinicaoSenhaEntrada{
+				Email: req.Email,
+			}
+
+			err := solicitarRedefinicao.Executar(context.Background(), entrada)
+			if err != nil {
+				jsonError(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusBadRequest)
+				return
+			}
+
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(map[string]string{
+				"mensagem": "Se o e-mail estiver cadastrado, voce recebera um link de redefinicao de senha.",
+			})
+		})
+		mux.HandleFunc("POST /api/v1/redefinir-senha", func(w http.ResponseWriter, r *http.Request) {
+			var req struct {
+				Token            string `json:"token"`
+				Senha            string `json:"senha"`
+				ConfirmacaoSenha string `json:"confirmacao_senha"`
+			}
+			if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+				jsonError(w, `{"erro":"requisicao invalida"}`, http.StatusBadRequest)
+				return
+			}
+
+			entrada := dto.RedefinirSenhaEntrada{
+				Token:            req.Token,
+				Senha:            req.Senha,
+				ConfirmacaoSenha: req.ConfirmacaoSenha,
+			}
+
+			err := redefinirSenha.Executar(context.Background(), entrada)
+			if err != nil {
+				jsonError(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusBadRequest)
+				return
+			}
+
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(map[string]string{
+				"mensagem": "Senha redefinida com sucesso.",
+			})
+		})
+	}
 
 	mux.HandleFunc("GET /api/v1/check-cpf", func(w http.ResponseWriter, r *http.Request) {
 		cpf := r.URL.Query().Get("cpf")
@@ -163,40 +305,49 @@ func main() {
 		json.NewEncoder(w).Encode(map[string]bool{"existe": existe})
 	})
 
-	mux.HandleFunc("POST /api/v1/login", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("GET /api/v1/auth/login", func(w http.ResponseWriter, r *http.Request) {
+		if authProvider != "casdoor" {
+			jsonError(w, `{"erro":"provedor casdoor nao configurado"}`, http.StatusBadRequest)
+			return
+		}
+		redirectURI := r.URL.Query().Get("redirect_uri")
+		if redirectURI == "" {
+			redirectURI = fmt.Sprintf("%s/api/v1/auth/callback", r.URL.Scheme+"://"+r.Host)
+			if r.URL.Scheme == "" {
+				redirectURI = fmt.Sprintf("http://%s/api/v1/auth/callback", r.Host)
+			}
+		}
+		state := r.URL.Query().Get("state")
+		if state == "" {
+			state = "fapitec-state"
+		}
+		url := casdoorAdapter.GerarURLDeAutorizacao(redirectURI, state)
+		http.Redirect(w, r, url, http.StatusFound)
+	})
+
+	mux.HandleFunc("POST /api/v1/auth/callback", func(w http.ResponseWriter, r *http.Request) {
+		if authProvider != "casdoor" {
+			jsonError(w, `{"erro":"provedor casdoor nao configurado"}`, http.StatusBadRequest)
+			return
+		}
 		var req struct {
-			CPF          string `json:"cpf"`
-			Senha        string `json:"senha"`
-			CaptchaToken string `json:"captcha_token"`
+			Code  string `json:"code"`
+			State string `json:"state"`
 		}
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 			jsonError(w, `{"erro":"requisicao invalida"}`, http.StatusBadRequest)
 			return
 		}
-
-		cpfLimpo := regexp.MustCompile(`\D`).ReplaceAllString(req.CPF, "")
-		usuario, _ := repo.BuscarPorCPF(r.Context(), cpfLimpo)
-		if usuario != nil && usuario.Tentativas >= 3 {
-			valido, _ := turnstileVerificador.Verificar(req.CaptchaToken)
-			if !valido {
-				jsonError(w, `{"erro":"Validacao de captcha falhou. Tente novamente."}`, http.StatusUnauthorized)
-				return
-			}
-		}
-
-		entrada := dto.AutenticarUsuarioEntrada{
-			CPF:   req.CPF,
-			Senha: req.Senha,
-		}
-
-		saida, err := autenticar.Executar(context.Background(), entrada)
+		token, err := casdoorAdapter.TrocarCodigoPorToken(req.Code, req.State)
 		if err != nil {
-			jsonError(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusUnauthorized)
+			jsonError(w, fmt.Sprintf(`{"erro":"falha ao obter token: %s"}`, err.Error()), http.StatusUnauthorized)
 			return
 		}
-
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(saida)
+		json.NewEncoder(w).Encode(map[string]string{
+			"access_token": token,
+			"token_type":   "Bearer",
+		})
 	})
 
 	mux.HandleFunc("GET /api/v1/user-profile", func(w http.ResponseWriter, r *http.Request) {
@@ -228,63 +379,6 @@ func main() {
 			"email":       usuario.Email.String(),
 			"estrangeiro": usuario.Estrangeiro,
 			"criado_em":   usuario.CriadoEm.Format("2006-01-02T15:04:05-07:00"),
-		})
-	})
-
-	solicitarRedefinicaoHandler := func(w http.ResponseWriter, r *http.Request) {
-		var req struct {
-			Email string `json:"email"`
-		}
-		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			jsonError(w, `{"erro":"requisicao invalida"}`, http.StatusBadRequest)
-			return
-		}
-
-		entrada := dto.SolicitarRedefinicaoSenhaEntrada{
-			Email: req.Email,
-		}
-
-		err := solicitarRedefinicao.Executar(context.Background(), entrada)
-		if err != nil {
-			jsonError(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusBadRequest)
-			return
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]string{
-			"mensagem": "Se o e-mail estiver cadastrado, voce recebera um link de redefinicao de senha.",
-		})
-	}
-
-	mux.HandleFunc("POST /api/v1/solicitar-redefinicao-senha", solicitarRedefinicaoHandler)
-	mux.HandleFunc("POST /api/v1/reset-password", solicitarRedefinicaoHandler)
-
-	mux.HandleFunc("POST /api/v1/redefinir-senha", func(w http.ResponseWriter, r *http.Request) {
-		var req struct {
-			Token            string `json:"token"`
-			Senha            string `json:"senha"`
-			ConfirmacaoSenha string `json:"confirmacao_senha"`
-		}
-		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			jsonError(w, `{"erro":"requisicao invalida"}`, http.StatusBadRequest)
-			return
-		}
-
-		entrada := dto.RedefinirSenhaEntrada{
-			Token:            req.Token,
-			Senha:            req.Senha,
-			ConfirmacaoSenha: req.ConfirmacaoSenha,
-		}
-
-		err := redefinirSenha.Executar(context.Background(), entrada)
-		if err != nil {
-			jsonError(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusBadRequest)
-			return
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]string{
-			"mensagem": "Senha redefinida com sucesso.",
 		})
 	})
 
@@ -418,10 +512,16 @@ func main() {
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]any{
 			"indicadores": []map[string]any{
-				{"id": "iso-27001", "nome": "Progresso ISO 27001", "valor": 65, "tipo": "porcentagem", "cor": "violeta"},
-				{"id": "nao-conformidades", "nome": "Não Conformidades Tratadas", "valor": 78, "tipo": "porcentagem", "cor": "verde"},
-				{"id": "valor-absoluto", "nome": "Valor em Projetos", "valor": 5000, "tipo": "numero", "cor": "azul"},
-				{"id": "status-geral", "nome": "Status Geral", "valor": 82, "tipo": "barra", "cor": "laranja"},
+				{"id": "iso-27001", "nome": "Progresso ISO 27001", "valor": 65, "tipo": "pizza", "cor": "violeta"},
+				{"id": "nao-conformidades", "nome": "Não Conformidades Tratadas", "valor": 78, "tipo": "pizza", "cor": "verde"},
+				{"id": "valor-absoluto", "nome": "Valor Absoluto", "valor": 5000, "tipo": "linha", "cor": "azul", "dados": []map[string]any{
+					{"mes": "Jan", "valor": 3200},
+					{"mes": "Fev", "valor": 4100},
+					{"mes": "Mar", "valor": 3800},
+					{"mes": "Abr", "valor": 4600},
+					{"mes": "Mai", "valor": 5000},
+				}},
+				{"id": "status-geral", "nome": "Status do Gráfico", "valor": 82, "tipo": "barra", "cor": "laranja"},
 			},
 		})
 	})
@@ -452,11 +552,64 @@ func main() {
 		})
 	})
 
+	var handler http.Handler = mux
+	if authProvider == "casdoor" {
+		publicPaths := map[string]bool{
+			"/api/v1/health": true, "/api/v1/cadastro": true, "/api/v1/register": true,
+			"/api/v1/check-cpf": true, "/api/v1/check-email": true, "/api/v1/login": true,
+			"/api/v1/solicitar-redefinicao-senha": true, "/api/v1/reset-password": true,
+			"/api/v1/redefinir-senha": true, "/api/v1/auth/login": true,
+			"/api/v1/auth/callback": true,
+		}
+
+		routePermissions := []struct {
+			prefix   string
+			modulo   string
+			operacao string
+		}{
+			{"/api/v1/editais", "editais", "gerenciar"},
+			{"/api/v1/dashboard", "dashboard", "visualizar"},
+			{"/api/v1/auditoria", "auditoria", "listar"},
+			{"/api/v1/user-profile", "identidade_e_acesso", "visualizar"},
+		}
+
+		authMW := interfacesHTTP.AutenticacaoMiddleware(casdoorAdapter)
+		handler = authMW(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if publicPaths[r.URL.Path] {
+				mux.ServeHTTP(w, r)
+				return
+			}
+
+			perfil := ""
+			if claims, ok := r.Context().Value(interfacesHTTP.UsuarioContextKey).(*casdoorsdk.Claims); ok {
+				perfil = claims.Type
+			}
+			if perfil == "" {
+				perfil = "proponente"
+			}
+
+			for _, rp := range routePermissions {
+				if strings.HasPrefix(r.URL.Path, rp.prefix) {
+					permitido, err := casdoorAdapter.VerificarPermissao(r.Context(), "", perfil, rp.modulo, rp.operacao)
+					if err != nil || !permitido {
+						w.Header().Set("Content-Type", "application/json")
+						w.WriteHeader(http.StatusForbidden)
+						w.Write([]byte(`{"erro":"acesso negado"}`))
+						return
+					}
+					break
+				}
+			}
+
+			mux.ServeHTTP(w, r)
+		}))
+	}
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
 	}
 
 	log.Printf("API rodando na porta %s", port)
-	log.Fatal(http.ListenAndServe(":"+port, mux))
+	log.Fatal(http.ListenAndServe(":"+port, handler))
 }

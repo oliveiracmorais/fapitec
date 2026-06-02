@@ -31,6 +31,8 @@ Thumbs.db
 .aiox/install-log.txt
 .aiox/handoffs/
 apps/api/bin/
+apps/api/api
+apps/api/seed
 
 .next/
 *.tsbuildinfo

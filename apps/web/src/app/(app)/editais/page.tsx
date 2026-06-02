@@ -15,17 +15,6 @@ type Edital = {
   criado_em: string;
 };
 
-function obterSessao() {
-  if (typeof window === "undefined") return null;
-  const raw = localStorage.getItem("sessao");
-  if (!raw) return null;
-  try {
-    return JSON.parse(raw);
-  } catch {
-    return null;
-  }
-}
-
 const statusLabel: Record<string, string> = {
   ativo: "Ativo",
   encerrado: "Encerrado",
@@ -45,13 +34,8 @@ export default function EditaisPage() {
   const [carregando, setCarregando] = useState(true);
 
   useEffect(() => {
-    const sessao = obterSessao();
-    if (!sessao) {
-      router.replace("/");
-      return;
-    }
     carregarEditais();
-  }, [router]);
+  }, []);
 
   async function carregarEditais(titulo?: string) {
     setCarregando(true);

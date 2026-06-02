@@ -22,6 +22,7 @@ services:
       - "127.0.0.1:5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./api/db/init-casdoor-db.sql:/docker-entrypoint-initdb.d/02-init-casdoor-db.sql
     networks:
       - app_network
     restart: unless-stopped
@@ -31,6 +32,22 @@ services:
       timeout: 5s
       retries: 5
 
+  casdoor:
+    image: casbin/casdoor:latest
+    container_name: fapitec-casdoor
+    environment:
+      driverName: postgres
+      dataSourceName: "host=postgres port=5432 user=fapitec password=${DB_PASSWORD} dbname=casdoor sslmode=disable"
+      dbName: casdoor
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - app_network
+    restart: unless-stopped
+
   api:
     build:
       context: ./api
@@ -38,6 +55,12 @@ services:
     container_name: fapitec-api
     environment:
       DATABASE_URL: ${DATABASE_URL}
+      AUTH_PROVIDER: ${AUTH_PROVIDER:-internal}
+      CASDOOR_ENDPOINT: ${CASDOOR_ENDPOINT}
+      CASDOOR_CLIENT_ID: ${CASDOOR_CLIENT_ID}
+      CASDOOR_CLIENT_SECRET: ${CASDOOR_CLIENT_SECRET}
+      CASDOOR_CERTIFICATE: ${CASDOOR_CERTIFICATE}
+      CASDOOR_ORGANIZATION_NAME: ${CASDOOR_ORGANIZATION_NAME}
       SMTP_HOST: ${SMTP_HOST}
       SMTP_PORT: ${SMTP_PORT}
       SMTP_USER: ${SMTP_USER}
