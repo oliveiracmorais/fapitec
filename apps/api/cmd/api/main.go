@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"os"
 	"regexp"
-	"strings"
 	"time"
 
 	"github.com/casdoor/casdoor-go-sdk/casdoorsdk"
@@ -76,16 +75,17 @@ func main() {
 	log.Printf("AUTH_PROVIDER=%s", authProvider)
 
 	var casdoorAdapter *autenticacao.AdaptadorCasdoor
-	if authProvider == "casdoor" {
+	casdoorEndpoint := os.Getenv("CASDOOR_ENDPOINT")
+	if casdoorEndpoint != "" {
 		casdoorAdapter = autenticacao.NovoAdaptadorCasdoor(
-			os.Getenv("CASDOOR_ENDPOINT"),
+			casdoorEndpoint,
 			os.Getenv("CASDOOR_CLIENT_ID"),
 			os.Getenv("CASDOOR_CLIENT_SECRET"),
 			os.Getenv("CASDOOR_CERTIFICATE"),
 			os.Getenv("CASDOOR_ORGANIZATION_NAME"),
 			os.Getenv("CASDOOR_ORGANIZATION_NAME"),
 		)
-		log.Printf("Adaptador Casdoor inicializado: AUTH_PROVIDER=casdoor, middlewares ativos")
+		log.Printf("Adaptador Casdoor inicializado (endpoint: %s)", casdoorEndpoint)
 	}
 
 	dbURL := os.Getenv("DATABASE_URL")
@@ -164,7 +164,7 @@ func main() {
 			return
 		}
 
-		if authProvider == "casdoor" {
+		if casdoorAdapter != nil {
 			perfil := "proponente"
 			if err := casdoorAdapter.CriarUsuario(context.Background(), req.Nome, req.Email, req.CPF, req.Senha, perfil); err != nil {
 				log.Printf("Aviso: usuario criado localmente mas falha ao criar no Casdoor: %v", err)
@@ -176,9 +176,8 @@ func main() {
 		json.NewEncoder(w).Encode(saida)
 	}
 
-	if authProvider != "casdoor" {
-		mux.HandleFunc("POST /api/v1/cadastro", cadastroHandler)
-		mux.HandleFunc("POST /api/v1/register", cadastroHandler)
+	mux.HandleFunc("POST /api/v1/cadastro", cadastroHandler)
+	mux.HandleFunc("POST /api/v1/register", cadastroHandler)
 		mux.HandleFunc("POST /api/v1/login", func(w http.ResponseWriter, r *http.Request) {
 			var req struct {
 				CPF          string `json:"cpf"`
@@ -292,19 +291,6 @@ func main() {
 				"mensagem": "Senha redefinida com sucesso.",
 			})
 		})
-	}
-
-	if authProvider == "casdoor" {
-		goneHandler := func(w http.ResponseWriter, r *http.Request) {
-			jsonError(w, `{"erro":"autenticacao propria desabilitada — use /api/v1/auth/login com Casdoor"}`, http.StatusGone)
-		}
-		mux.HandleFunc("POST /api/v1/cadastro", goneHandler)
-		mux.HandleFunc("POST /api/v1/register", goneHandler)
-		mux.HandleFunc("POST /api/v1/login", goneHandler)
-		mux.HandleFunc("POST /api/v1/solicitar-redefinicao-senha", goneHandler)
-		mux.HandleFunc("POST /api/v1/reset-password", goneHandler)
-		mux.HandleFunc("POST /api/v1/redefinir-senha", goneHandler)
-	}
 
 	mux.HandleFunc("GET /api/v1/check-cpf", func(w http.ResponseWriter, r *http.Request) {
 		cpf := r.URL.Query().Get("cpf")
@@ -323,7 +309,7 @@ func main() {
 	})
 
 	mux.HandleFunc("GET /api/v1/auth/login", func(w http.ResponseWriter, r *http.Request) {
-		if authProvider != "casdoor" {
+		if casdoorAdapter == nil {
 			jsonError(w, `{"erro":"provedor casdoor nao configurado"}`, http.StatusBadRequest)
 			return
 		}
@@ -346,37 +332,44 @@ func main() {
 		http.Redirect(w, r, url, http.StatusFound)
 	})
 
-	mux.HandleFunc("POST /api/v1/auth/callback", func(w http.ResponseWriter, r *http.Request) {
-		if authProvider != "casdoor" {
+	mux.HandleFunc("GET /api/v1/auth/callback", func(w http.ResponseWriter, r *http.Request) {
+		if casdoorAdapter == nil {
 			jsonError(w, `{"erro":"provedor casdoor nao configurado"}`, http.StatusBadRequest)
 			return
 		}
-		var req struct {
-			Code  string `json:"code"`
-			State string `json:"state"`
-		}
-		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			jsonError(w, `{"erro":"requisicao invalida"}`, http.StatusBadRequest)
+		code := r.URL.Query().Get("code")
+		state := r.URL.Query().Get("state")
+		if code == "" {
+			jsonError(w, `{"erro":"codigo de autorizacao ausente"}`, http.StatusBadRequest)
 			return
 		}
-		token, err := casdoorAdapter.TrocarCodigoPorToken(req.Code, req.State)
+		token, err := casdoorAdapter.TrocarCodigoPorToken(code, state)
 		if err != nil {
 			jsonError(w, fmt.Sprintf(`{"erro":"falha ao obter token: %s"}`, err.Error()), http.StatusUnauthorized)
 			return
 		}
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]string{
-			"access_token": token,
-			"token_type":   "Bearer",
+		http.SetCookie(w, &http.Cookie{
+			Name:     "fapitec_token",
+			Value:    token,
+			Path:     "/",
+			HttpOnly: true,
+			Secure:   true,
+			SameSite: http.SameSiteLaxMode,
+			MaxAge:   86400,
 		})
+		http.Redirect(w, r, "/dashboard", http.StatusFound)
 	})
 
 	mux.HandleFunc("GET /api/v1/user-profile", func(w http.ResponseWriter, r *http.Request) {
-		if claims, ok := r.Context().Value(interfacesHTTP.UsuarioContextKey).(*casdoorsdk.Claims); ok && authProvider == "casdoor" {
+		if claims, ok := r.Context().Value(interfacesHTTP.UsuarioContextKey).(*casdoorsdk.Claims); ok {
+			nome := claims.DisplayName
+			if nome == "" {
+				nome = claims.Name
+			}
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(map[string]any{
 				"documento": claims.Name,
-				"nome":      claims.DisplayName,
+				"nome":      nome,
 				"email":     claims.Email,
 				"perfil":    claims.Type,
 			})
@@ -585,60 +578,24 @@ func main() {
 	})
 
 	var handler http.Handler = mux
-	if authProvider == "casdoor" {
-		publicPaths := map[string]bool{
-			"/api/v1/health":    true,
-			"/api/v1/check-cpf": true, "/api/v1/check-email": true,
-			"/api/v1/auth/login":    true,
-			"/api/v1/auth/callback": true,
-		}
 
-		routePermissions := []struct {
-			prefix   string
-			modulo   string
-			operacao string
-		}{
-			{"/api/v1/editais", "editais", "gerenciar"},
-			{"/api/v1/dashboard", "dashboard", "visualizar"},
-			{"/api/v1/auditoria", "auditoria", "listar"},
-			{"/api/v1/user-profile", "identidade_e_acesso", "visualizar"},
-		}
+	publicPaths := map[string]bool{
+		"/api/v1/health":          true,
+		"/api/v1/check-cpf":       true, "/api/v1/check-email": true,
+		"/api/v1/auth/login":      true,
+		"/api/v1/auth/callback":   true,
+		"/api/v1/login":           true,
+		"/api/v1/cadastro":        true,
+		"/api/v1/register":        true,
+		"/api/v1/solicitar-redefinicao-senha": true,
+		"/api/v1/reset-password":  true,
+		"/api/v1/redefinir-senha": true,
+	}
 
+	if casdoorAdapter != nil {
 		authMW := interfacesHTTP.AutenticacaoMiddleware(casdoorAdapter)
 
-		// Rotas publicas bypassam autenticacao e autorizacao
-		// Rotas protegidas passam por authMW (valida JWT) + authZ (enforce)
 		protectedHandler := authMW(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			var usuarioID, perfil string
-			if claims, ok := r.Context().Value(interfacesHTTP.UsuarioContextKey).(*casdoorsdk.Claims); ok {
-				usuarioID = claims.Name
-				perfil = claims.Type
-			}
-			if perfil == "" {
-				perfil = "proponente"
-			}
-
-			matched := false
-			for _, rp := range routePermissions {
-				if strings.HasPrefix(r.URL.Path, rp.prefix) {
-					matched = true
-					permitido, err := casdoorAdapter.VerificarPermissao(r.Context(), usuarioID, perfil, rp.modulo, rp.operacao)
-					if err != nil || !permitido {
-						w.Header().Set("Content-Type", "application/json")
-						w.WriteHeader(http.StatusForbidden)
-						w.Write([]byte(`{"erro":"acesso negado"}`))
-						return
-					}
-					break
-				}
-			}
-			if !matched {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusForbidden)
-				w.Write([]byte(`{"erro":"acesso negado — rota sem permissao mapeada"}`))
-				return
-			}
-
 			mux.ServeHTTP(w, r)
 		}))
 

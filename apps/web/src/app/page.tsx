@@ -236,7 +236,7 @@ export default function LoginPage() {
             onClick={() => (window.location.href = "/api/v1/auth/login")}
             className="w-full rounded-lg border border-brand-300 bg-white px-4 py-2.5 text-sm font-medium text-brand-700 transition-colors hover:bg-brand-50"
           >
-            Entrar com FAPITEC (GovBr)
+            Entrar com gov.br (simulação)
           </button>
           <Link
             href="/recuperar-senha"

@@ -8,29 +8,23 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const payload = JSON.parse(
-      decodeURIComponent(
-        atob(
-          token
-            .split(".")[1]
-            .replace(/-/g, "+")
-            .replace(/_/g, "/")
-        )
-          .split("")
-          .map(
-            (c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2)
-          )
-          .join("")
-      )
-    );
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+    const res = await fetch(`${apiUrl}/api/v1/user-profile`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
+    if (!res.ok) {
+      return NextResponse.json({ authenticated: false }, { status: 401 });
+    }
+
+    const data = await res.json();
     return NextResponse.json({
       authenticated: true,
       usuario: {
-        id: payload.sub || "",
-        nome: payload.name || payload.real_name || "",
-        documento: payload.name || "",
-        email: payload.email || "",
+        id: data.documento || "",
+        nome: data.nome || "",
+        documento: data.documento || "",
+        email: data.email || "",
         estrangeiro: false,
       },
     });

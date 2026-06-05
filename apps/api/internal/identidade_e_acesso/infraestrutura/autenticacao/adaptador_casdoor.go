@@ -43,7 +43,7 @@ func (a *AdaptadorCasdoor) GerarURLDeAutorizacao(redirectURI, state string) stri
 		ClientID:     a.client.ClientId,
 		ClientSecret: a.client.ClientSecret,
 		Endpoint: oauth2.Endpoint{
-			AuthURL:   fmt.Sprintf("%s/api/login/oauth/authorize", a.client.Endpoint),
+			AuthURL:   fmt.Sprintf("%s/login/oauth/authorize", a.client.Endpoint),
 			TokenURL:  fmt.Sprintf("%s/api/login/oauth/access_token", a.client.Endpoint),
 			AuthStyle: oauth2.AuthStyleInParams,
 		},

@@ -12,7 +12,7 @@
 | Total de cenários planejados | 10 (ACs) |
 | Total de cenários executados | 10 |
 | Cenários com falha | 0 |
-| Cenários pendentes (integração manual) | 2 (AC8, AC9 — ver notas) |
+| Cenários pendentes (integração manual) | 0 (AC8 PASS, AC9 PASS) |
 
 ---
 
@@ -147,7 +147,7 @@
 2. Fazer login OIDC via `GET /api/v1/auth/login`
 3. Verificar callback e obtenção de JWT
 
-**Resultado:** PENDENTE — Depende de ambiente com Casdoor funcional e subdomínio configurado (Story 2.1.1).
+**Resultado:** PASS (2026-06-05) — Usuário `11122233344` (proponente, organização `fapitec`) criado via API Casdoor. Login OIDC via "Entrar com FAPITEC" bem-sucedido: Casdoor → callback → cookie JWT → redirect `/dashboard`. Dashboard exibido com dados do usuário autenticado.
 
 **Cobertura de código:** O fluxo de criação (`casdoorAdapter.CriarUsuario`) é chamado em `main.go`:167-172. O fluxo de callback OIDC é testado indiretamente via `TestTrocarCodigoPorToken` (cobertura parcial).
 
@@ -161,7 +161,7 @@
 1. Desabilitar usuário na UI do Casdoor
 2. Tentar login OIDC — Casdoor rejeita na origem
 
-**Resultado:** PENDENTE — Teste manual requer Casdoor rodando.
+**Resultado:** PASS (2026-06-05) — Usuário `11122233344` desabilitado via PostgreSQL (`is_forbidden=true`). Casdoor API retorna `"The user is forbidden to sign in, please contact the administrator"`. Usuário reativado após teste (`is_forbidden=false`).
 
 **Nota:** A validação de usuário desabilitado é responsabilidade do Casdoor. O middleware Go apenas valida JWT — se o Casdoor não emite JWT para usuário desabilitado, o fluxo inteiro é bloqueado.
 

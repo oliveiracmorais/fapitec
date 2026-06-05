@@ -86,7 +86,7 @@ func TestGerarURLDeAutorizacao(t *testing.T) {
 	a := NovoAdaptadorCasdoor("http://localhost:8000", "client-id", "secret", "cert", "fapitec", "fapitec")
 	url := a.GerarURLDeAutorizacao("http://localhost:3000/auth/callback", "test-state")
 
-	if !strings.Contains(url, "http://localhost:8000/api/login/oauth/authorize") {
+	if !strings.Contains(url, "http://localhost:8000/login/oauth/authorize") {
 		t.Errorf("URL deve conter o endpoint de autorizacao: %s", url)
 	}
 	if !strings.Contains(url, "client_id=client-id") {
