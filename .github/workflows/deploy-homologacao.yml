@@ -130,11 +130,14 @@ jobs:
           # Copiar scripts de deploy e rollback
           scp ${{ env.DEPLOY_SCRIPT }} ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_DIR }}/scripts/deploy-homologacao.sh
           scp ${{ env.ROLLBACK_SCRIPT }} ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_DIR }}/scripts/rollback-homologacao.sh
+          scp scripts/deploy-vm.sh ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_DIR }}/scripts/deploy-vm.sh
 
       - name: Executar deploy na VM
         run: |
           echo "=== Executando deploy via SSH ==="
-          ssh ${{ env.SSH_USER }}@${{ env.SSH_HOST }} "cd ${{ env.REMOTE_DIR }} && bash scripts/deploy-homologacao.sh"
+          scp ${{ env.DEPLOY_SCRIPT }} ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_DIR }}/scripts/deploy-homologacao.sh
+          scp scripts/deploy-vm.sh ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_DIR }}/scripts/deploy-vm.sh
+          ssh ${{ env.SSH_USER }}@${{ env.SSH_HOST }} "cd ${{ env.REMOTE_DIR }} && bash scripts/deploy-vm.sh"
 
       - name: Healthcheck - API
         id: healthcheck-api
