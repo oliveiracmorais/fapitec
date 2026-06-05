@@ -16,6 +16,12 @@ Preparar ambiente de homologação na Oracle Cloud VM e realizar deploy funciona
 - Migrações SQL automatizadas no deploy
 - Dozzle instalado para logs em tempo real (`/logs/`)
 - Estrutura reorganizada para `~/apps/fapitec/` na VM
+- **Story 2.1.2 — Testes de Resiliência do Sistema IAM concluída:**
+  - 8 novos testes automatizados de resiliência (410 Gone, JWT expiry, JWT inválido, token ausente)
+  - 410 Gone handlers implementados para 6 endpoints legados no modo Casdoor
+  - Relatório consolidado em `docs/qa/testes-resiliencia-iam.md`
+  - 10/10 acceptance criteria validados (8 automatizados + 2 manuais documentados)
+  - Força bruta, rollback, JWT, 410 Gone — todos PASS
 - **Story 1.18 — Integração Casdoor IAM concluída** (Waves 1-9):
   - Infraestrutura local + homologação (Docker, init DB, feature flag)
   - Adapter Casdoor Go (JWT, OAuth, Enforce, criar usuário, GerarURL)

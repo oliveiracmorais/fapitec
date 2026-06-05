@@ -294,6 +294,18 @@ func main() {
 		})
 	}
 
+	if authProvider == "casdoor" {
+		goneHandler := func(w http.ResponseWriter, r *http.Request) {
+			jsonError(w, `{"erro":"autenticacao propria desabilitada — use /api/v1/auth/login com Casdoor"}`, http.StatusGone)
+		}
+		mux.HandleFunc("POST /api/v1/cadastro", goneHandler)
+		mux.HandleFunc("POST /api/v1/register", goneHandler)
+		mux.HandleFunc("POST /api/v1/login", goneHandler)
+		mux.HandleFunc("POST /api/v1/solicitar-redefinicao-senha", goneHandler)
+		mux.HandleFunc("POST /api/v1/reset-password", goneHandler)
+		mux.HandleFunc("POST /api/v1/redefinir-senha", goneHandler)
+	}
+
 	mux.HandleFunc("GET /api/v1/check-cpf", func(w http.ResponseWriter, r *http.Request) {
 		cpf := r.URL.Query().Get("cpf")
 		usuario, _ := repo.BuscarPorCPF(context.Background(), cpf)
