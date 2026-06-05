@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -9,6 +10,7 @@ import (
 	"os"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/casdoor/casdoor-go-sdk/casdoorsdk"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -208,6 +210,30 @@ func main() {
 				jsonError(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusUnauthorized)
 				return
 			}
+
+			payload := map[string]interface{}{
+				"sub":   fmt.Sprintf("%d", saida.ID),
+				"name":  saida.Nome,
+				"email": saida.Email,
+				"iat":   time.Now().Unix(),
+				"exp":   time.Now().Add(24 * time.Hour).Unix(),
+			}
+			payloadBytes, _ := json.Marshal(payload)
+
+			header := base64.RawURLEncoding.EncodeToString([]byte(`{"alg":"HS256","typ":"JWT"}`))
+			payloadB64 := base64.RawURLEncoding.EncodeToString(payloadBytes)
+			signature := base64.RawURLEncoding.EncodeToString([]byte{})
+			token := fmt.Sprintf("%s.%s.%s", header, payloadB64, signature)
+
+			http.SetCookie(w, &http.Cookie{
+				Name:     "fapitec_token",
+				Value:    token,
+				Path:     "/",
+				HttpOnly: true,
+				Secure:   true,
+				SameSite: http.SameSiteLaxMode,
+				MaxAge:   86400,
+			})
 
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(saida)

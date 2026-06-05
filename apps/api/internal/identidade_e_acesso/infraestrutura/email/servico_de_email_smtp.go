@@ -33,8 +33,12 @@ func (s *ServicoDeEmailSMTP) EnviarRedefinicaoSenha(ctx context.Context, email, 
 	subject := "Redefinicao de Senha - FAPITEC-SE"
 	body := s.montarTemplateHTML(link)
 
-	auth := smtp.PlainAuth("", s.user, s.pass, s.host)
 	addr := fmt.Sprintf("%s:%s", s.host, s.port)
+
+	var auth smtp.Auth
+	if s.user != "" {
+		auth = smtp.PlainAuth("", s.user, s.pass, s.host)
+	}
 
 	msg := fmt.Sprintf("From: %s\r\nTo: %s\r\nSubject: %s\r\nMIME-Version: 1.0\r\nContent-Type: text/html; charset=\"UTF-8\"\r\n\r\n%s", s.from, email, subject, body)
 
@@ -80,11 +84,9 @@ func (s *ServicoDeEmailSMTP) montarTemplateHTML(link string) string {
 func ConfigSMTPPresente() bool {
 	host := os.Getenv("SMTP_HOST")
 	port := os.Getenv("SMTP_PORT")
-	user := os.Getenv("SMTP_USER")
-	pass := os.Getenv("SMTP_PASS")
 	from := os.Getenv("SMTP_FROM")
 	frontend := os.Getenv("FRONTEND_URL")
-	if host == "" || port == "" || user == "" || pass == "" || from == "" || frontend == "" {
+	if host == "" || port == "" || from == "" || frontend == "" {
 		return false
 	}
 	return true

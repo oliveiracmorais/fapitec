@@ -18,25 +18,19 @@ ssh -o BatchMode=yes "$REMOTE" "echo Conexao SSH OK" || {
 
 echo "=== Build local dos artefatos ==="
 
-echo "[1/4] Compilando API Go para linux/arm64..."
-cd "$(dirname "$0")/.."
-mkdir -p apps/api/bin
-CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -C apps/api -o bin/api-linux-arm64 ./cmd/api
-
-echo "[2/4] Buildando Next.js (standalone)..."
+echo "[1/3] Buildando Next.js (standalone)..."
 cd apps/web
 NEXT_OUTPUT=standalone npm run build
 cd ../..
 
-echo "[3/4] Copiando artefatos para VM..."
+echo "[2/3] Copiando artefatos para VM..."
 ssh "$REMOTE" "mkdir -p $REMOTE_DIR/api $REMOTE_DIR/web $REMOTE_DIR/api/db/migracoes"
 
-scp apps/api/bin/api-linux-arm64 "$REMOTE:$REMOTE_DIR/api/api"
-scp apps/api/Dockerfile.homolog "$REMOTE:$REMOTE_DIR/api/Dockerfile"
+rsync -az --delete apps/api/ "$REMOTE:$REMOTE_DIR/api/" --exclude bin/
 
-rsync -az --delete apps/web/.next/standalone/ "$REMOTE:$REMOTE_DIR/web/"
-rsync -az --delete apps/web/.next/static/ "$REMOTE:$REMOTE_DIR/web/apps/web/.next/static/"
-rsync -az --delete apps/web/public/ "$REMOTE:$REMOTE_DIR/web/apps/web/public/"
+rsync -azL --delete apps/web/.next/standalone/apps/web/ "$REMOTE:$REMOTE_DIR/web/"
+rsync -az --delete apps/web/.next/static/ "$REMOTE:$REMOTE_DIR/web/.next/static/"
+rsync -az --delete apps/web/public/ "$REMOTE:$REMOTE_DIR/web/public/"
 scp apps/web/Dockerfile.homolog "$REMOTE:$REMOTE_DIR/web/Dockerfile"
 
 scp docker-compose.homolog.yml "$REMOTE:$REMOTE_DIR/docker-compose.yml"
@@ -44,8 +38,8 @@ scp .env.homolog "$REMOTE:$REMOTE_DIR/.env" 2>/dev/null || true
 rsync -az --delete apps/api/db/migracoes/ "$REMOTE:$REMOTE_DIR/api/db/migracoes/"
 scp apps/api/db/init-casdoor-db.sql "$REMOTE:$REMOTE_DIR/api/db/init-casdoor-db.sql"
 
-echo "[4/4] Realizando deploy e migracoes na VM..."
+echo "[3/3] Realizando deploy e migracoes na VM..."
 ssh "$REMOTE" "cd $REMOTE_DIR && docker compose pull && docker compose up -d --build && echo 'Aguardando PostgreSQL...' && until docker compose exec -T postgres pg_isready -U fapitec 2>/dev/null; do sleep 1; done && echo 'Executando migracoes...' && for f in api/db/migracoes/*.sql; do echo \"  Aplicando \$f\" && cat \"\$f\" | docker compose exec -T postgres psql -U fapitec -d fapitec; done && echo 'Migracoes concluidas'"
 
 echo "=== Deploy concluido ==="
-echo "Acesse: https://compusa.duckdns.org"
+echo "Acesse: https://fapitec.duckdns.org"

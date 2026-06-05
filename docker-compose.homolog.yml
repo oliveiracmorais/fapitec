@@ -48,6 +48,19 @@ services:
       - app_network
     restart: unless-stopped
 
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: fapitec-mailpit
+    environment:
+      MP_SMTP_AUTH_ACCEPT_ANY: "true"
+      MP_SMTP_AUTH_ALLOW_INSECURE: "true"
+      MP_WEBROOT: /mail/
+    ports:
+      - "127.0.0.1:8025:8025"
+    networks:
+      - app_network
+    restart: unless-stopped
+
   api:
     build:
       context: ./api
@@ -61,17 +74,19 @@ services:
       CASDOOR_CLIENT_SECRET: ${CASDOOR_CLIENT_SECRET}
       CASDOOR_CERTIFICATE: ${CASDOOR_CERTIFICATE}
       CASDOOR_ORGANIZATION_NAME: ${CASDOOR_ORGANIZATION_NAME}
-      SMTP_HOST: ${SMTP_HOST}
-      SMTP_PORT: ${SMTP_PORT}
-      SMTP_USER: ${SMTP_USER}
-      SMTP_PASS: ${SMTP_PASS}
-      SMTP_FROM: ${SMTP_FROM}
-      FRONTEND_URL: ${FRONTEND_URL}
+      SMTP_HOST: mailpit
+      SMTP_PORT: "1025"
+      SMTP_USER: ""
+      SMTP_PASS: ""
+      SMTP_FROM: noreply@fapitec.se.gov.br
+      FRONTEND_URL: https://fapitec.duckdns.org
     ports:
       - "127.0.0.1:8080:8080"
     depends_on:
       postgres:
         condition: service_healthy
+      mailpit:
+        condition: service_started
     networks:
       - app_network
     restart: unless-stopped

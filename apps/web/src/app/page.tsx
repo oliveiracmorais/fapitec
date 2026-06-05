@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import CampoFormulario from "../components/campo-formulario";
+import { useAuth } from "../context/auth-context";
 
 declare global {
   interface Window {
@@ -43,6 +44,7 @@ function salvarSessao(usuario: UsuarioSessao) {
 
 export default function LoginPage() {
   const router = useRouter();
+  const { definirUsuario } = useAuth();
   const [cpf, setCpf] = useState("");
   const [senha, setSenha] = useState("");
   const [erro, setErro] = useState("");
@@ -140,6 +142,7 @@ export default function LoginPage() {
 
       setTentativas(0);
       setCaptchaToken("");
+      definirUsuario(data as any);
       salvarSessao(data as UsuarioSessao);
       router.push("/dashboard");
     } catch {

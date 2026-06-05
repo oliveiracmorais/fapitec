@@ -14,6 +14,16 @@ services:
     networks:
       - fapitec
 
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: fapitec-mailpit
+    ports:
+      - "127.0.0.1:8025:8025"
+      - "1025:1025"
+    networks:
+      - fapitec
+    restart: unless-stopped
+
   api:
     build:
       context: .
@@ -30,9 +40,17 @@ services:
       DATABASE_URL: "postgres://fapitec:fapitec123@postgres:5432/fapitec?sslmode=disable"
       TURNSTILE_SECRET_KEY: "${TURNSTILE_SECRET_KEY:-1x0000000000000000000000000000000000000000000000000000000000000000AA}"
       CASDOOR_ENDPOINT: "http://casdoor:8000"
+      SMTP_HOST: mailpit
+      SMTP_PORT: "1025"
+      SMTP_USER: ""
+      SMTP_PASS: ""
+      SMTP_FROM: noreply@fapitec.se.gov.br
+      FRONTEND_URL: http://localhost:3000
     depends_on:
       postgres:
         condition: service_healthy
+      mailpit:
+        condition: service_started
     networks:
       - fapitec
     restart: unless-stopped
