@@ -61,6 +61,22 @@ services:
       - app_network
     restart: unless-stopped
 
+  nginx:
+    image: nginx:alpine
+    container_name: fapitec-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./api/nginx/nginx.homolog.conf:/etc/nginx/conf.d/default.conf:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    depends_on:
+      - api
+      - web
+    networks:
+      - app_network
+    restart: unless-stopped
+
   api:
     build:
       context: ./api
@@ -80,8 +96,6 @@ services:
       SMTP_PASS: ""
       SMTP_FROM: noreply@fapitec.se.gov.br
       FRONTEND_URL: https://fapitec.duckdns.org
-    ports:
-      - "127.0.0.1:8080:8080"
     depends_on:
       postgres:
         condition: service_healthy
@@ -94,13 +108,11 @@ services:
   web:
     build:
       context: ./web
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.homolog
     container_name: fapitec-web
     environment:
       NODE_ENV: production
       NEXT_PUBLIC_API_URL: http://api:8080
-    ports:
-      - "127.0.0.1:3000:3000"
     depends_on:
       - api
     networks:
