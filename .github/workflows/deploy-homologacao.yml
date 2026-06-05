@@ -1,0 +1,229 @@
+name: Deploy Homologação
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: homologacao-deploy
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: 22
+  GO_VERSION: '1.23'
+  SSH_USER: ubuntu
+  SSH_HOST: ${{ secrets.SSH_HOST }}
+  REMOTE_DIR: /home/ubuntu/apps/fapitec
+  DEPLOY_SCRIPT: scripts/deploy-homologacao.sh
+  ROLLBACK_SCRIPT: scripts/rollback-homologacao.sh
+  HEALTH_API: https://fapitec.duckdns.org/api/v1/health
+  HEALTH_FRONTEND: https://fapitec.duckdns.org/
+  SLACK_NOTIFY: ${{ secrets.SLACK_WEBHOOK != '' && 'true' || 'false' }}
+
+jobs:
+  quality:
+    name: Qualidade
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache-dependency-path: apps/api/go.sum
+
+      - name: Lint
+        run: pnpm run lint
+
+      - name: Typecheck
+        run: pnpm run typecheck
+
+      - name: Test Node.js
+        run: pnpm test
+
+      - name: Test Go
+        run: pnpm run test:go
+        working-directory: apps/api
+
+  build-and-deploy:
+    name: Build e Deploy
+    needs: quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache-dependency-path: apps/api/go.sum
+
+      - name: Build Next.js
+        run: |
+          cd apps/web
+          NEXT_OUTPUT=standalone npm run build
+        env:
+          NODE_ENV: production
+
+      - name: Build API Go
+        run: pnpm run build:api
+        working-directory: apps/api
+
+      - name: Setup SSH agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_KEY }}
+
+      - name: Add host key to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ env.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Copy artifacts to VM
+        run: |
+          echo "=== Copiando artefatos para VM ==="
+          ssh ${{ env.SSH_USER }}@${{ env.SSH_HOST }} "mkdir -p ${{ env.REMOTE_DIR }}/api ${{ env.REMOTE_DIR }}/web ${{ env.REMOTE_DIR }}/api/db/migracoes"
+
+          rsync -az --delete apps/api/ ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_DIR }}/api/ --exclude bin/
+
+          rsync -azL --delete apps/web/.next/standalone/apps/web/ ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_DIR }}/web/
+          rsync -az --delete apps/web/.next/static/ ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_DIR }}/web/.next/static/
+          rsync -az --delete apps/web/public/ ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_DIR }}/web/public/
+          scp apps/web/Dockerfile.homolog ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_DIR }}/web/Dockerfile
+
+          scp docker-compose.homolog.yml ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_DIR }}/docker-compose.yml
+          scp .env.homolog ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_DIR }}/.env 2>/dev/null || true
+          rsync -az --delete apps/api/db/migracoes/ ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_DIR }}/api/db/migracoes/
+          scp apps/api/db/init-casdoor-db.sql ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_DIR }}/api/db/init-casdoor-db.sql
+
+          # Copiar scripts de deploy e rollback
+          scp ${{ env.DEPLOY_SCRIPT }} ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_DIR }}/scripts/deploy-homologacao.sh
+          scp ${{ env.ROLLBACK_SCRIPT }} ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_DIR }}/scripts/rollback-homologacao.sh
+
+      - name: Executar deploy na VM
+        run: |
+          echo "=== Executando deploy via SSH ==="
+          ssh ${{ env.SSH_USER }}@${{ env.SSH_HOST }} "cd ${{ env.REMOTE_DIR }} && bash scripts/deploy-homologacao.sh"
+
+      - name: Healthcheck - API
+        id: healthcheck-api
+        run: |
+          echo "=== Verificando saúde da API ==="
+          for i in $(seq 1 12); do
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" ${{ env.HEALTH_API }} || true)
+            if [ "$HTTP_CODE" = "200" ]; then
+              echo "API saudável (HTTP $HTTP_CODE)"
+              exit 0
+            fi
+            echo "Tentativa $i: HTTP $HTTP_CODE. Aguardando 5s..."
+            sleep 5
+          done
+          echo "ERRO: API não respondeu com 200 após 60s."
+          exit 1
+
+      - name: Healthcheck - Frontend
+        id: healthcheck-frontend
+        run: |
+          echo "=== Verificando frontend ==="
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" ${{ env.HEALTH_FRONTEND }} || true)
+          if [ "$HTTP_CODE" = "200" ]; then
+            echo "Frontend saudável (HTTP $HTTP_CODE)"
+          else
+            echo "Aviso: Frontend retornou HTTP $HTTP_CODE (não crítico)"
+          fi
+
+      - name: Notificar sucesso
+        if: success()
+        run: |
+          if [ "${{ env.SLACK_NOTIFY }}" = "true" ]; then
+            curl -s -X POST -H 'Content-type: application/json' \
+              --data "{\"text\":\"✅ Deploy Homologação concluído com sucesso!\nCommit: ${{ github.sha }}\nLink: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\"}" \
+              ${{ secrets.SLACK_WEBHOOK }}
+          fi
+          echo "Deploy concluído com sucesso."
+
+  rollback:
+    name: Rollback
+    needs: build-and-deploy
+    if: failure()
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup SSH agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_KEY }}
+
+      - name: Add host key to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ env.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Executar rollback na VM
+        run: |
+          echo "=== Executando rollback ==="
+          ssh ${{ env.SSH_USER }}@${{ env.SSH_HOST }} "cd ${{ env.REMOTE_DIR }} && bash scripts/rollback-homologacao.sh"
+
+      - name: Verificar saúde pós-rollback
+        run: |
+          echo "=== Verificando saúde após rollback ==="
+          for i in $(seq 1 6); do
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" ${{ env.HEALTH_API }} || true)
+            if [ "$HTTP_CODE" = "200" ]; then
+              echo "API saudável após rollback (HTTP $HTTP_CODE)"
+              exit 0
+            fi
+            echo "Tentativa $i: HTTP $HTTP_CODE. Aguardando 10s..."
+            sleep 10
+          done
+          echo "ALERTA: API não respondeu após rollback. Intervenção manual necessária."
+          exit 1
+
+      - name: Notificar falha
+        if: always()
+        run: |
+          if [ "${{ env.SLACK_NOTIFY }}" = "true" ]; then
+            curl -s -X POST -H 'Content-type: application/json' \
+              --data "{\"text\":\"❌ Deploy Homologação FALHOU - Rollback executado.\nCommit: ${{ github.sha }}\nLink: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\"}" \
+              ${{ secrets.SLACK_WEBHOOK }}
+          fi
+          echo "Rollback concluído."
