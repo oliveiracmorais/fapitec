@@ -120,7 +120,7 @@ jobs:
           rsync -azL --delete apps/web/.next/standalone/apps/web/ ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_DIR }}/web/
           rsync -az --delete apps/web/.next/static/ ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_DIR }}/web/.next/static/
           rsync -az --delete apps/web/public/ ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_DIR }}/web/public/
-          scp apps/web/Dockerfile.homolog ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_DIR }}/web/Dockerfile
+          scp apps/web/Dockerfile.homolog ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_DIR }}/web/Dockerfile.homolog
 
           scp docker-compose.homolog.yml ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_DIR }}/docker-compose.yml
           scp .env.homolog ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_DIR }}/.env 2>/dev/null || true
