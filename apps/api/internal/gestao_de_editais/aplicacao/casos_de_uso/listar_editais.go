@@ -35,16 +35,7 @@ func (l *ListarEditais) Executar(ctx context.Context, filtros FiltrosListarEdita
 
 	saida := make([]dto.EditalSaida, 0, len(editais))
 	for _, e := range editais {
-		saida = append(saida, dto.EditalSaida{
-			ID:          e.ID,
-			Nome:        e.Nome,
-			Descricao:   e.Descricao,
-			DataInicio:  e.DataInicio.Format("2006-01-02"),
-			DataFim:     e.DataFim.Format("2006-01-02"),
-			Status:      e.Status.String(),
-			TipoChamada: e.TipoChamada,
-			CriadoEm:    e.CriadoEm.Format("2006-01-02T15:04:05-07:00"),
-		})
+		saida = append(saida, *paraEditalSaida(e))
 	}
 
 	return &dto.ListarEditaisSaida{

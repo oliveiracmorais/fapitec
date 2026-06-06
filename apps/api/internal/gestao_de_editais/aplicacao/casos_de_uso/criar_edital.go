@@ -29,12 +29,32 @@ func (c *CriarEdital) Executar(ctx context.Context, entrada dto.CriarEditalEntra
 		return nil, fmt.Errorf("data de fim invalida: %w", err)
 	}
 
+	if entrada.RelatoriosExigidos == nil {
+		entrada.RelatoriosExigidos = []string{}
+	}
+	if entrada.PorteEmpresa == nil {
+		entrada.PorteEmpresa = []string{}
+	}
+	if entrada.EnquadramentoEmpresa == nil {
+		entrada.EnquadramentoEmpresa = []string{}
+	}
+	if entrada.DocumentosObrigatorios == nil {
+		entrada.DocumentosObrigatorios = []string{}
+	}
+
 	params := entidades.NovoEditalParams{
-		Nome:        entrada.Nome,
-		Descricao:   entrada.Descricao,
-		DataInicio:  dataInicio,
-		DataFim:     dataFim,
-		TipoChamada: entrada.TipoChamada,
+		Nome:                      entrada.Nome,
+		Descricao:                 entrada.Descricao,
+		DataInicio:                dataInicio,
+		DataFim:                   dataFim,
+		TipoChamada:               entrada.TipoChamada,
+		ModeloFormulario:          entrada.ModeloFormulario,
+		RelatoriosExigidos:        entrada.RelatoriosExigidos,
+		TituloMinimoElegibilidade: entrada.TituloMinimoElegibilidade,
+		ExigeEmpresa:              entrada.ExigeEmpresa,
+		PorteEmpresa:              entrada.PorteEmpresa,
+		EnquadramentoEmpresa:      entrada.EnquadramentoEmpresa,
+		DocumentosObrigatorios:    entrada.DocumentosObrigatorios,
 	}
 
 	edital, err := entidades.NovoEdital(params)
@@ -46,14 +66,27 @@ func (c *CriarEdital) Executar(ctx context.Context, entrada dto.CriarEditalEntra
 		return nil, fmt.Errorf("erro ao criar edital: %w", err)
 	}
 
+	return paraEditalSaida(edital), nil
+}
+
+func paraEditalSaida(e *entidades.Edital) *dto.EditalSaida {
 	return &dto.EditalSaida{
-		ID:          edital.ID,
-		Nome:        edital.Nome,
-		Descricao:   edital.Descricao,
-		DataInicio:  edital.DataInicio.Format("2006-01-02"),
-		DataFim:     edital.DataFim.Format("2006-01-02"),
-		Status:      edital.Status.String(),
-		TipoChamada: edital.TipoChamada,
-		CriadoEm:    edital.CriadoEm.Format(time.RFC3339),
-	}, nil
+		ID:                        e.ID,
+		Nome:                      e.Nome,
+		Descricao:                 e.Descricao,
+		DataInicio:                e.DataInicio.Format("2006-01-02"),
+		DataFim:                   e.DataFim.Format("2006-01-02"),
+		Status:                    e.Status.String(),
+		TipoChamada:               e.TipoChamada.String(),
+		NotaDeCorte:               e.NotaDeCorte,
+		ValorGlobal:               e.ValorGlobal,
+		ModeloFormulario:          int(e.ModeloFormulario),
+		RelatoriosExigidos:        e.RelatoriosExigidos,
+		TituloMinimoElegibilidade: e.TituloMinimoElegibilidade.String(),
+		ExigeEmpresa:              e.ExigeEmpresa,
+		PorteEmpresa:              e.PorteEmpresa,
+		EnquadramentoEmpresa:      e.EnquadramentoEmpresa,
+		DocumentosObrigatorios:    e.DocumentosObrigatorios,
+		CriadoEm:                  e.CriadoEm.Format(time.RFC3339),
+	}
 }

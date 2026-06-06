@@ -16,3 +16,11 @@ sql:
         package: "sqlcpersistencia"
         out: "internal/gestao_de_editais/infraestrutura/persistencia/sqlc"
         sql_package: "pgx/v5"
+  - engine: "postgresql"
+    schema: "db/migracoes"
+    queries: "db/consultas/inscricao_e_selecao_de_projetos"
+    gen:
+      go:
+        package: "sqlcpersistencia"
+        out: "internal/inscricao_e_selecao_de_projetos/infraestrutura/persistencia/sqlc"
+        sql_package: "pgx/v5"

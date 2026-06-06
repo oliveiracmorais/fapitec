@@ -55,7 +55,46 @@ func (a *AtualizarEdital) Executar(ctx context.Context, id int64, entrada dto.At
 		edital.Status = status
 	}
 	if entrada.TipoChamada != "" {
-		edital.TipoChamada = entrada.TipoChamada
+		tipoChamada, err := objetos_de_valor.NovoTipoChamada(entrada.TipoChamada)
+		if err != nil {
+			return nil, err
+		}
+		edital.TipoChamada = tipoChamada
+	}
+	if entrada.NotaDeCorte != nil {
+		edital.NotaDeCorte = *entrada.NotaDeCorte
+	}
+	if entrada.ValorGlobal != nil {
+		edital.ValorGlobal = *entrada.ValorGlobal
+	}
+	if entrada.ModeloFormulario != nil {
+		modelo, err := objetos_de_valor.NovoModeloFormulario(*entrada.ModeloFormulario)
+		if err != nil {
+			return nil, err
+		}
+		edital.ModeloFormulario = modelo
+	}
+	if entrada.RelatoriosExigidos != nil {
+		edital.RelatoriosExigidos = entrada.RelatoriosExigidos
+	}
+	if entrada.TituloMinimoElegibilidade != nil {
+		titulo, err := objetos_de_valor.NovoTituloMinimoElegibilidade(*entrada.TituloMinimoElegibilidade)
+		if err != nil {
+			return nil, err
+		}
+		edital.TituloMinimoElegibilidade = titulo
+	}
+	if entrada.ExigeEmpresa != nil {
+		edital.ExigeEmpresa = *entrada.ExigeEmpresa
+	}
+	if entrada.PorteEmpresa != nil {
+		edital.PorteEmpresa = entrada.PorteEmpresa
+	}
+	if entrada.EnquadramentoEmpresa != nil {
+		edital.EnquadramentoEmpresa = entrada.EnquadramentoEmpresa
+	}
+	if entrada.DocumentosObrigatorios != nil {
+		edital.DocumentosObrigatorios = entrada.DocumentosObrigatorios
 	}
 
 	if !edital.DataFim.IsZero() && !edital.DataInicio.IsZero() && edital.DataInicio.After(edital.DataFim) {
@@ -66,14 +105,5 @@ func (a *AtualizarEdital) Executar(ctx context.Context, id int64, entrada dto.At
 		return nil, fmt.Errorf("erro ao atualizar edital: %w", err)
 	}
 
-	return &dto.EditalSaida{
-		ID:          edital.ID,
-		Nome:        edital.Nome,
-		Descricao:   edital.Descricao,
-		DataInicio:  edital.DataInicio.Format("2006-01-02"),
-		DataFim:     edital.DataFim.Format("2006-01-02"),
-		Status:      edital.Status.String(),
-		TipoChamada: edital.TipoChamada,
-		CriadoEm:    edital.CriadoEm.Format(time.RFC3339),
-	}, nil
+	return paraEditalSaida(edital), nil
 }

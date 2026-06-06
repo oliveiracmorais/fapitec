@@ -8,17 +8,81 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-type Editai struct {
+type DocumentosPropostum struct {
 	ID          int64
-	Nome        string
-	Descricao   string
-	DataInicio  pgtype.Date
-	DataFim     pgtype.Date
-	Status      string
-	TipoChamada string
-	NotaDeCorte int32
-	ValorGlobal int64
-	CriadoEm    pgtype.Timestamptz
+	PropostaID  int64
+	Tipo        string
+	NomeArquivo string
+	Caminho     string
+	DataUpload  pgtype.Timestamptz
+}
+
+type Editai struct {
+	ID                        int64
+	Nome                      string
+	Descricao                 string
+	DataInicio                pgtype.Date
+	DataFim                   pgtype.Date
+	Status                    string
+	TipoChamada               string
+	NotaDeCorte               int32
+	ValorGlobal               int64
+	CriadoEm                  pgtype.Timestamptz
+	ModeloFormulario          int32
+	RelatoriosExigidos        []byte
+	TituloMinimoElegibilidade string
+	ExigeEmpresa              bool
+	PorteEmpresa              []byte
+	EnquadramentoEmpresa      []byte
+	DocumentosObrigatorios    []byte
+}
+
+type ItensOrcamentario struct {
+	ID            int64
+	PropostaID    int64
+	Descricao     string
+	Tipo          string
+	Quantidade    int32
+	ValorUnitario int64
+	ValorTotal    int64
+}
+
+type Parecere struct {
+	ID           int64
+	PropostaID   int64
+	Etapa        string
+	AvaliadorID  int64
+	Nota         int32
+	ParecerTexto string
+	Data         pgtype.Timestamptz
+}
+
+type Proposta struct {
+	ID                        int64
+	EditalID                  int64
+	ProponenteID              int64
+	Protocolo                 string
+	Status                    string
+	Versao                    int32
+	ProponenteNome            string
+	ProponenteCpf             string
+	ProponenteRg              string
+	ProponenteGenero          string
+	ProponenteEtnia           string
+	ProponenteDataNascimento  string
+	ProponenteEndereco        string
+	ProponenteTelefone        string
+	ProponenteEmail           string
+	AcademicoMaiorTitulacao   string
+	AcademicoCurso            string
+	AcademicoInstituicao      string
+	AcademicoAnoConclusao     int32
+	AcademicoAreaConhecimento string
+	EmpresaVinculada          string
+	ValorTotalSolicitado      int64
+	DataSubmissao             pgtype.Timestamptz
+	DataAtualizacao           pgtype.Timestamptz
+	CriadoEm                  pgtype.Timestamptz
 }
 
 type TokensRedefinicao struct {
@@ -40,4 +104,30 @@ type Usuario struct {
 	Tentativas    int32
 	BloqueadoAte  pgtype.Timestamptz
 	CriadoEm      pgtype.Timestamptz
+}
+
+type VersoesPropostum struct {
+	ID                        int64
+	PropostaID                int64
+	Versao                    int32
+	Status                    string
+	ProponenteNome            string
+	ProponenteCpf             string
+	ProponenteRg              string
+	ProponenteGenero          string
+	ProponenteEtnia           string
+	ProponenteDataNascimento  string
+	ProponenteEndereco        string
+	ProponenteTelefone        string
+	ProponenteEmail           string
+	AcademicoMaiorTitulacao   string
+	AcademicoCurso            string
+	AcademicoInstituicao      string
+	AcademicoAnoConclusao     int32
+	AcademicoAreaConhecimento string
+	EmpresaVinculada          string
+	ValorTotalSolicitado      int64
+	Protocolo                 string
+	DataSubmissao             pgtype.Timestamptz
+	CriadoEm                  pgtype.Timestamptz
 }

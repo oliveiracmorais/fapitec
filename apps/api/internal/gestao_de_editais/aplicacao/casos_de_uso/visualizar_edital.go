@@ -25,14 +25,5 @@ func (v *VisualizarEdital) Executar(ctx context.Context, id int64) (*dto.EditalS
 		return nil, fmt.Errorf("edital nao encontrado")
 	}
 
-	return &dto.EditalSaida{
-		ID:          edital.ID,
-		Nome:        edital.Nome,
-		Descricao:   edital.Descricao,
-		DataInicio:  edital.DataInicio.Format("2006-01-02"),
-		DataFim:     edital.DataFim.Format("2006-01-02"),
-		Status:      edital.Status.String(),
-		TipoChamada: edital.TipoChamada,
-		CriadoEm:    edital.CriadoEm.Format("2006-01-02T15:04:05-07:00"),
-	}, nil
+	return paraEditalSaida(edital), nil
 }

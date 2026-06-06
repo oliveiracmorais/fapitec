@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"regexp"
+	"strings"
 	"time"
 
 	"github.com/casdoor/casdoor-go-sdk/casdoorsdk"
@@ -33,6 +34,11 @@ import (
 	"github.com/oliveiracmorais/fapitec/api/internal/identidade_e_acesso/infraestrutura/persistencia"
 	sqlcgedital "github.com/oliveiracmorais/fapitec/api/internal/gestao_de_editais/infraestrutura/persistencia/sqlc"
 	sqlcpersistencia "github.com/oliveiracmorais/fapitec/api/internal/identidade_e_acesso/infraestrutura/persistencia/sqlc"
+	propostaCasosDeUso "github.com/oliveiracmorais/fapitec/api/internal/inscricao_e_selecao_de_projetos/aplicacao/casos_de_uso"
+	propostaDTO "github.com/oliveiracmorais/fapitec/api/internal/inscricao_e_selecao_de_projetos/aplicacao/dto"
+	propostaRepositorios "github.com/oliveiracmorais/fapitec/api/internal/inscricao_e_selecao_de_projetos/dominio/repositorios"
+	propostaPersistencia "github.com/oliveiracmorais/fapitec/api/internal/inscricao_e_selecao_de_projetos/infraestrutura/persistencia"
+	sqlcproposta "github.com/oliveiracmorais/fapitec/api/internal/inscricao_e_selecao_de_projetos/infraestrutura/persistencia/sqlc"
 )
 
 func jsonError(w http.ResponseWriter, msg string, code int) {
@@ -67,6 +73,7 @@ func main() {
 	var repo repositorios.RepositorioDeUsuario
 	var tokenRepo repositorios.RepositorioDeTokenRedefinicao
 	var editalRepo gestaoEditaisRepositorios.RepositorioDeEdital
+	var propostaRepo propostaRepositorios.RepositorioDeProposta
 
 	authProvider := os.Getenv("AUTH_PROVIDER")
 	if authProvider == "" {
@@ -103,6 +110,9 @@ func main() {
 			queriesEdital := sqlcgedital.New(pool)
 			editalRepo = gestaoEditaisPersistencia.NovoRepositorioDeEditalSQLC(queriesEdital)
 
+			queriesProposta := sqlcproposta.New(pool)
+			propostaRepo = propostaPersistencia.NovoRepositorioDePropostaSQLC(queriesProposta)
+
 			log.Println("Conectado ao PostgreSQL")
 		} else {
 			pool.Close()
@@ -120,6 +130,11 @@ func main() {
 		editalRepo = gestaoEditaisPersistencia.NovoRepositorioDeEditalMemoria()
 	}
 
+	if propostaRepo == nil {
+		log.Println("PostgreSQL indisponivel para propostas — usando repositorio em memoria")
+		propostaRepo = propostaPersistencia.NovoRepositorioDePropostaMemoria()
+	}
+
 	cadastrar := casos_de_uso.NovoCadastrarUsuarioComAuditoria(repo, hashService, auditService)
 	autenticar := casos_de_uso.NovoAutenticarUsuarioComAuditoria(repo, hashService, auditService)
 	solicitarRedefinicao := casos_de_uso.NovoSolicitarRedefinicaoSenhaComAuditoria(repo, tokenRepo, emailSvc, auditService)
@@ -130,6 +145,15 @@ func main() {
 	visualizarEdital := gestaoEditais.NovoVisualizarEdital(editalRepo)
 	atualizarEdital := gestaoEditais.NovoAtualizarEdital(editalRepo)
 	deletarEdital := gestaoEditais.NovoDeletarEdital(editalRepo)
+
+	criarProposta := propostaCasosDeUso.NovoCriarProposta(propostaRepo)
+
+	editalVerificador := &editalVerificadorAdapter{repo: editalRepo}
+	submeterProposta := propostaCasosDeUso.NovoSubmeterProposta(propostaRepo, editalVerificador)
+	editarProposta := propostaCasosDeUso.NovoEditarProposta(propostaRepo)
+	listarPropostas := propostaCasosDeUso.NovoListarPropostas(propostaRepo)
+	visualizarProposta := propostaCasosDeUso.NovoVisualizarProposta(propostaRepo)
+	deletarProposta := propostaCasosDeUso.NovoDeletarProposta(propostaRepo)
 
 	mux := http.NewServeMux()
 
@@ -528,6 +552,146 @@ func main() {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
+	mux.HandleFunc("POST /api/v1/propostas", func(w http.ResponseWriter, r *http.Request) {
+		var req propostaDTO.CriarPropostaEntrada
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			jsonError(w, `{"erro":"requisicao invalida"}`, http.StatusBadRequest)
+			return
+		}
+
+		saida, err := criarProposta.Executar(context.Background(), req)
+		if err != nil {
+			jsonError(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusBadRequest)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+		json.NewEncoder(w).Encode(saida)
+	})
+
+	mux.HandleFunc("GET /api/v1/propostas", func(w http.ResponseWriter, r *http.Request) {
+		filtros := propostaRepositorios.FiltrosListarPropostas{
+			ProponenteID: 0,
+			EditalID:     0,
+			Status:       r.URL.Query().Get("status"),
+		}
+		if idStr := r.URL.Query().Get("edital_id"); idStr != "" {
+			fmt.Sscanf(idStr, "%d", &filtros.EditalID)
+		}
+		if idStr := r.URL.Query().Get("proponente_id"); idStr != "" {
+			fmt.Sscanf(idStr, "%d", &filtros.ProponenteID)
+		}
+
+		saida, err := listarPropostas.Executar(context.Background(), filtros)
+		if err != nil {
+			jsonError(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(saida)
+	})
+
+	mux.HandleFunc("GET /api/v1/propostas/{id}", func(w http.ResponseWriter, r *http.Request) {
+		idStr := r.PathValue("id")
+		var id int64
+		if _, err := fmt.Sscanf(idStr, "%d", &id); err != nil {
+			jsonError(w, `{"erro":"id invalido"}`, http.StatusBadRequest)
+			return
+		}
+
+		saida, err := visualizarProposta.Executar(context.Background(), id)
+		if err != nil {
+			jsonError(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusNotFound)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(saida)
+	})
+
+	mux.HandleFunc("PUT /api/v1/propostas/{id}", func(w http.ResponseWriter, r *http.Request) {
+		idStr := r.PathValue("id")
+		var id int64
+		if _, err := fmt.Sscanf(idStr, "%d", &id); err != nil {
+			jsonError(w, `{"erro":"id invalido"}`, http.StatusBadRequest)
+			return
+		}
+
+		var req propostaDTO.AtualizarPropostaEntrada
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			jsonError(w, `{"erro":"requisicao invalida"}`, http.StatusBadRequest)
+			return
+		}
+
+		saida, err := editarProposta.Executar(context.Background(), id, req)
+		if err != nil {
+			jsonError(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusBadRequest)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(saida)
+	})
+
+	mux.HandleFunc("DELETE /api/v1/propostas/{id}", func(w http.ResponseWriter, r *http.Request) {
+		idStr := r.PathValue("id")
+		var id int64
+		if _, err := fmt.Sscanf(idStr, "%d", &id); err != nil {
+			jsonError(w, `{"erro":"id invalido"}`, http.StatusBadRequest)
+			return
+		}
+
+		if err := deletarProposta.Executar(context.Background(), id); err != nil {
+			jsonError(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusNotFound)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	mux.HandleFunc("POST /api/v1/propostas/{id}/submeter", func(w http.ResponseWriter, r *http.Request) {
+		idStr := r.PathValue("id")
+		var id int64
+		if _, err := fmt.Sscanf(idStr, "%d", &id); err != nil {
+			jsonError(w, `{"erro":"id invalido"}`, http.StatusBadRequest)
+			return
+		}
+
+		saida, err := submeterProposta.Executar(context.Background(), id)
+		if err != nil {
+			jsonError(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusBadRequest)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(saida)
+	})
+
+	mux.HandleFunc("GET /api/v1/editais/{id}/propostas", func(w http.ResponseWriter, r *http.Request) {
+		idStr := r.PathValue("id")
+		var editalID int64
+		if _, err := fmt.Sscanf(idStr, "%d", &editalID); err != nil {
+			jsonError(w, `{"erro":"id invalido"}`, http.StatusBadRequest)
+			return
+		}
+
+		filtros := propostaRepositorios.FiltrosListarPropostas{
+			EditalID: editalID,
+		}
+
+		saida, err := listarPropostas.Executar(context.Background(), filtros)
+		if err != nil {
+			jsonError(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(saida)
+	})
+
 	mux.HandleFunc("GET /api/v1/health", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
@@ -592,6 +756,10 @@ func main() {
 		"/api/v1/redefinir-senha": true,
 	}
 
+	publicPrefixes := []string{
+		"/api/v1/editais",
+	}
+
 	if casdoorAdapter != nil {
 		authMW := interfacesHTTP.AutenticacaoMiddleware(casdoorAdapter)
 
@@ -604,6 +772,12 @@ func main() {
 				mux.ServeHTTP(w, r)
 				return
 			}
+			for _, prefix := range publicPrefixes {
+				if strings.HasPrefix(r.URL.Path, prefix) {
+					mux.ServeHTTP(w, r)
+					return
+				}
+			}
 			protectedHandler.ServeHTTP(w, r)
 		})
 	}
@@ -615,4 +789,23 @@ func main() {
 
 	log.Printf("API rodando na porta %s", port)
 	log.Fatal(http.ListenAndServe(":"+port, handler))
+}
+
+type editalVerificadorAdapter struct {
+	repo gestaoEditaisRepositorios.RepositorioDeEdital
+}
+
+func (a *editalVerificadorAdapter) BuscarEditalInfo(ctx context.Context, id int64) (*propostaRepositorios.EditalInfo, error) {
+	edital, err := a.repo.BuscarPorID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	if edital == nil {
+		return nil, nil
+	}
+	return &propostaRepositorios.EditalInfo{
+		Status:     edital.Status.String(),
+		DataInicio: edital.DataInicio,
+		DataFim:    edital.DataFim,
+	}, nil
 }

@@ -1,7 +1,7 @@
 # Status do Projeto
 
 ## Goal
-Preparar ambiente de homologação na Oracle Cloud VM e realizar deploy funcional da aplicação FAPITEC-SE.
+Concluir Epic 2.2 — Gestão de Editais e Submissão de Propostas.
 
 ## Progress
 ### Done
@@ -53,7 +53,14 @@ Preparar ambiente de homologação na Oracle Cloud VM e realizar deploy funciona
 - *(none)*
 
 ## Próximos Passos
-- Módulos do negócio (bolsistas, prestação de contas) — Onda 2+
+- **Epic 2.2: Gestão de Editais e Submissão de Propostas** — EM ANDAMENTO
+  - Story 2.2.1: Extensão do Modelo de Editais — ✅ CONCLUÍDA (inclui correções C-01, C-02, C-03, C-04)
+  - Story 2.2.2: Submissão de Propostas — Backend — ✅ CONCLUÍDA (QA fixes aplicados: versionamento e validação de edital)
+  - Story 2.2.3: Submissão de Propostas — Frontend — A AGENDAR
+  - Story 2.2.4: Gestão de Avaliadores e Atribuição — A AGENDAR
+  - Story 2.2.5: Avaliação de Projetos — A AGENDAR
+  - Story 2.2.6: Classificação, Seleção e Divulgação — A AGENDAR
+- Módulos futuros: bolsistas, prestação de contas — Onda 2+
 
 ## Epic Ativa
-- *(nenhuma — aguardando definição da próxima épic)*
+- **Epic 2.2 — Gestão de Editais e Submissão de Propostas** — Em Andamento

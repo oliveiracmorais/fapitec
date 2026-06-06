@@ -10,14 +10,14 @@ import (
 )
 
 type RepositorioDeEditalMemoria struct {
-	mu       sync.RWMutex
-	editais  map[int64]*entidades.Edital
+	mu        sync.RWMutex
+	editais   map[int64]*entidades.Edital
 	proximoID int64
 }
 
 func NovoRepositorioDeEditalMemoria() *RepositorioDeEditalMemoria {
 	return &RepositorioDeEditalMemoria{
-		editais:  make(map[int64]*entidades.Edital),
+		editais:   make(map[int64]*entidades.Edital),
 		proximoID: 1,
 	}
 }
@@ -55,7 +55,7 @@ func (r *RepositorioDeEditalMemoria) Listar(ctx context.Context, filtros reposit
 		if filtros.Status != "" && string(e.Status) != filtros.Status {
 			continue
 		}
-		if filtros.TipoChamada != "" && e.TipoChamada != filtros.TipoChamada {
+		if filtros.TipoChamada != "" && e.TipoChamada.String() != filtros.TipoChamada {
 			continue
 		}
 		resultado = append(resultado, e)
