@@ -140,13 +140,21 @@ export default function EditalDetalhePage() {
           </Section>
         </div>
 
-        <div className="mt-6 border-t border-gray-100 pt-6">
+        <div className="mt-6 flex flex-wrap items-center gap-4 border-t border-gray-100 pt-6">
           <Link
             href="/editais"
             className="text-sm font-medium text-brand-600 hover:text-brand-700"
           >
             ← Voltar para lista
           </Link>
+          {edital.status === "ativo" && (
+            <Link
+              href={{ pathname: `/editais/${edital.id}/inscrever` }}
+              className="rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-green-700"
+            >
+              Inscrever-se neste edital
+            </Link>
+          )}
         </div>
       </div>
     </main>

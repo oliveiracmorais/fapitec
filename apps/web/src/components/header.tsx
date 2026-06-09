@@ -24,6 +24,26 @@ export default function Header() {
             Plataforma Integrada de Gestão Institucional
           </span>
         </div>
+        <nav className="hidden items-center gap-4 sm:flex">
+          <Link
+            href="/dashboard"
+            className="text-sm text-gray-600 transition-colors hover:text-brand-600"
+          >
+            Dashboard
+          </Link>
+          <Link
+            href="/editais"
+            className="text-sm text-gray-600 transition-colors hover:text-brand-600"
+          >
+            Editais
+          </Link>
+          <Link
+            href={{ pathname: "/minhas-propostas" }}
+            className="text-sm text-gray-600 transition-colors hover:text-brand-600"
+          >
+            Minhas Propostas
+          </Link>
+        </nav>
         <div className="flex items-center gap-3 text-sm">
           {usuario && (
             <>

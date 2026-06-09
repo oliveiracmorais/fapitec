@@ -9,6 +9,8 @@ const rotas: Record<string, string> = {
   dashboard: "Início",
   editais: "Editais",
   novo: "Novo Edital",
+  "minhas-propostas": "Minhas Propostas",
+  inscrever: "Inscrever-se",
 };
 
 export default function Breadcrumb() {

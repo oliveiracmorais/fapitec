@@ -89,3 +89,40 @@ export function formatarCPF(valor: string): string {
     return `${digitos.slice(0, 3)}.${digitos.slice(3, 6)}.${digitos.slice(6)}`;
   return `${digitos.slice(0, 3)}.${digitos.slice(3, 6)}.${digitos.slice(6, 9)}-${digitos.slice(9)}`;
 }
+
+export function validarTitulacao(valor: string): string {
+  if (!valor.trim()) return "Maior titulação é obrigatória";
+  return "";
+}
+
+export function validarAnoConclusao(valor: string): string {
+  if (!valor.trim()) return "Ano de conclusão é obrigatório";
+  const ano = Number(valor);
+  const atual = new Date().getFullYear();
+  if (!Number.isInteger(ano) || ano < 1950 || ano > atual + 10)
+    return `Ano deve estar entre 1950 e ${atual + 10}`;
+  return "";
+}
+
+export function validarValorUnitario(valor: string): string {
+  if (!valor.trim()) return "Valor unitário é obrigatório";
+  const v = Number(valor.replace(/\D/g, ""));
+  if (v <= 0) return "Valor deve ser maior que zero";
+  return "";
+}
+
+export function validarQuantidade(valor: string): string {
+  if (!valor.trim()) return "Quantidade é obrigatória";
+  const q = Number(valor);
+  if (!Number.isInteger(q) || q < 1) return "Quantidade deve ser um número inteiro positivo";
+  return "";
+}
+
+export function validarArquivo(arquivo: File | null, tiposAceitos: string[], tamanhoMaximoMB = 5): string {
+  if (!arquivo) return "Arquivo é obrigatório";
+  const ext = arquivo.name.split(".").pop()?.toLowerCase();
+  if (!ext || !tiposAceitos.includes(ext)) return `Formato aceito: ${tiposAceitos.join(", ")}`;
+  if (arquivo.size > tamanhoMaximoMB * 1024 * 1024)
+    return `Arquivo deve ter no máximo ${tamanhoMaximoMB}MB`;
+  return "";
+}
