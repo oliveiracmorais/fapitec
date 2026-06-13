@@ -13,11 +13,24 @@ type Props = {
   tiposExigidos: string[];
   onAdicionar: (tipo: string, arquivo: File) => void;
   onRemover: (tipo: string) => void;
+  erros?: Record<string, string>;
+  touched?: Record<string, boolean>;
 };
 
 const TIPOS_ACEITOS = ["pdf", "doc", "docx", "jpg", "jpeg", "png"];
 
-export default function PropostaEtapaDocumentos({ documentos, tiposExigidos, onAdicionar, onRemover }: Props) {
+const ROTULOS_DOCUMENTOS: Record<string, string> = {
+  comprovante_conclusao: "Comprovante de Conclusão",
+  comprovante_residencia: "Comprovante de Residência",
+  comprovante_inscricao: "Comprovante de Inscrição",
+  identidade: "Documento de Identidade",
+  cpf: "Cadastro de Pessoa Física (CPF)",
+  currículo: "Currículo Lattes",
+  plano_trabalho: "Plano de Trabalho",
+  declaracao_vinculo: "Declaração de Vínculo Institucional",
+};
+
+export default function PropostaEtapaDocumentos({ documentos, tiposExigidos, onAdicionar, onRemover, erros, touched }: Props) {
   if (tiposExigidos.length === 0) {
     return (
       <div className="space-y-4">
@@ -41,7 +54,7 @@ export default function PropostaEtapaDocumentos({ documentos, tiposExigidos, onA
         return (
           <div key={tipo}>
             <label className="mb-1 block text-sm font-medium text-gray-700">
-              {tipo}
+              {ROTULOS_DOCUMENTOS[tipo] || tipo}
             </label>
             <PropostaUpload
               tiposAceitos={TIPOS_ACEITOS}
@@ -50,6 +63,9 @@ export default function PropostaEtapaDocumentos({ documentos, tiposExigidos, onA
               arquivo={doc?.arquivo}
               nomeArquivo={doc?.nome_arquivo}
             />
+            {touched?.[`doc_${tipo}`] && erros?.[`doc_${tipo}`] && (
+              <p className="mt-1 text-xs text-red-700">{erros[`doc_${tipo}`]}</p>
+            )}
           </div>
         );
       })}

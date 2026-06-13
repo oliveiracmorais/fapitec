@@ -70,6 +70,16 @@ func (uc *CriarProposta) Executar(ctx context.Context, entrada dto.CriarProposta
 }
 
 func toProponenteInfo(d dto.ProponenteInfoDTO) entidades.ProponenteInfo {
+	endereco := objetos_de_valor.NovoEndereco(
+		d.Logradouro, d.Numero, d.Complemento,
+		d.Bairro, d.Cidade, d.UF, d.CEP,
+	)
+	if endereco.Vazio() && d.Endereco != "" {
+		endereco = objetos_de_valor.NovoEndereco(
+			d.Endereco, "", "", "", "", "", "",
+		)
+	}
+
 	return entidades.ProponenteInfo{
 		Nome:          d.Nome,
 		CPF:           d.CPF,
@@ -77,7 +87,7 @@ func toProponenteInfo(d dto.ProponenteInfoDTO) entidades.ProponenteInfo {
 		Genero:        d.Genero,
 		Etnia:         d.Etnia,
 		DataNascimento: d.DataNascimento,
-		Endereco:      d.Endereco,
+		Endereco:      endereco,
 		Telefone:      d.Telefone,
 		Email:         d.Email,
 	}
@@ -158,7 +168,14 @@ func toProponenteInfoDTO(p entidades.ProponenteInfo) dto.ProponenteInfoDTO {
 		Genero:        p.Genero,
 		Etnia:         p.Etnia,
 		DataNascimento: p.DataNascimento,
-		Endereco:      p.Endereco,
+		Endereco:      p.Endereco.Completo(),
+		CEP:           p.Endereco.CEP,
+		Logradouro:    p.Endereco.Logradouro,
+		Numero:        p.Endereco.Numero,
+		Complemento:   p.Endereco.Complemento,
+		Bairro:        p.Endereco.Bairro,
+		Cidade:        p.Endereco.Cidade,
+		UF:            p.Endereco.UF,
 		Telefone:      p.Telefone,
 		Email:         p.Email,
 	}

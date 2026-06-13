@@ -11,6 +11,10 @@ const rotas: Record<string, string> = {
   novo: "Novo Edital",
   "minhas-propostas": "Minhas Propostas",
   inscrever: "Inscrever-se",
+  avaliadores: "Avaliadores",
+  avaliacoes: "Avaliações",
+  admin: "Administrador",
+  classificacao: "Classificação Final",
 };
 
 export default function Breadcrumb() {

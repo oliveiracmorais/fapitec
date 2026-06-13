@@ -3,23 +3,29 @@ package persistencia
 import (
 	"context"
 	"sync"
+	"time"
 
 	"github.com/oliveiracmorais/fapitec/api/internal/inscricao_e_selecao_de_projetos/dominio/entidades"
+	"github.com/oliveiracmorais/fapitec/api/internal/inscricao_e_selecao_de_projetos/dominio/objetos_de_valor"
 	"github.com/oliveiracmorais/fapitec/api/internal/inscricao_e_selecao_de_projetos/dominio/repositorios"
 )
 
 type RepositorioDePropostaMemoria struct {
-	mu        sync.RWMutex
-	propostas map[int64]*entidades.Proposta
-	versoes   map[int64][]*entidades.Proposta
-	proximoID int64
+	mu           sync.RWMutex
+	propostas    map[int64]*entidades.Proposta
+	versoes      map[int64][]*entidades.Proposta
+	pareceres    map[int64]*entidades.Parecer
+	proximoID    int64
+	proximoParecerID int64
 }
 
 func NovoRepositorioDePropostaMemoria() *RepositorioDePropostaMemoria {
 	return &RepositorioDePropostaMemoria{
-		propostas: make(map[int64]*entidades.Proposta),
-		versoes:   make(map[int64][]*entidades.Proposta),
-		proximoID: 1,
+		propostas:    make(map[int64]*entidades.Proposta),
+		versoes:      make(map[int64][]*entidades.Proposta),
+		pareceres:    make(map[int64]*entidades.Parecer),
+		proximoID:    1,
+		proximoParecerID: 1,
 	}
 }
 
@@ -140,6 +146,81 @@ func (r *RepositorioDePropostaMemoria) ContarPorEdital(ctx context.Context, edit
 		}
 	}
 	return count, nil
+}
+
+func (r *RepositorioDePropostaMemoria) SalvarParecer(_ context.Context, parecer *entidades.Parecer) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	parecer.ID = r.proximoParecerID
+	r.proximoParecerID++
+	c := *parecer
+	r.pareceres[parecer.ID] = &c
+	return nil
+}
+
+func (r *RepositorioDePropostaMemoria) ListarPareceresPorProposta(_ context.Context, propostaID int64) ([]*entidades.Parecer, error) {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
+	var resultado []*entidades.Parecer
+	for _, p := range r.pareceres {
+		if p.PropostaID == propostaID {
+			c := *p
+			resultado = append(resultado, &c)
+		}
+	}
+	if resultado == nil {
+		resultado = []*entidades.Parecer{}
+	}
+	return resultado, nil
+}
+
+func (r *RepositorioDePropostaMemoria) ListarPareceresPorAvaliador(_ context.Context, avaliadorID int64) ([]*entidades.Parecer, error) {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
+	var resultado []*entidades.Parecer
+	for _, p := range r.pareceres {
+		if p.AvaliadorID == avaliadorID {
+			c := *p
+			resultado = append(resultado, &c)
+		}
+	}
+	if resultado == nil {
+		resultado = []*entidades.Parecer{}
+	}
+	return resultado, nil
+}
+
+func (r *RepositorioDePropostaMemoria) ListarPropostasPorEdital(_ context.Context, editalID int64) ([]*entidades.Proposta, error) {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
+	var resultado []*entidades.Proposta
+	for _, p := range r.propostas {
+		if p.EditalID == editalID {
+			resultado = append(resultado, p)
+		}
+	}
+	if resultado == nil {
+		resultado = []*entidades.Proposta{}
+	}
+	return resultado, nil
+}
+
+func (r *RepositorioDePropostaMemoria) AtualizarStatus(_ context.Context, id int64, status string) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	proposta, ok := r.propostas[id]
+	if !ok {
+		return nil
+	}
+	novoStatus, _ := objetos_de_valor.NovoStatusProposta(status)
+	proposta.Status = novoStatus
+	proposta.DataAtualizacao = time.Now()
+	return nil
 }
 
 

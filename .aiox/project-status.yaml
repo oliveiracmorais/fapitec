@@ -1,21 +1,32 @@
 status:
   branch: main
   modifiedFiles:
-    - .aiox-core/constitution.md
+    - .aiox/project-status.yaml
+    - .aiox-core/development/agents/pm.md
     - apps/api/cmd/api/main.go
-    - apps/api/internal/gestao_de_editais/aplicacao/dto/edital_dto.go
-    - >-
-      apps/api/internal/gestao_de_editais/dominio/repositorios/repositorio_de_edital.go
-    - >-
-      apps/api/internal/gestao_de_editais/infraestrutura/persistencia/repositorio_de_edital_memoria.go
-  modifiedFilesTotalCount: 26
+    - apps/api/internal/gestao_de_editais/infraestrutura/persistencia/sqlc/models.go
+    - apps/api/internal/identidade_e_acesso/infraestrutura/persistencia/sqlc/models.go
+    - apps/api/internal/inscricao_e_selecao_de_projetos/infraestrutura/persistencia/sqlc/models.go
+  modifiedFilesTotalCount: 4 (modified) + ~50 (untracked)
   recentCommits:
-    - 'feat: adiciona identidade visual da FAPITEC-SE nos formularios e paginas'
-    - 'feat: adiciona validacao cliente e padroes UX modernos nos formularios'
+    - 'feat: implementa frontend de submissao de propostas multi-etapas (Story 2.2.3)'
+    - 'feat: implementa Epic 2.2 — gestao de editais estendida e submissao de propostas (backend)'
   currentEpic: null
   currentStory: null
-  lastUpdate: '2026-05-25T14:37:15.695Z'
+  lastUpdate: '2026-06-12T13:00:00.000Z'
   isGitRepo: true
-timestamp: 1779719835696
+  epic22Status: Concluded
+  bugFixes:
+    - 'Corrigido jsonError() em apps/api/cmd/api/main.go — agora usa json.NewEncoder com escapes adequados'
+    - 'Aplicadas migrations 003-006 no PostgreSQL — tabelas editais, propostas, avaliadores, atribuicoes criadas'
+    - 'Verificados e eliminados todos os pontos com fmt.Sprintf para montagem manual de JSON'
+  stories:
+    2.2.1: Concluded
+    2.2.2: Concluded
+    2.2.3: Concluded
+    2.2.4: Concluded
+    2.2.5: Concluded
+    2.2.6: Deferred
+timestamp: 1781812800000
 ttl: 60
-gitFingerprint: 1777558807884.973:1779652794433.4727
+gitFingerprint: 1777558807884.973:1781034898624.0645

@@ -8,6 +8,32 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type AtribuicoesEditai struct {
+	ID               int64
+	AvaliadorID      int64
+	EditalID         int64
+	DataInicio       pgtype.Timestamptz
+	DataFim          pgtype.Timestamptz
+	StatusConvite    string
+	HashAnonimizacao string
+	CriadoEm         pgtype.Timestamptz
+}
+
+type Avaliadore struct {
+	ID                int64
+	UsuarioID         int64
+	Nome              string
+	Cpf               string
+	Email             string
+	TitulacaoMaxima   string
+	AreaConhecimento  string
+	Instituicao       string
+	CurriculoResumido string
+	Estado            string
+	DataCadastro      pgtype.Timestamptz
+	DataAtualizacao   pgtype.Timestamptz
+}
+
 type DocumentosPropostum struct {
 	ID          int64
 	PropostaID  int64
@@ -70,7 +96,6 @@ type Proposta struct {
 	ProponenteGenero          string
 	ProponenteEtnia           string
 	ProponenteDataNascimento  string
-	ProponenteEndereco        string
 	ProponenteTelefone        string
 	ProponenteEmail           string
 	AcademicoMaiorTitulacao   string
@@ -83,6 +108,13 @@ type Proposta struct {
 	DataSubmissao             pgtype.Timestamptz
 	DataAtualizacao           pgtype.Timestamptz
 	CriadoEm                  pgtype.Timestamptz
+	ProponenteCep             string
+	ProponenteLogradouro      string
+	ProponenteNumero          string
+	ProponenteComplemento     string
+	ProponenteBairro          string
+	ProponenteCidade          string
+	ProponenteUf              string
 }
 
 type TokensRedefinicao struct {
@@ -117,7 +149,6 @@ type VersoesPropostum struct {
 	ProponenteGenero          string
 	ProponenteEtnia           string
 	ProponenteDataNascimento  string
-	ProponenteEndereco        string
 	ProponenteTelefone        string
 	ProponenteEmail           string
 	AcademicoMaiorTitulacao   string
@@ -130,4 +161,11 @@ type VersoesPropostum struct {
 	Protocolo                 string
 	DataSubmissao             pgtype.Timestamptz
 	CriadoEm                  pgtype.Timestamptz
+	ProponenteCep             string
+	ProponenteLogradouro      string
+	ProponenteNumero          string
+	ProponenteComplemento     string
+	ProponenteBairro          string
+	ProponenteCidade          string
+	ProponenteUf              string
 }

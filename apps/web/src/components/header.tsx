@@ -38,6 +38,24 @@ export default function Header() {
             Editais
           </Link>
           <Link
+            href={{ pathname: "/avaliadores" }}
+            className="text-sm text-gray-600 transition-colors hover:text-brand-600"
+          >
+            Avaliadores
+          </Link>
+          <Link
+            href={{ pathname: "/avaliacoes" }}
+            className="text-sm text-gray-600 transition-colors hover:text-brand-600"
+          >
+            Avaliações
+          </Link>
+          <Link
+            href={{ pathname: "/admin/avaliacoes" }}
+            className="text-sm text-gray-600 transition-colors hover:text-brand-600"
+          >
+            Acompanhamento
+          </Link>
+          <Link
             href={{ pathname: "/minhas-propostas" }}
             className="text-sm text-gray-600 transition-colors hover:text-brand-600"
           >

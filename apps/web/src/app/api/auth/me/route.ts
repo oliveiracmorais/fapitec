@@ -21,11 +21,11 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       authenticated: true,
       usuario: {
-        id: data.documento || "",
+        id: String(data.id ?? data.documento ?? ""),
         nome: data.nome || "",
         documento: data.documento || "",
         email: data.email || "",
-        estrangeiro: false,
+        estrangeiro: !!data.estrangeiro,
       },
     });
   } catch {

@@ -9,7 +9,7 @@ const PUBLIC_PATHS = [
   "/redefinir-senha",
 ];
 
-const PROTECTED_PREFIXES = ["/dashboard", "/editais", "/perfil"];
+const PROTECTED_PREFIXES = ["/dashboard", "/editais", "/perfil", "/avaliadores", "/minhas-propostas", "/avaliacoes", "/admin"];
 
 export function middleware(request: NextRequest) {
   const token = request.cookies.get("fapitec_token")?.value;

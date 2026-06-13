@@ -21,6 +21,11 @@ type RepositorioDeProposta interface {
 	Atualizar(ctx context.Context, proposta *entidades.Proposta) error
 	Deletar(ctx context.Context, id int64) error
 	ContarPorEdital(ctx context.Context, editalID int64) (int64, error)
+	SalvarParecer(ctx context.Context, parecer *entidades.Parecer) error
+	ListarPareceresPorProposta(ctx context.Context, propostaID int64) ([]*entidades.Parecer, error)
+	ListarPareceresPorAvaliador(ctx context.Context, avaliadorID int64) ([]*entidades.Parecer, error)
+	ListarPropostasPorEdital(ctx context.Context, editalID int64) ([]*entidades.Proposta, error)
+	AtualizarStatus(ctx context.Context, id int64, status string) error
 }
 
 type EditalInfo struct {

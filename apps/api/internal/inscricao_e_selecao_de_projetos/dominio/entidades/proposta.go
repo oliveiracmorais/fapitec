@@ -107,3 +107,57 @@ func (p *Proposta) CalcularValorTotal() {
 	}
 	p.ValorTotalSolicitado = total
 }
+
+func (p *Proposta) AdicionarParecer(parecer *Parecer) error {
+	if p.Status != objetos_de_valor.StatusPropostaSubmetida &&
+		p.Status != objetos_de_valor.StatusPropostaEmAvaliacao {
+		return fmt.Errorf("apenas propostas submetidas ou em avaliacao podem receber pareceres")
+	}
+
+	p.Pareceres = append(p.Pareceres, *parecer)
+	p.DataAtualizacao = time.Now()
+
+	if p.Status == objetos_de_valor.StatusPropostaSubmetida {
+		status, err := objetos_de_valor.NovoStatusProposta("em_avaliacao")
+		if err != nil {
+			return err
+		}
+		p.Status = status
+	}
+
+	return nil
+}
+
+func (p *Proposta) FinalizarAvaliacao(notaDeCorte int) error {
+	if p.Status != objetos_de_valor.StatusPropostaEmAvaliacao {
+		return fmt.Errorf("apenas propostas em avaliacao podem ser finalizadas")
+	}
+
+	notaFinal := p.CalcularNotaFinal()
+
+	var novoStatus objetos_de_valor.StatusProposta
+	var err error
+	if notaFinal >= notaDeCorte {
+		novoStatus, err = objetos_de_valor.NovoStatusProposta("aprovada")
+	} else {
+		novoStatus, err = objetos_de_valor.NovoStatusProposta("reprovada")
+	}
+	if err != nil {
+		return err
+	}
+
+	p.Status = novoStatus
+	p.DataAtualizacao = time.Now()
+	return nil
+}
+
+func (p *Proposta) CalcularNotaFinal() int {
+	if len(p.Pareceres) == 0 {
+		return 0
+	}
+	soma := 0
+	for _, parecer := range p.Pareceres {
+		soma += parecer.Nota
+	}
+	return soma / len(p.Pareceres)
+}

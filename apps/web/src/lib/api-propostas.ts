@@ -6,6 +6,13 @@ export type DadosProponente = {
   etnia: string;
   data_nascimento: string;
   endereco: string;
+  cep: string;
+  logradouro: string;
+  numero: string;
+  complemento: string;
+  bairro: string;
+  cidade: string;
+  uf: string;
   telefone: string;
   email: string;
 };
@@ -72,6 +79,7 @@ export type PropostaResumo = {
 
 export type CriarPropostaPayload = {
   edital_id: number;
+  proponente_id: number;
   dados_proponente: DadosProponente;
   dados_academicos: DadosAcademicos;
   empresa_vinculada?: EmpresaVinculada;

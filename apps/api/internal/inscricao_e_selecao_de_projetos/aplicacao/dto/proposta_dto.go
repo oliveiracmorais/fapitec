@@ -18,6 +18,13 @@ type ProponenteInfoDTO struct {
 	Etnia         string `json:"etnia"`
 	DataNascimento string `json:"data_nascimento"`
 	Endereco      string `json:"endereco"`
+	CEP           string `json:"cep"`
+	Logradouro    string `json:"logradouro"`
+	Numero        string `json:"numero"`
+	Complemento   string `json:"complemento"`
+	Bairro        string `json:"bairro"`
+	Cidade        string `json:"cidade"`
+	UF            string `json:"uf"`
 	Telefone      string `json:"telefone"`
 	Email         string `json:"email"`
 }

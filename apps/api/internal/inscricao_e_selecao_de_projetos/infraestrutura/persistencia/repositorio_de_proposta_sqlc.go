@@ -33,7 +33,13 @@ func (r *RepositorioDePropostaSQLC) Criar(ctx context.Context, proposta *entidad
 		ProponenteGenero:          proposta.DadosProponente.Genero,
 		ProponenteEtnia:           proposta.DadosProponente.Etnia,
 		ProponenteDataNascimento:  proposta.DadosProponente.DataNascimento,
-		ProponenteEndereco:        proposta.DadosProponente.Endereco,
+		ProponenteCep:             proposta.DadosProponente.Endereco.CEP,
+		ProponenteLogradouro:      proposta.DadosProponente.Endereco.Logradouro,
+		ProponenteNumero:          proposta.DadosProponente.Endereco.Numero,
+		ProponenteComplemento:     proposta.DadosProponente.Endereco.Complemento,
+		ProponenteBairro:          proposta.DadosProponente.Endereco.Bairro,
+		ProponenteCidade:          proposta.DadosProponente.Endereco.Cidade,
+		ProponenteUf:              proposta.DadosProponente.Endereco.UF,
 		ProponenteTelefone:        proposta.DadosProponente.Telefone,
 		ProponenteEmail:           proposta.DadosProponente.Email,
 		AcademicoMaiorTitulacao:   proposta.DadosAcademicos.MaiorTitulacao,
@@ -120,7 +126,13 @@ func (r *RepositorioDePropostaSQLC) Atualizar(ctx context.Context, proposta *ent
 		ProponenteGenero:          existente.ProponenteGenero,
 		ProponenteEtnia:           existente.ProponenteEtnia,
 		ProponenteDataNascimento:  existente.ProponenteDataNascimento,
-		ProponenteEndereco:        existente.ProponenteEndereco,
+		ProponenteCep:             existente.ProponenteCep,
+		ProponenteLogradouro:      existente.ProponenteLogradouro,
+		ProponenteNumero:          existente.ProponenteNumero,
+		ProponenteComplemento:     existente.ProponenteComplemento,
+		ProponenteBairro:          existente.ProponenteBairro,
+		ProponenteCidade:          existente.ProponenteCidade,
+		ProponenteUf:              existente.ProponenteUf,
 		ProponenteTelefone:        existente.ProponenteTelefone,
 		ProponenteEmail:           existente.ProponenteEmail,
 		AcademicoMaiorTitulacao:   existente.AcademicoMaiorTitulacao,
@@ -152,7 +164,13 @@ func (r *RepositorioDePropostaSQLC) Atualizar(ctx context.Context, proposta *ent
 		ProponenteGenero:          proposta.DadosProponente.Genero,
 		ProponenteEtnia:           proposta.DadosProponente.Etnia,
 		ProponenteDataNascimento:  proposta.DadosProponente.DataNascimento,
-		ProponenteEndereco:        proposta.DadosProponente.Endereco,
+		ProponenteCep:             proposta.DadosProponente.Endereco.CEP,
+		ProponenteLogradouro:      proposta.DadosProponente.Endereco.Logradouro,
+		ProponenteNumero:          proposta.DadosProponente.Endereco.Numero,
+		ProponenteComplemento:     proposta.DadosProponente.Endereco.Complemento,
+		ProponenteBairro:          proposta.DadosProponente.Endereco.Bairro,
+		ProponenteCidade:          proposta.DadosProponente.Endereco.Cidade,
+		ProponenteUf:              proposta.DadosProponente.Endereco.UF,
 		ProponenteTelefone:        proposta.DadosProponente.Telefone,
 		ProponenteEmail:           proposta.DadosProponente.Email,
 		AcademicoMaiorTitulacao:   proposta.DadosAcademicos.MaiorTitulacao,
@@ -202,7 +220,11 @@ func (r *RepositorioDePropostaSQLC) sqlcParaDominio(s sqlcpersistencia.Proposta)
 			Genero:        s.ProponenteGenero,
 			Etnia:         s.ProponenteEtnia,
 			DataNascimento: s.ProponenteDataNascimento,
-			Endereco:      s.ProponenteEndereco,
+			Endereco: objetos_de_valor.NovoEndereco(
+				s.ProponenteLogradouro, s.ProponenteNumero,
+				s.ProponenteComplemento, s.ProponenteBairro,
+				s.ProponenteCidade, s.ProponenteUf, s.ProponenteCep,
+			),
 			Telefone:      s.ProponenteTelefone,
 			Email:         s.ProponenteEmail,
 		},
@@ -222,4 +244,24 @@ func (r *RepositorioDePropostaSQLC) sqlcParaDominio(s sqlcpersistencia.Proposta)
 		DataAtualizacao:      dataAtualizacao,
 		CriadoEm:             s.CriadoEm.Time,
 	}
+}
+
+func (r *RepositorioDePropostaSQLC) SalvarParecer(_ context.Context, _ *entidades.Parecer) error {
+	return errors.New("SalvarParecer: implementacao SQL pendente - usar repositorio em memoria")
+}
+
+func (r *RepositorioDePropostaSQLC) ListarPareceresPorProposta(_ context.Context, _ int64) ([]*entidades.Parecer, error) {
+	return nil, errors.New("ListarPareceresPorProposta: implementacao SQL pendente - usar repositorio em memoria")
+}
+
+func (r *RepositorioDePropostaSQLC) ListarPareceresPorAvaliador(_ context.Context, _ int64) ([]*entidades.Parecer, error) {
+	return nil, errors.New("ListarPareceresPorAvaliador: implementacao SQL pendente - usar repositorio em memoria")
+}
+
+func (r *RepositorioDePropostaSQLC) ListarPropostasPorEdital(ctx context.Context, editalID int64) ([]*entidades.Proposta, error) {
+	return r.Listar(ctx, repositorios.FiltrosListarPropostas{EditalID: editalID})
+}
+
+func (r *RepositorioDePropostaSQLC) AtualizarStatus(_ context.Context, _ int64, _ string) error {
+	return errors.New("AtualizarStatus: implementacao SQL pendente - usar repositorio em memoria")
 }

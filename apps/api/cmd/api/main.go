@@ -44,7 +44,7 @@ import (
 func jsonError(w http.ResponseWriter, msg string, code int) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
-	fmt.Fprintln(w, msg)
+	json.NewEncoder(w).Encode(map[string]string{"erro": msg})
 }
 
 func main() {
@@ -74,6 +74,8 @@ func main() {
 	var tokenRepo repositorios.RepositorioDeTokenRedefinicao
 	var editalRepo gestaoEditaisRepositorios.RepositorioDeEdital
 	var propostaRepo propostaRepositorios.RepositorioDeProposta
+	var avaliadorRepo propostaRepositorios.RepositorioDeAvaliador
+	var atribuicaoRepo propostaRepositorios.RepositorioDeAtribuicao
 
 	authProvider := os.Getenv("AUTH_PROVIDER")
 	if authProvider == "" {
@@ -112,6 +114,8 @@ func main() {
 
 			queriesProposta := sqlcproposta.New(pool)
 			propostaRepo = propostaPersistencia.NovoRepositorioDePropostaSQLC(queriesProposta)
+			avaliadorRepo = propostaPersistencia.NovoRepositorioDeAvaliadorSQLC(queriesProposta)
+			atribuicaoRepo = propostaPersistencia.NovoRepositorioDeAtribuicaoSQLC(queriesProposta)
 
 			log.Println("Conectado ao PostgreSQL")
 		} else {
@@ -135,6 +139,16 @@ func main() {
 		propostaRepo = propostaPersistencia.NovoRepositorioDePropostaMemoria()
 	}
 
+	if avaliadorRepo == nil {
+		log.Println("PostgreSQL indisponivel para avaliadores — usando repositorio em memoria")
+		avaliadorRepo = propostaPersistencia.NovoRepositorioDeAvaliadorMemoria()
+	}
+
+	if atribuicaoRepo == nil {
+		log.Println("PostgreSQL indisponivel para atribuicoes — usando repositorio em memoria")
+		atribuicaoRepo = propostaPersistencia.NovoRepositorioDeAtribuicaoMemoria()
+	}
+
 	cadastrar := casos_de_uso.NovoCadastrarUsuarioComAuditoria(repo, hashService, auditService)
 	autenticar := casos_de_uso.NovoAutenticarUsuarioComAuditoria(repo, hashService, auditService)
 	solicitarRedefinicao := casos_de_uso.NovoSolicitarRedefinicaoSenhaComAuditoria(repo, tokenRepo, emailSvc, auditService)
@@ -155,6 +169,19 @@ func main() {
 	visualizarProposta := propostaCasosDeUso.NovoVisualizarProposta(propostaRepo)
 	deletarProposta := propostaCasosDeUso.NovoDeletarProposta(propostaRepo)
 
+	cadastrarAvaliador := propostaCasosDeUso.NovoCadastrarAvaliador(avaliadorRepo)
+	editarAvaliador := propostaCasosDeUso.NovoEditarAvaliador(avaliadorRepo)
+	listarAvaliadores := propostaCasosDeUso.NovoListarAvaliadores(avaliadorRepo)
+	visualizarAvaliador := propostaCasosDeUso.NovoVisualizarAvaliador(avaliadorRepo, atribuicaoRepo)
+	atribuirEdital := propostaCasosDeUso.NovoAtribuirEdital(avaliadorRepo, atribuicaoRepo)
+	gerenciarConvite := propostaCasosDeUso.NovoGerenciarConvite(atribuicaoRepo)
+	listarAtribuicoes := propostaCasosDeUso.NovoListarAtribuicoes(atribuicaoRepo)
+
+	emitirParecer := propostaCasosDeUso.NovoEmitirParecer(propostaRepo, avaliadorRepo, atribuicaoRepo)
+	listarPareceres := propostaCasosDeUso.NovoListarPareceres(propostaRepo, atribuicaoRepo)
+	listarPropostasParaAvaliar := propostaCasosDeUso.NovoListarPropostasParaAvaliar(propostaRepo, atribuicaoRepo)
+	finalizarAvaliacao := propostaCasosDeUso.NovoFinalizarAvaliacaoDoEdital(propostaRepo)
+
 	mux := http.NewServeMux()
 
 	cadastroHandler := func(w http.ResponseWriter, r *http.Request) {
@@ -168,7 +195,7 @@ func main() {
 			Estrangeiro      bool   `json:"estrangeiro"`
 		}
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			jsonError(w, `{"erro":"requisicao invalida"}`, http.StatusBadRequest)
+			jsonError(w, "requisicao invalida", http.StatusBadRequest)
 			return
 		}
 
@@ -184,7 +211,7 @@ func main() {
 
 		saida, err := cadastrar.Executar(context.Background(), entrada)
 		if err != nil {
-			jsonError(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusBadRequest)
+			jsonError(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
@@ -209,7 +236,7 @@ func main() {
 				CaptchaToken string `json:"captcha_token"`
 			}
 			if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-				jsonError(w, `{"erro":"requisicao invalida"}`, http.StatusBadRequest)
+				jsonError(w, "requisicao invalida", http.StatusBadRequest)
 				return
 			}
 
@@ -218,7 +245,7 @@ func main() {
 			if usuario != nil && usuario.Tentativas >= 3 {
 				valido, _ := turnstileVerificador.Verificar(req.CaptchaToken)
 				if !valido {
-					jsonError(w, `{"erro":"Validacao de captcha falhou. Tente novamente."}`, http.StatusUnauthorized)
+					jsonError(w, "Validacao de captcha falhou. Tente novamente.", http.StatusUnauthorized)
 					return
 				}
 			}
@@ -230,7 +257,7 @@ func main() {
 
 			saida, err := autenticar.Executar(context.Background(), entrada)
 			if err != nil {
-				jsonError(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusUnauthorized)
+				jsonError(w, err.Error(), http.StatusUnauthorized)
 				return
 			}
 
@@ -266,7 +293,7 @@ func main() {
 				Email string `json:"email"`
 			}
 			if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-				jsonError(w, `{"erro":"requisicao invalida"}`, http.StatusBadRequest)
+				jsonError(w, "requisicao invalida", http.StatusBadRequest)
 				return
 			}
 
@@ -276,7 +303,7 @@ func main() {
 
 			err := solicitarRedefinicao.Executar(context.Background(), entrada)
 			if err != nil {
-				jsonError(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusBadRequest)
+				jsonError(w, err.Error(), http.StatusBadRequest)
 				return
 			}
 
@@ -294,7 +321,7 @@ func main() {
 				ConfirmacaoSenha string `json:"confirmacao_senha"`
 			}
 			if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-				jsonError(w, `{"erro":"requisicao invalida"}`, http.StatusBadRequest)
+				jsonError(w, "requisicao invalida", http.StatusBadRequest)
 				return
 			}
 
@@ -306,7 +333,7 @@ func main() {
 
 			err := redefinirSenha.Executar(context.Background(), entrada)
 			if err != nil {
-				jsonError(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusBadRequest)
+				jsonError(w, err.Error(), http.StatusBadRequest)
 				return
 			}
 
@@ -334,7 +361,7 @@ func main() {
 
 	mux.HandleFunc("GET /api/v1/auth/login", func(w http.ResponseWriter, r *http.Request) {
 		if casdoorAdapter == nil {
-			jsonError(w, `{"erro":"provedor casdoor nao configurado"}`, http.StatusBadRequest)
+			jsonError(w, "provedor casdoor nao configurado", http.StatusBadRequest)
 			return
 		}
 		redirectURI := r.URL.Query().Get("redirect_uri")
@@ -358,18 +385,18 @@ func main() {
 
 	mux.HandleFunc("GET /api/v1/auth/callback", func(w http.ResponseWriter, r *http.Request) {
 		if casdoorAdapter == nil {
-			jsonError(w, `{"erro":"provedor casdoor nao configurado"}`, http.StatusBadRequest)
+			jsonError(w, "provedor casdoor nao configurado", http.StatusBadRequest)
 			return
 		}
 		code := r.URL.Query().Get("code")
 		state := r.URL.Query().Get("state")
 		if code == "" {
-			jsonError(w, `{"erro":"codigo de autorizacao ausente"}`, http.StatusBadRequest)
+			jsonError(w, "codigo de autorizacao ausente", http.StatusBadRequest)
 			return
 		}
 		token, err := casdoorAdapter.TrocarCodigoPorToken(code, state)
 		if err != nil {
-			jsonError(w, fmt.Sprintf(`{"erro":"falha ao obter token: %s"}`, err.Error()), http.StatusUnauthorized)
+			jsonError(w, fmt.Sprintf("falha ao obter token: %s", err.Error()), http.StatusUnauthorized)
 			return
 		}
 		http.SetCookie(w, &http.Cookie{
@@ -404,7 +431,7 @@ func main() {
 		email := r.URL.Query().Get("email")
 
 		if cpf == "" && email == "" {
-			jsonError(w, `{"erro":"informe cpf ou email"}`, http.StatusBadRequest)
+			jsonError(w, "informe cpf ou email", http.StatusBadRequest)
 			return
 		}
 
@@ -416,7 +443,7 @@ func main() {
 		}
 
 		if usuario == nil {
-			jsonError(w, `{"erro":"usuario nao encontrado"}`, http.StatusNotFound)
+			jsonError(w, "usuario nao encontrado", http.StatusNotFound)
 			return
 		}
 
@@ -434,7 +461,7 @@ func main() {
 	mux.HandleFunc("GET /api/v1/auditoria", func(w http.ResponseWriter, r *http.Request) {
 		eventos, err := auditRepo.Listar(context.Background())
 		if err != nil {
-			jsonError(w, `{"erro":"erro ao listar eventos de auditoria"}`, http.StatusInternalServerError)
+			jsonError(w, "erro ao listar eventos de auditoria", http.StatusInternalServerError)
 			return
 		}
 		resp := make([]map[string]any, 0, len(eventos))
@@ -461,13 +488,13 @@ func main() {
 	mux.HandleFunc("POST /api/v1/editais", func(w http.ResponseWriter, r *http.Request) {
 		var req gestaoEditaisDTO.CriarEditalEntrada
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			jsonError(w, `{"erro":"requisicao invalida"}`, http.StatusBadRequest)
+			jsonError(w, "requisicao invalida", http.StatusBadRequest)
 			return
 		}
 
 		saida, err := criarEdital.Executar(context.Background(), req)
 		if err != nil {
-			jsonError(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusBadRequest)
+			jsonError(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
@@ -485,7 +512,7 @@ func main() {
 
 		saida, err := listarEditais.Executar(context.Background(), filtros)
 		if err != nil {
-			jsonError(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusInternalServerError)
+			jsonError(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
@@ -497,13 +524,13 @@ func main() {
 		idStr := r.PathValue("id")
 		var id int64
 		if _, err := fmt.Sscanf(idStr, "%d", &id); err != nil {
-			jsonError(w, `{"erro":"id invalido"}`, http.StatusBadRequest)
+			jsonError(w, "id invalido", http.StatusBadRequest)
 			return
 		}
 
 		saida, err := visualizarEdital.Executar(context.Background(), id)
 		if err != nil {
-			jsonError(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusNotFound)
+			jsonError(w, err.Error(), http.StatusNotFound)
 			return
 		}
 
@@ -515,19 +542,19 @@ func main() {
 		idStr := r.PathValue("id")
 		var id int64
 		if _, err := fmt.Sscanf(idStr, "%d", &id); err != nil {
-			jsonError(w, `{"erro":"id invalido"}`, http.StatusBadRequest)
+			jsonError(w, "id invalido", http.StatusBadRequest)
 			return
 		}
 
 		var req gestaoEditaisDTO.AtualizarEditalEntrada
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			jsonError(w, `{"erro":"requisicao invalida"}`, http.StatusBadRequest)
+			jsonError(w, "requisicao invalida", http.StatusBadRequest)
 			return
 		}
 
 		saida, err := atualizarEdital.Executar(context.Background(), id, req)
 		if err != nil {
-			jsonError(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusBadRequest)
+			jsonError(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
@@ -539,12 +566,12 @@ func main() {
 		idStr := r.PathValue("id")
 		var id int64
 		if _, err := fmt.Sscanf(idStr, "%d", &id); err != nil {
-			jsonError(w, `{"erro":"id invalido"}`, http.StatusBadRequest)
+			jsonError(w, "id invalido", http.StatusBadRequest)
 			return
 		}
 
 		if err := deletarEdital.Executar(context.Background(), id); err != nil {
-			jsonError(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusNotFound)
+			jsonError(w, err.Error(), http.StatusNotFound)
 			return
 		}
 
@@ -555,13 +582,13 @@ func main() {
 	mux.HandleFunc("POST /api/v1/propostas", func(w http.ResponseWriter, r *http.Request) {
 		var req propostaDTO.CriarPropostaEntrada
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			jsonError(w, `{"erro":"requisicao invalida"}`, http.StatusBadRequest)
+			jsonError(w, "requisicao invalida", http.StatusBadRequest)
 			return
 		}
 
 		saida, err := criarProposta.Executar(context.Background(), req)
 		if err != nil {
-			jsonError(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusBadRequest)
+			jsonError(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
@@ -585,7 +612,7 @@ func main() {
 
 		saida, err := listarPropostas.Executar(context.Background(), filtros)
 		if err != nil {
-			jsonError(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusInternalServerError)
+			jsonError(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
@@ -597,13 +624,13 @@ func main() {
 		idStr := r.PathValue("id")
 		var id int64
 		if _, err := fmt.Sscanf(idStr, "%d", &id); err != nil {
-			jsonError(w, `{"erro":"id invalido"}`, http.StatusBadRequest)
+			jsonError(w, "id invalido", http.StatusBadRequest)
 			return
 		}
 
 		saida, err := visualizarProposta.Executar(context.Background(), id)
 		if err != nil {
-			jsonError(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusNotFound)
+			jsonError(w, err.Error(), http.StatusNotFound)
 			return
 		}
 
@@ -615,19 +642,19 @@ func main() {
 		idStr := r.PathValue("id")
 		var id int64
 		if _, err := fmt.Sscanf(idStr, "%d", &id); err != nil {
-			jsonError(w, `{"erro":"id invalido"}`, http.StatusBadRequest)
+			jsonError(w, "id invalido", http.StatusBadRequest)
 			return
 		}
 
 		var req propostaDTO.AtualizarPropostaEntrada
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			jsonError(w, `{"erro":"requisicao invalida"}`, http.StatusBadRequest)
+			jsonError(w, "requisicao invalida", http.StatusBadRequest)
 			return
 		}
 
 		saida, err := editarProposta.Executar(context.Background(), id, req)
 		if err != nil {
-			jsonError(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusBadRequest)
+			jsonError(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
@@ -639,12 +666,12 @@ func main() {
 		idStr := r.PathValue("id")
 		var id int64
 		if _, err := fmt.Sscanf(idStr, "%d", &id); err != nil {
-			jsonError(w, `{"erro":"id invalido"}`, http.StatusBadRequest)
+			jsonError(w, "id invalido", http.StatusBadRequest)
 			return
 		}
 
 		if err := deletarProposta.Executar(context.Background(), id); err != nil {
-			jsonError(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusNotFound)
+			jsonError(w, err.Error(), http.StatusNotFound)
 			return
 		}
 
@@ -656,13 +683,13 @@ func main() {
 		idStr := r.PathValue("id")
 		var id int64
 		if _, err := fmt.Sscanf(idStr, "%d", &id); err != nil {
-			jsonError(w, `{"erro":"id invalido"}`, http.StatusBadRequest)
+			jsonError(w, "id invalido", http.StatusBadRequest)
 			return
 		}
 
 		saida, err := submeterProposta.Executar(context.Background(), id)
 		if err != nil {
-			jsonError(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusBadRequest)
+			jsonError(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
@@ -674,7 +701,7 @@ func main() {
 		idStr := r.PathValue("id")
 		var editalID int64
 		if _, err := fmt.Sscanf(idStr, "%d", &editalID); err != nil {
-			jsonError(w, `{"erro":"id invalido"}`, http.StatusBadRequest)
+			jsonError(w, "id invalido", http.StatusBadRequest)
 			return
 		}
 
@@ -684,7 +711,256 @@ func main() {
 
 		saida, err := listarPropostas.Executar(context.Background(), filtros)
 		if err != nil {
-			jsonError(w, fmt.Sprintf(`{"erro":"%s"}`, err.Error()), http.StatusInternalServerError)
+			jsonError(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(saida)
+	})
+
+	mux.HandleFunc("GET /api/v1/avaliadores", func(w http.ResponseWriter, r *http.Request) {
+		filtros := propostaRepositorios.FiltrosListarAvaliadores{
+			Nome:             r.URL.Query().Get("nome"),
+			CPF:              r.URL.Query().Get("cpf"),
+			AreaConhecimento: r.URL.Query().Get("area_conhecimento"),
+			Estado:           r.URL.Query().Get("estado"),
+		}
+
+		saida, err := listarAvaliadores.Executar(context.Background(), filtros)
+		if err != nil {
+			jsonError(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(saida)
+	})
+
+	mux.HandleFunc("POST /api/v1/avaliadores", func(w http.ResponseWriter, r *http.Request) {
+		var req propostaDTO.CadastrarAvaliadorEntrada
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			jsonError(w, "requisicao invalida", http.StatusBadRequest)
+			return
+		}
+
+		saida, err := cadastrarAvaliador.Executar(context.Background(), req)
+		if err != nil {
+			jsonError(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+		json.NewEncoder(w).Encode(saida)
+	})
+
+	mux.HandleFunc("GET /api/v1/avaliadores/{id}", func(w http.ResponseWriter, r *http.Request) {
+		idStr := r.PathValue("id")
+		var id int64
+		if _, err := fmt.Sscanf(idStr, "%d", &id); err != nil {
+			jsonError(w, "id invalido", http.StatusBadRequest)
+			return
+		}
+
+		saida, err := visualizarAvaliador.Executar(context.Background(), id)
+		if err != nil {
+			jsonError(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(saida)
+	})
+
+	mux.HandleFunc("PUT /api/v1/avaliadores/{id}", func(w http.ResponseWriter, r *http.Request) {
+		idStr := r.PathValue("id")
+		var id int64
+		if _, err := fmt.Sscanf(idStr, "%d", &id); err != nil {
+			jsonError(w, "id invalido", http.StatusBadRequest)
+			return
+		}
+
+		var req propostaDTO.AtualizarAvaliadorEntrada
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			jsonError(w, "requisicao invalida", http.StatusBadRequest)
+			return
+		}
+
+		saida, err := editarAvaliador.Executar(context.Background(), id, req)
+		if err != nil {
+			jsonError(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(saida)
+	})
+
+	mux.HandleFunc("POST /api/v1/avaliadores/{id}/atribuir", func(w http.ResponseWriter, r *http.Request) {
+		idStr := r.PathValue("id")
+		var id int64
+		if _, err := fmt.Sscanf(idStr, "%d", &id); err != nil {
+			jsonError(w, "id invalido", http.StatusBadRequest)
+			return
+		}
+
+		var req propostaDTO.AtribuirEditalEntrada
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			jsonError(w, "requisicao invalida", http.StatusBadRequest)
+			return
+		}
+
+		saida, err := atribuirEdital.Executar(context.Background(), id, req)
+		if err != nil {
+			jsonError(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+		json.NewEncoder(w).Encode(saida)
+	})
+
+	mux.HandleFunc("GET /api/v1/avaliadores/{id}/atribuicoes", func(w http.ResponseWriter, r *http.Request) {
+		idStr := r.PathValue("id")
+		var id int64
+		if _, err := fmt.Sscanf(idStr, "%d", &id); err != nil {
+			jsonError(w, "id invalido", http.StatusBadRequest)
+			return
+		}
+
+		saida, err := listarAtribuicoes.ExecutarPorAvaliador(context.Background(), id)
+		if err != nil {
+			jsonError(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(saida)
+	})
+
+	mux.HandleFunc("PUT /api/v1/atribuicoes/{id}/convite", func(w http.ResponseWriter, r *http.Request) {
+		idStr := r.PathValue("id")
+		var id int64
+		if _, err := fmt.Sscanf(idStr, "%d", &id); err != nil {
+			jsonError(w, "id invalido", http.StatusBadRequest)
+			return
+		}
+
+		var req propostaDTO.GerenciarConviteEntrada
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			jsonError(w, "requisicao invalida", http.StatusBadRequest)
+			return
+		}
+
+		saida, err := gerenciarConvite.Executar(context.Background(), id, req)
+		if err != nil {
+			jsonError(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(saida)
+	})
+
+	mux.HandleFunc("GET /api/v1/editais/{id}/avaliadores", func(w http.ResponseWriter, r *http.Request) {
+		idStr := r.PathValue("id")
+		var editalID int64
+		if _, err := fmt.Sscanf(idStr, "%d", &editalID); err != nil {
+			jsonError(w, "id invalido", http.StatusBadRequest)
+			return
+		}
+
+		saida, err := listarAtribuicoes.ExecutarPorEdital(context.Background(), editalID)
+		if err != nil {
+			jsonError(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(saida)
+	})
+
+	mux.HandleFunc("GET /api/v1/avaliadores/me/propostas", func(w http.ResponseWriter, r *http.Request) {
+		avaliadorIDStr := r.URL.Query().Get("avaliador_id")
+		var avaliadorID int64
+		if _, err := fmt.Sscanf(avaliadorIDStr, "%d", &avaliadorID); err != nil {
+			jsonError(w, "avaliador_id é obrigatorio", http.StatusBadRequest)
+			return
+		}
+
+		saida, err := listarPropostasParaAvaliar.Executar(context.Background(), avaliadorID)
+		if err != nil {
+			jsonError(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(saida)
+	})
+
+	mux.HandleFunc("POST /api/v1/propostas/{id}/pareceres", func(w http.ResponseWriter, r *http.Request) {
+		idStr := r.PathValue("id")
+		var propostaID int64
+		if _, err := fmt.Sscanf(idStr, "%d", &propostaID); err != nil {
+			jsonError(w, "id invalido", http.StatusBadRequest)
+			return
+		}
+
+		var req propostaDTO.EmitirParecerEntrada
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			jsonError(w, "requisicao invalida", http.StatusBadRequest)
+			return
+		}
+		req.PropostaID = propostaID
+
+		saida, err := emitirParecer.Executar(context.Background(), req)
+		if err != nil {
+			jsonError(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+		json.NewEncoder(w).Encode(saida)
+	})
+
+	mux.HandleFunc("GET /api/v1/propostas/{id}/pareceres", func(w http.ResponseWriter, r *http.Request) {
+		idStr := r.PathValue("id")
+		var propostaID int64
+		if _, err := fmt.Sscanf(idStr, "%d", &propostaID); err != nil {
+			jsonError(w, "id invalido", http.StatusBadRequest)
+			return
+		}
+
+		saida, err := listarPareceres.ExecutarPorProposta(context.Background(), propostaID)
+		if err != nil {
+			jsonError(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(saida)
+	})
+
+	mux.HandleFunc("POST /api/v1/editais/{id}/finalizar-avaliacao", func(w http.ResponseWriter, r *http.Request) {
+		idStr := r.PathValue("id")
+		var editalID int64
+		if _, err := fmt.Sscanf(idStr, "%d", &editalID); err != nil {
+			jsonError(w, "id invalido", http.StatusBadRequest)
+			return
+		}
+
+		var req propostaDTO.FinalizarAvaliacaoEntrada
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			jsonError(w, "requisicao invalida", http.StatusBadRequest)
+			return
+		}
+
+		saida, err := finalizarAvaliacao.Executar(context.Background(), editalID, req)
+		if err != nil {
+			jsonError(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 

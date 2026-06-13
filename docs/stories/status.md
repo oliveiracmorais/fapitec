@@ -50,17 +50,17 @@ Concluir Epic 2.2 — Gestão de Editais e Submissão de Propostas.
 - *(none)*
 
 ### Ready for Deploy
-- *(none)*
+- **Epic 2.2: Gestão de Editais e Submissão de Propostas** — stories 2.2.1 a 2.2.5 concluídas. Pendente deploy em homologação.
 
 ## Próximos Passos
-- **Epic 2.2: Gestão de Editais e Submissão de Propostas** — EM ANDAMENTO
-  - Story 2.2.1: Extensão do Modelo de Editais — ✅ CONCLUÍDA (inclui correções C-01, C-02, C-03, C-04)
-  - Story 2.2.2: Submissão de Propostas — Backend — ✅ CONCLUÍDA (QA fixes aplicados: versionamento e validação de edital)
-  - Story 2.2.3: Submissão de Propostas — Frontend — A AGENDAR
-  - Story 2.2.4: Gestão de Avaliadores e Atribuição — A AGENDAR
-  - Story 2.2.5: Avaliação de Projetos — A AGENDAR
-  - Story 2.2.6: Classificação, Seleção e Divulgação — A AGENDAR
-- Módulos futuros: bolsistas, prestação de contas — Onda 2+
+- **Epic 2.2: Gestão de Editais e Submissão de Propostas** — ✅ CONCLUÍDA
+  - Story 2.2.1: Extensão do Modelo de Editais — ✅ CONCLUÍDA
+  - Story 2.2.2: Submissão de Propostas — Backend — ✅ CONCLUÍDA
+  - Story 2.2.3: Submissão de Propostas — Frontend — ✅ CONCLUÍDA
+  - Story 2.2.4: Gestão de Avaliadores e Atribuição — ✅ CONCLUÍDA
+  - Story 2.2.5: Avaliação de Projetos — ✅ CONCLUÍDA
+  - Story 2.2.6: Classificação, Seleção e Divulgação — ⏳ A AGENDAR (postergada — funcionalidade de classificação já implementada como parte da 2.2.5)
+- **Próximos passos:** Módulos futuros: bolsistas, prestação de contas — Onda 2+
 
 ## Epic Ativa
-- **Epic 2.2 — Gestão de Editais e Submissão de Propostas** — Em Andamento
+- *(nenhuma)* — Epic 2.2 concluída

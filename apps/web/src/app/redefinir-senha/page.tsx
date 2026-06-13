@@ -53,7 +53,7 @@ function RedefinirSenhaForm() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-brand-900 via-brand-800 to-brand-700 px-4">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-linear-to-br from-brand-900 via-brand-800 to-brand-700 px-4">
       <div className="w-full max-w-md rounded-2xl bg-white/95 p-8 shadow-2xl backdrop-blur">
         <div className="mb-8 flex flex-col items-center">
           <Image
@@ -166,7 +166,7 @@ function RedefinirSenhaForm() {
 export default function RedefinirSenhaPage() {
   return (
     <Suspense fallback={
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-brand-900 via-brand-800 to-brand-700">
+      <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-brand-900 via-brand-800 to-brand-700">
         <p className="text-white">Carregando...</p>
       </div>
     }>

@@ -73,10 +73,17 @@ export default function PropostaFormMultiEtapas({
       novosErros.rg = dadosProponente.rg.trim() ? "" : "RG é obrigatório";
       novosErros.data_nascimento = dadosProponente.data_nascimento ? "" : "Data de nascimento é obrigatória";
       novosErros.telefone = dadosProponente.telefone.trim() ? "" : "Telefone é obrigatório";
-      novosErros.endereco = dadosProponente.endereco.trim() ? "" : "Endereço é obrigatório";
+      novosErros.cep = dadosProponente.cep.trim() ? "" : "CEP é obrigatório";
+      novosErros.logradouro = dadosProponente.logradouro.trim() ? "" : "Logradouro é obrigatório";
+      novosErros.numero = dadosProponente.numero.trim() ? "" : "Número é obrigatório";
+      novosErros.bairro = dadosProponente.bairro.trim() ? "" : "Bairro é obrigatório";
+      novosErros.cidade = dadosProponente.cidade.trim() ? "" : "Cidade é obrigatória";
+      novosErros.uf = dadosProponente.uf.trim() ? "" : "UF é obrigatória";
       novosErros.genero = dadosProponente.genero.trim() ? "" : "Gênero é obrigatório";
       novosErros.etnia = dadosProponente.etnia.trim() ? "" : "Etnia é obrigatória";
-      ["nome", "cpf", "email", "rg", "data_nascimento", "telefone", "endereco", "genero", "etnia"].forEach(
+      ["nome", "cpf", "email", "rg", "data_nascimento", "telefone",
+        "cep", "logradouro", "numero", "bairro", "cidade", "uf",
+        "genero", "etnia"].forEach(
         (c) => (novosTouched[c] = true)
       );
     } else if (etapa === 1) {
@@ -93,8 +100,9 @@ export default function PropostaFormMultiEtapas({
         for (const tipo of tiposDocumentosExigidos) {
           const doc = documentos.find((d) => d.tipo === tipo);
           if (!doc?.arquivo && !doc?.nome_arquivo) {
-            novosErros[`doc_${tipo}`] = `Documento "${tipo}" é obrigatório`;
+            novosErros[`doc_${tipo}`] = "Este documento é obrigatório";
           }
+          novosTouched[`doc_${tipo}`] = true;
         }
       }
     } else if (etapa === 3) {
@@ -122,22 +130,24 @@ export default function PropostaFormMultiEtapas({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-2">
-        {ETAPAS.map((nome, i) => (
-          <div key={nome} className="flex items-center gap-2">
-            <span
-              className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold ${
-                i < etapa ? STATUS_ETAPA.concluida : i === etapa ? STATUS_ETAPA.atual : STATUS_ETAPA.pendente
-              }`}
-            >
-              {i < etapa ? "✓" : i + 1}
-            </span>
-            <span className={`hidden text-xs sm:inline ${i === etapa ? "font-medium text-gray-900" : "text-gray-500"}`}>
-              {nome}
-            </span>
-            {i < ETAPAS.length - 1 && <div className="h-px w-6 bg-gray-300 sm:w-12" />}
-          </div>
-        ))}
+      <div className="overflow-x-auto">
+        <div className="flex w-max items-center gap-2 sm:w-auto">
+          {ETAPAS.map((nome, i) => (
+            <div key={nome} className="flex shrink-0 items-center gap-2">
+              <span
+                className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold ${
+                  i < etapa ? STATUS_ETAPA.concluida : i === etapa ? STATUS_ETAPA.atual : STATUS_ETAPA.pendente
+                }`}
+              >
+                {i < etapa ? "✓" : i + 1}
+              </span>
+              <span className={`hidden text-xs sm:inline ${i === etapa ? "font-medium text-gray-900" : "text-gray-500"}`}>
+                {nome}
+              </span>
+              {i < ETAPAS.length - 1 && <div className="h-px w-6 shrink-0 bg-gray-300 sm:w-12" />}
+            </div>
+          ))}
+        </div>
       </div>
 
       {etapa === 0 && (
@@ -164,6 +174,8 @@ export default function PropostaFormMultiEtapas({
           tiposExigidos={tiposDocumentosExigidos}
           onAdicionar={onDocumentoAdicionar}
           onRemover={onDocumentoRemover}
+          erros={erros}
+          touched={touched}
         />
       )}
       {etapa === 3 && (

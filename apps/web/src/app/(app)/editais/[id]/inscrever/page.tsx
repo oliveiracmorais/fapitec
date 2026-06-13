@@ -15,7 +15,9 @@ type DocumentoEntry = {
 
 const PROPOSTA_PADRAO: DadosProponente = {
   nome: "", cpf: "", rg: "", genero: "", etnia: "",
-  data_nascimento: "", endereco: "", telefone: "", email: "",
+  data_nascimento: "", endereco: "", cep: "", logradouro: "",
+  numero: "", complemento: "", bairro: "", cidade: "", uf: "",
+  telefone: "", email: "",
 };
 
 const ACADEMICO_PADRAO: DadosAcademicos = {
@@ -85,6 +87,13 @@ export default function InscreverPage() {
             etnia: "",
             data_nascimento: "",
             endereco: "",
+            cep: "",
+            logradouro: "",
+            numero: "",
+            complemento: "",
+            bairro: "",
+            cidade: "",
+            uf: "",
             telefone: "",
           });
         }
@@ -152,9 +161,22 @@ export default function InscreverPage() {
     setErroGeral("");
 
     try {
+      const enderecoCompleto = [
+        dadosProponente.logradouro,
+        dadosProponente.numero,
+        dadosProponente.complemento,
+        dadosProponente.bairro,
+        dadosProponente.cidade,
+        dadosProponente.uf,
+        dadosProponente.cep,
+      ]
+        .filter(Boolean)
+        .join(", ");
+
       const payload = {
         edital_id: edital.id,
-        dados_proponente: dadosProponente,
+        proponente_id: Number(usuario?.id) || 0,
+        dados_proponente: { ...dadosProponente, endereco: enderecoCompleto },
         dados_academicos: dadosAcademicos,
         itens_orcamentarios: itensOrcamentarios.map((item) => ({
           descricao: item.descricao,
@@ -217,7 +239,7 @@ export default function InscreverPage() {
   }
 
   return (
-    <main className="mx-auto max-w-3xl px-4 py-6">
+    <main className="mx-auto max-w-7xl px-4 py-6">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">
           {editarId ? "Editar Proposta" : "Nova Proposta"}
