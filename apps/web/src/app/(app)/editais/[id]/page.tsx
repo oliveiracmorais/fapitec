@@ -118,7 +118,7 @@ export default function EditalDetalhePage() {
         <div className="space-y-6">
           <Section title="Informações Gerais">
             <Field label="Tipo de Chamada" value={edital.tipo_chamada} />
-            <Field label="Vigência" value={`${edital.data_inicio} a ${edital.data_fim}`} />
+            <Field label="Vigência" value={`${new Date(edital.data_inicio).toLocaleDateString("pt-BR")} a ${new Date(edital.data_fim).toLocaleDateString("pt-BR")}`} />
             <Field label="Modelo de Formulário" value={edital.modelo_formulario || "Nenhum"} />
             <Field label="Nota de Corte" value={edital.nota_de_corte} />
             <Field label="Valor Global" value={edital.valor_global ? `R$ ${(edital.valor_global / 100).toFixed(2)}` : null} />
