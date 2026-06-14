@@ -96,7 +96,7 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Prepare web build context
-        run: cp pnpm-lock.yaml apps/web/
+        run: cp pnpm-lock.yaml pnpm-workspace.yaml apps/web/
 
       - name: Build and push Web
         uses: docker/build-push-action@v6
