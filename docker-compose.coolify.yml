@@ -21,7 +21,7 @@ services:
       - coolify
 
   casdoor:
-    image: casbin/casdoor:v1.829.0
+    image: casbin/casdoor:v3.92.0
     pull_policy: always
     container_name: fapitec-casdoor
     environment:
