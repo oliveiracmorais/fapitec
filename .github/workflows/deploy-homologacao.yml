@@ -1,4 +1,4 @@
-name: Deploy Homologação
+name: Deploy Homologacao
 
 on:
   push:
@@ -11,16 +11,13 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  NODE_VERSION: 22
-  GO_VERSION: '1.23'
   SSH_USER: ubuntu
   SSH_HOST: ${{ secrets.SSH_HOST }}
   REMOTE_DIR: /home/ubuntu/apps/fapitec
-  DEPLOY_SCRIPT: scripts/deploy-homologacao.sh
-  ROLLBACK_SCRIPT: scripts/rollback-homologacao.sh
+  IMAGE_TAG: ${{ github.sha }}
+  GHCR_NS: ghcr.io/${{ github.repository_owner }}
   HEALTH_API: https://fapitec.duckdns.org/api/v1/health
   HEALTH_FRONTEND: https://fapitec.duckdns.org/
-  SLACK_NOTIFY: ${{ secrets.SLACK_WEBHOOK != '' && 'true' || 'false' }}
 
 jobs:
   quality:
@@ -29,13 +26,12 @@ jobs:
     timeout-minutes: 15
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: "22"
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -46,7 +42,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: ${{ env.GO_VERSION }}
+          go-version: "1.26"
           cache-dependency-path: apps/api/go.sum
 
       - name: Lint
@@ -67,38 +63,49 @@ jobs:
     needs: quality
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: write
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Setup Go
-        uses: actions/setup-go@v5
+      - name: Build and push API
+        uses: docker/build-push-action@v6
         with:
-          go-version: ${{ env.GO_VERSION }}
-          cache-dependency-path: apps/api/go.sum
+          context: apps/api
+          file: apps/api/Dockerfile
+          push: true
+          tags: |
+            ${{ env.GHCR_NS }}/fapitec-api:${{ env.IMAGE_TAG }}
+            ${{ env.GHCR_NS }}/fapitec-api:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
-      - name: Build Next.js
-        run: |
-          cd apps/web
-          NEXT_OUTPUT=standalone npm run build
-        env:
-          NODE_ENV: production
-
-      - name: Build API Go
-        run: pnpm run build:api
-        working-directory: apps/api
+      - name: Build and push Web
+        uses: docker/build-push-action@v6
+        with:
+          context: apps/web
+          file: apps/web/Dockerfile.homolog
+          push: true
+          tags: |
+            ${{ env.GHCR_NS }}/fapitec-web:${{ env.IMAGE_TAG }}
+            ${{ env.GHCR_NS }}/fapitec-web:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Setup SSH agent
         uses: webfactory/ssh-agent@v0.9.0
@@ -110,71 +117,51 @@ jobs:
           mkdir -p ~/.ssh
           ssh-keyscan -H ${{ env.SSH_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Copy artifacts to VM
+      - name: Deploy on VM
         run: |
-          echo "=== Copiando artefatos para VM ==="
-          ssh ${{ env.SSH_USER }}@${{ env.SSH_HOST }} "mkdir -p ${{ env.REMOTE_DIR }}/api ${{ env.REMOTE_DIR }}/web ${{ env.REMOTE_DIR }}/api/db/migracoes"
+          ssh ${{ env.SSH_USER }}@${{ env.SSH_HOST }} "
+            set -e
 
-          rsync -az --delete apps/api/ ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_DIR }}/api/ --exclude bin/
+            echo '=== Login GHCR ==='
+            echo ${{ secrets.GHCR_PAT }} | sudo docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 
-          rsync -azL --delete apps/web/.next/standalone/apps/web/ ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_DIR }}/web/
-          rsync -az --delete apps/web/.next/static/ ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_DIR }}/web/.next/static/
-          rsync -az --delete apps/web/public/ ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_DIR }}/web/public/
-          scp apps/web/Dockerfile.homolog ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_DIR }}/web/Dockerfile.homolog
+            echo '=== Atualizando image tag ==='
+            cd ${{ env.REMOTE_DIR }}
+            sed -i 's/^FAPITEC_IMAGE_TAG=.*/FAPITEC_IMAGE_TAG=${{ env.IMAGE_TAG }}/' .env 2>/dev/null || \
+              echo 'FAPITEC_IMAGE_TAG=${{ env.IMAGE_TAG }}' >> .env
 
-          scp docker-compose.homolog.yml ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_DIR }}/docker-compose.yml
-          scp .env.homolog ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_DIR }}/.env 2>/dev/null || true
-          rsync -az --delete apps/api/db/migracoes/ ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_DIR }}/api/db/migracoes/
-          scp apps/api/db/init-casdoor-db.sql ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_DIR }}/api/db/init-casdoor-db.sql
+            echo '=== Pull imagens ==='
+            sudo docker compose --env-file .env -f docker-compose.coolify.yml pull api web
 
-          # Copiar scripts de deploy e rollback
-          scp ${{ env.DEPLOY_SCRIPT }} ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_DIR }}/scripts/deploy-homologacao.sh
-          scp ${{ env.ROLLBACK_SCRIPT }} ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_DIR }}/scripts/rollback-homologacao.sh
-          scp scripts/deploy-vm.sh ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_DIR }}/scripts/deploy-vm.sh
-
-      - name: Executar deploy na VM
-        run: |
-          echo "=== Executando deploy via SSH ==="
-          scp ${{ env.DEPLOY_SCRIPT }} ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_DIR }}/scripts/deploy-homologacao.sh
-          scp scripts/deploy-vm.sh ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_DIR }}/scripts/deploy-vm.sh
-          ssh ${{ env.SSH_USER }}@${{ env.SSH_HOST }} "cd ${{ env.REMOTE_DIR }} && bash scripts/deploy-vm.sh"
+            echo '=== Restart servicos ==='
+            sudo docker compose --env-file .env -f docker-compose.coolify.yml up -d --no-build api web
+          "
 
       - name: Healthcheck - API
         id: healthcheck-api
         run: |
-          echo "=== Verificando saúde da API ==="
+          echo "=== Verificando saude da API ==="
           for i in $(seq 1 12); do
             HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" ${{ env.HEALTH_API }} || true)
             if [ "$HTTP_CODE" = "200" ]; then
-              echo "API saudável (HTTP $HTTP_CODE)"
+              echo "API saudavel (HTTP $HTTP_CODE)"
               exit 0
             fi
             echo "Tentativa $i: HTTP $HTTP_CODE. Aguardando 5s..."
             sleep 5
           done
-          echo "ERRO: API não respondeu com 200 após 60s."
+          echo "ERRO: API nao respondeu com 200 apos 60s."
           exit 1
 
       - name: Healthcheck - Frontend
-        id: healthcheck-frontend
         run: |
           echo "=== Verificando frontend ==="
           HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" ${{ env.HEALTH_FRONTEND }} || true)
           if [ "$HTTP_CODE" = "200" ]; then
-            echo "Frontend saudável (HTTP $HTTP_CODE)"
+            echo "Frontend saudavel (HTTP $HTTP_CODE)"
           else
-            echo "Aviso: Frontend retornou HTTP $HTTP_CODE (não crítico)"
+            echo "Aviso: Frontend retornou HTTP $HTTP_CODE"
           fi
-
-      - name: Notificar sucesso
-        if: success()
-        run: |
-          if [ "${{ env.SLACK_NOTIFY }}" = "true" ]; then
-            curl -s -X POST -H 'Content-type: application/json' \
-              --data "{\"text\":\"✅ Deploy Homologação concluído com sucesso!\nCommit: ${{ github.sha }}\nLink: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\"}" \
-              ${{ secrets.SLACK_WEBHOOK }}
-          fi
-          echo "Deploy concluído com sucesso."
 
   rollback:
     name: Rollback
@@ -184,8 +171,7 @@ jobs:
     timeout-minutes: 15
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Setup SSH agent
         uses: webfactory/ssh-agent@v0.9.0
@@ -197,32 +183,26 @@ jobs:
           mkdir -p ~/.ssh
           ssh-keyscan -H ${{ env.SSH_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Executar rollback na VM
+      - name: Executar rollback
         run: |
-          echo "=== Executando rollback ==="
-          ssh ${{ env.SSH_USER }}@${{ env.SSH_HOST }} "cd ${{ env.REMOTE_DIR }} && bash scripts/rollback-homologacao.sh"
+          ssh ${{ env.SSH_USER }}@${{ env.SSH_HOST }} "
+            cd ${{ env.REMOTE_DIR }}
+            TAG_ANTERIOR=\$(git rev-parse HEAD~1)
+            sed -i 's/^FAPITEC_IMAGE_TAG=.*/FAPITEC_IMAGE_TAG=\$TAG_ANTERIOR/' .env
+            sudo docker compose --env-file .env -f docker-compose.coolify.yml pull api web
+            sudo docker compose --env-file .env -f docker-compose.coolify.yml up -d --no-build api web
+          "
 
-      - name: Verificar saúde pós-rollback
+      - name: Verificar saude pos-rollback
         run: |
-          echo "=== Verificando saúde após rollback ==="
           for i in $(seq 1 6); do
             HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" ${{ env.HEALTH_API }} || true)
             if [ "$HTTP_CODE" = "200" ]; then
-              echo "API saudável após rollback (HTTP $HTTP_CODE)"
+              echo "API saudavel apos rollback (HTTP $HTTP_CODE)"
               exit 0
             fi
             echo "Tentativa $i: HTTP $HTTP_CODE. Aguardando 10s..."
             sleep 10
           done
-          echo "ALERTA: API não respondeu após rollback. Intervenção manual necessária."
+          echo "ALERTA: API nao respondeu apos rollback."
           exit 1
-
-      - name: Notificar falha
-        if: always()
-        run: |
-          if [ "${{ env.SLACK_NOTIFY }}" = "true" ]; then
-            curl -s -X POST -H 'Content-type: application/json' \
-              --data "{\"text\":\"❌ Deploy Homologação FALHOU - Rollback executado.\nCommit: ${{ github.sha }}\nLink: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\"}" \
-              ${{ secrets.SLACK_WEBHOOK }}
-          fi
-          echo "Rollback concluído."
