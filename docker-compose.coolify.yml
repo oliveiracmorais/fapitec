@@ -16,8 +16,6 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-    networks:
-      - coolify
 
   casdoor:
     image: casbin/casdoor:v3.92.0
@@ -30,8 +28,6 @@ services:
       postgres:
         condition: service_healthy
     restart: unless-stopped
-    networks:
-      - coolify
 
   mailpit:
     image: axllent/mailpit:latest
@@ -40,8 +36,6 @@ services:
       MP_SMTP_AUTH_ALLOW_INSECURE: "true"
       MP_WEBROOT: /mail/
     restart: unless-stopped
-    networks:
-      - coolify
 
   api:
     build:
@@ -69,8 +63,6 @@ services:
       mailpit:
         condition: service_started
     restart: unless-stopped
-    networks:
-      - coolify
 
   web:
     build:
@@ -82,8 +74,6 @@ services:
     depends_on:
       - api
     restart: unless-stopped
-    networks:
-      - coolify
 
 volumes:
   postgres_data:
