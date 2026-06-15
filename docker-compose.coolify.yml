@@ -3,14 +3,13 @@ name: fapitec
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: fapitec-postgres
     environment:
       POSTGRES_DB: fapitec
       POSTGRES_USER: fapitec
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./api/db/init-casdoor-db.sql:/docker-entrypoint-initdb.d/02-init-casdoor-db.sql
+      - ./apps/api/db/init-casdoor-db.sql:/docker-entrypoint-initdb.d/02-init-casdoor-db.sql
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U fapitec"]
@@ -23,10 +22,9 @@ services:
   casdoor:
     image: casbin/casdoor:v3.92.0
     pull_policy: always
-    container_name: fapitec-casdoor
     environment:
       driverName: postgres
-      dataSourceName: "host=postgres port=5432 user=fapitec password=fapitec123 dbname=casdoor sslmode=disable"
+      dataSourceName: "host=postgres port=5432 user=fapitec password=${DB_PASSWORD} dbname=casdoor sslmode=disable"
       dbName: casdoor
     depends_on:
       postgres:
@@ -34,20 +32,9 @@ services:
     restart: unless-stopped
     networks:
       - coolify
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.fapitec-auth-http.rule=Host(`auth.fapitec.duckdns.org`)
-      - traefik.http.routers.fapitec-auth-http.entrypoints=http
-      - traefik.http.routers.fapitec-auth-http.middlewares=redirect-to-https@file
-      - traefik.http.routers.fapitec-auth.rule=Host(`auth.fapitec.duckdns.org`)
-      - traefik.http.routers.fapitec-auth.entrypoints=https
-      - traefik.http.routers.fapitec-auth.tls=true
-      - traefik.http.routers.fapitec-auth.tls.certresolver=letsencrypt
-      - traefik.http.services.fapitec-auth.loadbalancer.server.port=8000
 
   mailpit:
     image: axllent/mailpit:latest
-    container_name: fapitec-mailpit
     environment:
       MP_SMTP_AUTH_ACCEPT_ANY: "true"
       MP_SMTP_AUTH_ALLOW_INSECURE: "true"
@@ -57,11 +44,9 @@ services:
       - coolify
 
   api:
-    image: ghcr.io/oliveiracmorais/fapitec-api:${FAPITEC_IMAGE_TAG:-latest}
     build:
-      context: ./api
+      context: ./apps/api
       dockerfile: Dockerfile
-    container_name: fapitec-api
     environment:
       DATABASE_URL: ${DATABASE_URL}
       AUTH_PROVIDER: ${AUTH_PROVIDER:-internal}
@@ -88,11 +73,9 @@ services:
       - coolify
 
   web:
-    image: ghcr.io/oliveiracmorais/fapitec-web:${FAPITEC_IMAGE_TAG:-latest}
     build:
       context: ./web
       dockerfile: Dockerfile.homolog
-    container_name: fapitec-web
     environment:
       NODE_ENV: production
       NEXT_PUBLIC_API_URL: http://api:8080
@@ -101,22 +84,6 @@ services:
     restart: unless-stopped
     networks:
       - coolify
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.fapitec-web-http.rule=Host(`fapitec.duckdns.org`)
-      - traefik.http.routers.fapitec-web-http.entrypoints=http
-      - traefik.http.routers.fapitec-web-http.middlewares=redirect-to-https@file
-      - traefik.http.routers.fapitec-web.rule=Host(`fapitec.duckdns.org`)
-      - traefik.http.routers.fapitec-web.entrypoints=https
-      - traefik.http.routers.fapitec-web.tls=true
-      - traefik.http.routers.fapitec-web.tls.certresolver=letsencrypt
-      - traefik.http.services.fapitec-web.loadbalancer.server.port=3000
-
-networks:
-  coolify:
-    external: true
 
 volumes:
   postgres_data:
-    name: fapitec_postgres_data
-    external: true
