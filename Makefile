@@ -1,6 +1,6 @@
 SSH_HOST ?= ubuntu@137.131.166.115
 SSH_KEY ?= ~/.ssh/ssh-key-2026-05-26.key
-COMPOSE_FILE ?= docker-compose.coolify.yml
+COMPOSE_FILE ?= docker-compose.homolog.yml
 ENV_FILE ?= .env
 PROJECT_DIR ?= /home/ubuntu/apps/fapitec
 

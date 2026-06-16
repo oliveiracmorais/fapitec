@@ -1,15 +1,32 @@
 name: fapitec
 
 services:
+  dozzle:
+    image: amir20/dozzle:v8
+    container_name: fapitec-dozzle
+    command: --base /logs
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "127.0.0.1:9999:8080"
+    networks:
+      - app_network
+    restart: unless-stopped
+
   postgres:
     image: postgres:16-alpine
+    container_name: fapitec-postgres
     environment:
       POSTGRES_DB: fapitec
       POSTGRES_USER: fapitec
       POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "127.0.0.1:5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./apps/api/db/init-casdoor-db.sql:/docker-entrypoint-initdb.d/02-init-casdoor-db.sql
+    networks:
+      - app_network
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U fapitec"]
@@ -18,29 +35,40 @@ services:
       retries: 5
 
   casdoor:
-    image: casbin/casdoor:v3.92.0
+    image: casbin/casdoor:v1.686.0
+    container_name: fapitec-casdoor
     pull_policy: always
     environment:
       driverName: postgres
       dataSourceName: "host=postgres port=5432 user=fapitec password=${DB_PASSWORD} dbname=casdoor sslmode=disable"
       dbName: casdoor
+    ports:
+      - "127.0.0.1:8000:8000"
     depends_on:
       postgres:
         condition: service_healthy
+    networks:
+      - app_network
     restart: unless-stopped
 
   mailpit:
     image: axllent/mailpit:latest
+    container_name: fapitec-mailpit
     environment:
       MP_SMTP_AUTH_ACCEPT_ANY: "true"
       MP_SMTP_AUTH_ALLOW_INSECURE: "true"
       MP_WEBROOT: /mail/
+    ports:
+      - "127.0.0.1:8025:8025"
+    networks:
+      - app_network
     restart: unless-stopped
 
   api:
     build:
       context: ./apps/api
       dockerfile: Dockerfile
+    container_name: fapitec-api
     environment:
       DATABASE_URL: ${DATABASE_URL}
       AUTH_PROVIDER: ${AUTH_PROVIDER:-internal}
@@ -57,23 +85,38 @@ services:
       FRONTEND_URL: https://fapitec.duckdns.org
     volumes:
       - ./casdoor-cert.pem:/app/casdoor-cert.pem:ro
+    ports:
+      - "127.0.0.1:8080:8080"
     depends_on:
       postgres:
         condition: service_healthy
       mailpit:
         condition: service_started
+    networks:
+      - app_network
     restart: unless-stopped
 
   web:
     build:
-      context: ./apps/web
-      dockerfile: Dockerfile.homolog
+      context: .
+      dockerfile: apps/web/Dockerfile.homolog
+    container_name: fapitec-web
     environment:
       NODE_ENV: production
       NEXT_PUBLIC_API_URL: http://api:8080
+    ports:
+      - "127.0.0.1:3000:3000"
     depends_on:
       - api
+    networks:
+      - app_network
     restart: unless-stopped
+
+networks:
+  app_network:
+    driver: bridge
 
 volumes:
   postgres_data:
+    name: fapitec_postgres_data
+    external: true

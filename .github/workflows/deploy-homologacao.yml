@@ -131,10 +131,10 @@ jobs:
               echo 'FAPITEC_IMAGE_TAG=${{ env.IMAGE_TAG }}' >> .env
 
             echo '=== Pull imagens ==='
-            sudo docker compose --env-file .env -f docker-compose.coolify.yml pull api web
+            sudo docker compose --env-file .env -f docker-compose.homolog.yml pull api web
 
             echo '=== Restart servicos ==='
-            sudo docker compose --env-file .env -f docker-compose.coolify.yml up -d --no-build api web
+            sudo docker compose --env-file .env -f docker-compose.homolog.yml up -d --no-build api web
           "
 
       - name: Healthcheck - API
@@ -189,8 +189,8 @@ jobs:
             cd ${{ env.REMOTE_DIR }}
             TAG_ANTERIOR=\$(git rev-parse HEAD~1)
             sed -i 's/^FAPITEC_IMAGE_TAG=.*/FAPITEC_IMAGE_TAG=\$TAG_ANTERIOR/' .env
-            sudo docker compose --env-file .env -f docker-compose.coolify.yml pull api web
-            sudo docker compose --env-file .env -f docker-compose.coolify.yml up -d --no-build api web
+            sudo docker compose --env-file .env -f docker-compose.homolog.yml pull api web
+            sudo docker compose --env-file .env -f docker-compose.homolog.yml up -d --no-build api web
           "
 
       - name: Verificar saude pos-rollback
