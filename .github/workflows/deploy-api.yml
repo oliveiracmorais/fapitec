@@ -1,10 +1,15 @@
-name: Deploy Homologacao (Full Stack)
+name: Deploy API
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/api/**'
+      - 'docker-compose.homolog.yml'
   workflow_dispatch:
 
 concurrency:
-  group: homologacao-deploy
+  group: homologacao-deploy-api
   cancel-in-progress: true
 
 env:
@@ -14,43 +19,19 @@ env:
   IMAGE_TAG: ${{ github.sha }}
   GHCR_NS: ghcr.io/${{ github.repository_owner }}
   HEALTH_API: https://fapitec.duckdns.org/api/v1/health
-  HEALTH_FRONTEND: https://fapitec.duckdns.org/
 
 jobs:
   quality:
     name: Qualidade
     runs-on: ubuntu-latest
     timeout-minutes: 15
-
     steps:
       - uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Install dependencies
-        run: pnpm install
-
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
           go-version: "1.26"
           cache-dependency-path: apps/api/go.sum
-
-      - name: Lint
-        run: pnpm run lint
-
-      - name: Typecheck
-        run: pnpm run typecheck
-
-      - name: Test Node.js
-        run: pnpm test
-
       - name: Test Go
         run: pnpm run test:go
         working-directory: apps/api
@@ -63,23 +44,18 @@ jobs:
     permissions:
       contents: read
       packages: write
-
     steps:
       - uses: actions/checkout@v4
-
       - name: Setup QEMU
         uses: docker/setup-qemu-action@v3
-
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v3
-
       - name: Login to GHCR
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Build and push API
         uses: docker/build-push-action@v6
         with:
@@ -91,53 +67,31 @@ jobs:
             ${{ env.GHCR_NS }}/fapitec-api:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-      - name: Build and push Web
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: apps/web/Dockerfile.homolog
-          push: true
-          tags: |
-            ${{ env.GHCR_NS }}/fapitec-web:${{ env.IMAGE_TAG }}
-            ${{ env.GHCR_NS }}/fapitec-web:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
       - name: Setup SSH agent
         uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
-
       - name: Add host key to known_hosts
         run: |
           mkdir -p ~/.ssh
           ssh-keyscan -H ${{ env.SSH_HOST }} >> ~/.ssh/known_hosts
-
-      - name: Deploy on VM
+      - name: Deploy API on VM
         run: |
           ssh ${{ env.SSH_USER }}@${{ env.SSH_HOST }} "
             set -e
-
             echo '=== Login GHCR ==='
             echo ${{ secrets.GHCR_PAT }} | sudo docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
-
             echo '=== Atualizando image tag ==='
             cd ${{ env.REMOTE_DIR }}
             sed -i 's/^FAPITEC_IMAGE_TAG=.*/FAPITEC_IMAGE_TAG=${{ env.IMAGE_TAG }}/' .env 2>/dev/null || \
               echo 'FAPITEC_IMAGE_TAG=${{ env.IMAGE_TAG }}' >> .env
-
-            echo '=== Pull imagens ==='
-            sudo docker compose --env-file .env -f docker-compose.homolog.yml pull api web
-
-            echo '=== Restart servicos ==='
-            sudo docker compose --env-file .env -f docker-compose.homolog.yml up -d --no-build api web
+            echo '=== Pull API ==='
+            sudo docker compose --env-file .env -f docker-compose.homolog.yml pull api
+            echo '=== Restart API ==='
+            sudo docker compose --env-file .env -f docker-compose.homolog.yml up -d --no-build api
           "
-
-      - name: Healthcheck - API
-        id: healthcheck-api
+      - name: Healthcheck API
         run: |
-          echo "=== Verificando saude da API ==="
           for i in $(seq 1 12); do
             HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" ${{ env.HEALTH_API }} || true)
             if [ "$HTTP_CODE" = "200" ]; then
@@ -150,46 +104,31 @@ jobs:
           echo "ERRO: API nao respondeu com 200 apos 60s."
           exit 1
 
-      - name: Healthcheck - Frontend
-        run: |
-          echo "=== Verificando frontend ==="
-          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" ${{ env.HEALTH_FRONTEND }} || true)
-          if [ "$HTTP_CODE" = "200" ]; then
-            echo "Frontend saudavel (HTTP $HTTP_CODE)"
-          else
-            echo "Aviso: Frontend retornou HTTP $HTTP_CODE"
-          fi
-
   rollback:
     name: Rollback
     needs: build-and-deploy
     if: failure()
     runs-on: ubuntu-latest
     timeout-minutes: 15
-
     steps:
       - uses: actions/checkout@v4
-
       - name: Setup SSH agent
         uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
-
       - name: Add host key to known_hosts
         run: |
           mkdir -p ~/.ssh
           ssh-keyscan -H ${{ env.SSH_HOST }} >> ~/.ssh/known_hosts
-
-      - name: Executar rollback
+      - name: Rollback API
         run: |
           ssh ${{ env.SSH_USER }}@${{ env.SSH_HOST }} "
             cd ${{ env.REMOTE_DIR }}
             TAG_ANTERIOR=\$(git rev-parse HEAD~1)
             sed -i 's/^FAPITEC_IMAGE_TAG=.*/FAPITEC_IMAGE_TAG=\$TAG_ANTERIOR/' .env
-            sudo docker compose --env-file .env -f docker-compose.homolog.yml pull api web
-            sudo docker compose --env-file .env -f docker-compose.homolog.yml up -d --no-build api web
+            sudo docker compose --env-file .env -f docker-compose.homolog.yml pull api
+            sudo docker compose --env-file .env -f docker-compose.homolog.yml up -d --no-build api
           "
-
       - name: Verificar saude pos-rollback
         run: |
           for i in $(seq 1 6); do
