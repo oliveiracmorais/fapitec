@@ -1,6 +1,14 @@
 name: Deploy Homologacao (Full Stack)
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/api/**'
+      - 'apps/web/**'
+      - 'packages/**'
+      - 'docker-compose.homolog.yml'
+      - '.github/workflows/deploy-homologacao.yml'
   workflow_dispatch:
 
 concurrency:
